@@ -309,7 +309,7 @@ function GM:ManageGametypeLocking( current )
 	if self.GametypeRounds[ current ] and current ~= "koth" then
 		self.GametypeRounds[ current ].played = self.GametypeRounds[ current ].played + 1
 		if self.GametypeRounds[ current ].played >= ROUNDS_PER_GAMETYPE then
-			self.GametypeRounds[ current ].tounlock = ( current == "ts" and 6 ) or UNLOCKS_PER_GAMETYPE //because constant punchpocalypse is nono
+			self.GametypeRounds[ current ].tounlock = ( current == "ts" and TS_UNLOCKS_PER_GAMETYPE ) or UNLOCKS_PER_GAMETYPE //because constant punchpocalypse is nono
 		end
 	end
 	

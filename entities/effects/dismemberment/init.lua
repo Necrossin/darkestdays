@@ -54,10 +54,10 @@ function EFFECT:Init( data )
 		
 		--self:StartDeath()
 		
-		if LocalPlayer():EyePos():DistToSqr( self.ent:GetPos() ) < 8100 then
+		if MySelf:EyePos():DistToSqr( self.ent:GetPos() ) < 8100 then
 			//AddBloodSplat( 3 )
 			//AddBloodSplat( 3 )
-			LocalPlayer():AddBloodyStuff()		
+			MySelf:AddBloodyStuff()		
 		end
 		
 	end

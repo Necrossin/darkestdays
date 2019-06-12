@@ -70,6 +70,11 @@ cvars.AddChangeCallback("dd_options_punchpocalypse_time", function(cvar, oldvalu
 	TS_TIME = tonumber( newvalue )
 end)
 
+TS_NIGHTMODE = util.tobool(CreateConVar("dd_options_punchpocalypse_nightmode", 1, FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable night mode for Punchpocalypse."):GetInt())
+cvars.AddChangeCallback("dd_options_punchpocalypse_nightmode", function(cvar, oldvalue, newvalue)
+	TS_NIGHTMODE = util.tobool( newvalue )
+end)
+
 //there is small admin menu for scoreboard by default
 ADMIN_MENU = util.tobool(CreateConVar("dd_options_enable_admin_menu", 1, FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable default admin menu in scoreboard. Disable it if you already have one, or something."):GetInt())
 cvars.AddChangeCallback("dd_options_enable_admin_menu", function(cvar, oldvalue, newvalue)
@@ -97,9 +102,23 @@ CONQUEST_TICKET_DRAIN_TIME = 5
 CONQUEST_CAPTURE_TIME = 3
 CONQUEST_MAX_POINTS = 3
 
+ROUNDS_PER_GAMETYPE = CreateConVar("dd_options_rounds_to_lock", 3, FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Amount of rounds that can be played on same gametype, before it gets locked."):GetInt()
+cvars.AddChangeCallback("dd_options_rounds_to_lock", function(cvar, oldvalue, newvalue)
+	ROUNDS_PER_GAMETYPE = tonumber( newvalue )
+end)
 
-ROUNDS_PER_GAMETYPE = 3
-UNLOCKS_PER_GAMETYPE = 4 //play at least one of something or dunno
+UNLOCKS_PER_GAMETYPE = CreateConVar("dd_options_rounds_to_unlock", 4, FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Amount of rounds that has to be played to unlock locked gametypes (EXCEPT FOR PUNCHPOCALYPSE)."):GetInt()
+cvars.AddChangeCallback("dd_options_rounds_to_unlock", function(cvar, oldvalue, newvalue)
+	UNLOCKS_PER_GAMETYPE = tonumber( newvalue )
+end)
+
+TS_UNLOCKS_PER_GAMETYPE = CreateConVar("dd_options_punchpocalypse_rounds_to_unlock", 6, FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Amount of rounds that has to be played to unlock Punchpocalypse gametype."):GetInt()
+cvars.AddChangeCallback("dd_options_punchpocalypse_rounds_to_unlock", function(cvar, oldvalue, newvalue)
+	TS_UNLOCKS_PER_GAMETYPE = tonumber( newvalue )
+end)
+
+--ROUNDS_PER_GAMETYPE = 3
+--UNLOCKS_PER_GAMETYPE = 4 //play at least one of something or dunno
 		
 
 IgnorePhysToMult = {

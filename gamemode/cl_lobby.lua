@@ -179,6 +179,11 @@ local function GetPlayerText()
 
 end
 
+net.Receive( "Client:ShowLobby", function( len )
+	print"got lobby"
+	timer.Simple( 0.2, function() DrawLobby() end )
+end)
+
 function DrawLobby()
 
 
@@ -291,9 +296,9 @@ function MakeGentleOffer()
 		RunConsoleCommand("gmod_mcore_test", "1")
 		RunConsoleCommand("cl_threaded_bone_setup", "1")
 		surface.PlaySound( "misc/achievement_earned.wav" )
-		LocalPlayer():ChatPrint( "Congratulations! Now you will probably have more fps!" ) 
+		MySelf:ChatPrint( "Congratulations! Now you will probably have more fps!" ) 
 		local e = EffectData()
-			e:SetOrigin( LocalPlayer():GetPos() )
+			e:SetOrigin( MySelf:GetPos() )
 		util.Effect( "achievement_unlock", e )
 		self:SetDisabled( true )
 		self:SetVisible( false )
@@ -1581,11 +1586,11 @@ function DrawContextMenu(x,y,ww,hh,num,tbl)
 		
 		for item,tab in pairs(tbl) do
 			
-			if !LocalPlayer():HasUnlocked(item) and not tab.Level then continue end
+			if !MySelf:HasUnlocked(item) and not tab.Level then continue end
 			if num == 1 and (tab.Melee or tab.Secondary) then continue end
 			if num == 2 and not (tab.Melee or tab.Secondary) then continue end
 			
-			local lock = !LocalPlayer():HasUnlocked(item) and tab.Level
+			local lock = !MySelf:HasUnlocked(item) and tab.Level
 			
 			ItemLabel[item] = vgui.Create("DLabel")
 			ItemLabel[item]:SetText("")
@@ -1768,7 +1773,7 @@ end
 
 function LoadoutMenu()
 	
-	if GAMEMODE:GetGametype() == "ts" and LocalPlayer():Team() == TEAM_THUG then return end
+	if GAMEMODE:GetGametype() == "ts" and MySelf:Team() == TEAM_THUG then return end
 	
 	local w,h = ScrW(),ScrH()
 	

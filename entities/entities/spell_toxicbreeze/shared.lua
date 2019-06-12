@@ -71,14 +71,14 @@ function ENT:OnDraw()
 	if owner:GetCurSpellInd() ~= self:GetDTInt(0) then
 		if self.Particle then
 			self.Particle = nil
-			if LocalPlayer() == owner and not GAMEMODE.ThirdPerson then
+			if MySelf == owner and not GAMEMODE.ThirdPerson then
 				owner:StopParticles()
 			end
 		end
 		return 
 	end
 	
-	if self.Particle and LocalPlayer() == owner and not GAMEMODE.ThirdPerson then
+	if self.Particle and MySelf == owner and not GAMEMODE.ThirdPerson then
 		self.Particle = nil
 		owner:StopParticles()
 		return

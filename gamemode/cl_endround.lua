@@ -182,9 +182,9 @@ function DrawEndround(time)
 		restartbtn:SetTall(restartsize)
 		restartbtn:SetText("")
 		restartbtn.DoClick = function()
-			if LocalPlayer().Voted ~= 5 then
+			if MySelf.Voted ~= 5 then
 				RunConsoleCommand ( "VoteAddMap", tostring(5) )
-				LocalPlayer().Voted = 5
+				MySelf.Voted = 5
 			end
 		end
 		restartbtn.OnCursorEntered = function() 
@@ -247,9 +247,9 @@ function DrawEndround(time)
 			self:SetTall(mappanel_l:GetTall()/2)
 		end
 		MapButton.DoClick = function()
-			if LocalPlayer().Voted ~= i then
+			if MySelf.Voted ~= i then
 				RunConsoleCommand ( "VoteAddMap", tostring(i) )
-				LocalPlayer().Voted = i
+				MySelf.Voted = i
 			end
 		end
 		MapButton.OnCursorEntered = function() 
@@ -361,9 +361,9 @@ function DrawEndround(time)
 			self:SetTall(gametypepanel:GetTall()/count)
 		end
 		gm.DoClick = function()
-			if LocalPlayer().VotedGameType ~= k then
+			if MySelf.VotedGameType ~= k then
 				RunConsoleCommand ( "VoteAddGametype", tostring(k) )
-				LocalPlayer().VotedGameType =k
+				MySelf.VotedGameType =k
 			end
 		end
 		gm.OnCursorEntered = function() 
@@ -536,7 +536,7 @@ function DrawEndroundOld(time)
 	
 	ENDROUND = true
 	
-	LocalPlayer().Voted = false
+	MySelf.Voted = false
 	
 	EndMenu = vgui.Create("DFrame")
 	EndMenu:SetSize(w,h)
@@ -606,9 +606,9 @@ function DrawEndroundOld(time)
 		MapButton:SetSize(lW,lH)
 		MapButton:SetText("")
 		MapButton.DoClick = function()
-			if not LocalPlayer().Voted then
+			if not MySelf.Voted then
 				RunConsoleCommand ( "VoteAddMap", tostring(i) )
-				LocalPlayer().Voted = true
+				MySelf.Voted = true
 			end
 		end
 		MapButton.OnCursorEntered = function() 

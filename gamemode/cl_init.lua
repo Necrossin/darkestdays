@@ -202,8 +202,17 @@ hook.Add("InitPostEntity", "GetLocal", function()
 	gamemode.Call("HookGetLocal", MySelf)
 end)
 
+function GM:OnReloaded()
+	self.BaseClass.OnReloaded(self)
+
+	self:LocalPlayerFound()
+end
+
 function GM:InitPostEntity()
-	self.Think = self._Think
+
+	self:LocalPlayerFound()
+
+	/*self.Think = self._Think
 	self.HUDShouldDraw = self._HUDShouldDraw
 	self.RenderScreenspaceEffects = self._RenderScreenspaceEffects
 	self.CalcView = self._CalcView
@@ -211,7 +220,52 @@ function GM:InitPostEntity()
 	self.HUDPaintBackground = self._HUDPaintBackground
 	self.PreDrawViewModel = self._PreDrawViewModel
 	self.PostDrawViewModel = self._PostDrawViewModel
+	self.HUDDrawTargetID = self._HUDDrawTargetID*/
+end
+
+function GM:Think() end
+
+GM.HUDWeaponPickedUp = GM.Think
+GM.Think = GM._Think
+GM.HUDShouldDraw = GM.Think
+GM.HUDDrawTargetID = GM.Think
+GM.CalcView = GM.Think
+GM.ShouldDrawLocalPlayer = GM.Think
+GM.PostDrawOpaqueRenderables = GM.Think
+GM.PostDrawTranslucentRenderables = GM.Think
+GM.HUDPaint = GM.Think
+GM.HUDPaintBackground = GM.Think
+GM.CreateMove = GM.Think
+GM.PrePlayerDraw = GM.Think
+GM.PostPlayerDraw = GM.Think
+GM.InputMouseApply = GM.Think
+GM.GUIMousePressed = GM.Think
+
+function GM:LocalPlayerFound()
+	
+	self.Think = self._Think
+	self.HUDShouldDraw = self._HUDShouldDraw
+	self.CalcView = self._CalcView
+	--self.ShouldDrawLocalPlayer = self._ShouldDrawLocalPlayer
+	--self.PostDrawTranslucentRenderables = self._PostDrawTranslucentRenderables
+	self.HUDPaint = self._HUDPaint
+	self.HUDPaintBackground = self._HUDPaintBackground
+	self.CreateMove = self._CreateMove
+	self.GetMotionBlurValues = self._GetMotionBlurValues
 	self.HUDDrawTargetID = self._HUDDrawTargetID
+	--self.PrePlayerDraw = self._PrePlayerDraw
+	--self.PostPlayerDraw = self._PostPlayerDraw
+	--self.InputMouseApply = self._InputMouseApply
+	--self.GUIMousePressed = self._GUIMousePressed
+	--self.HUDWeaponPickedUp = self._HUDWeaponPickedUp
+	--self.RenderScene = self._RenderScene
+	--self.SetupSkyboxFog = self._SetupSkyboxFog
+	--self.SetupWorldFog = self._SetupWorldFog
+	
+	if render.GetDXLevel() >= 80 then
+		self.RenderScreenspaceEffects = self._RenderScreenspaceEffects
+	end
+
 end
 
 function GM:Initialize( )	
@@ -455,23 +509,9 @@ wtf_tbl = {
 	Material( "models/monk/grigori_head" ),
 }
 
-function GM:_PreDrawViewModel( ViewModel, Player, Weapon )
+function GM:PreDrawViewModel( ViewModel, Player, Weapon )
 
-	if ( !IsValid( Weapon ) ) then return false end
-	
-	if wtf then 
-		if not Weapon.tex then
-			local ind = math.random( 1, 10 )
-			Weapon.tex = wtf_tbl[ ind ]
-		end
-		
-		if Weapon.tex then
-			render.ModelMaterialOverride( Weapon.tex )
-			draw_wtf = true
-		end
-	end
-	
-	
+	if ( !IsValid( Weapon ) ) then return false end	
 
 	if Weapon.PreDrawViewModel then
 		Weapon:PreDrawViewModel( ViewModel, Weapon, Player )
@@ -480,16 +520,9 @@ function GM:_PreDrawViewModel( ViewModel, Player, Weapon )
 end
 
 local blood_mat = Material( "models/flesh" )
-function GM:_PostDrawViewModel( ViewModel, Player, Weapon )
+function GM:PostDrawViewModel( ViewModel, Player, Weapon )
 	
 	if ( !IsValid( Weapon ) ) then return false end
-	
-	if wtf then 
-		if draw_wtf then
-			render.ModelMaterialOverride()
-			draw_wtf = false
-		end
-	end
 	
 	if Weapon.PostDrawViewModel then 
 		Weapon:PostDrawViewModel( ViewModel, Weapon, Player )
@@ -499,19 +532,7 @@ function GM:_PostDrawViewModel( ViewModel, Player, Weapon )
 	if ( Weapon.UseHands || !Weapon:IsScripted() ) then
 
 		local hands = Player:GetHands()
-		if ( IsValid( hands ) ) then
-			//if Weapon.ViewModelFlip then render.CullMode(MATERIAL_CULLMODE_CW) end
-			
-			//hands:SetRenderOrigin( ViewModel:GetPos())
-			//hands:SetRenderAngles( ViewModel:GetAngles() )
-			
-			//hands:SetupBones()
-			
-			//hands:RemoveEffects(EF_BONEMERGE)
-			--render.EnableClipping( true ) 
-			--local normal = LocalPlayer():EyeAngles():Forward()//ViewModel:GetAngles():Forward() * 1
-			--render.PushCustomClipPlane( normal, normal:Dot( LocalPlayer():EyePos() + normal * 1 ) )
-			
+		if ( IsValid( hands ) ) then			
 			hands:DrawModel()	
 			
 			if DD_BLOODYMODELS and hands.Bloody then
@@ -534,34 +555,23 @@ function GM:_PostDrawViewModel( ViewModel, Player, Weapon )
 				render.SetBlend( 1 )
 			end
 			
-			/*if DD_BLOODYMODELS and hands.Bloody then
-				render.SetBlend( 0.99 )
-				render.MaterialOverride( blood_mat )
-				render.SetColorModulation(1, 0.1, 0.1)
-				for i=1, hands.Bloody do
-					hands:SetupBones()
-					hands:DrawModel()
-				end
-				render.SetColorModulation(1, 1, 1)
-				render.MaterialOverride( )
-				render.SetBlend( 1 )
-			end*/
+			if Player:IsCarryingFlag() then
+				
+				local flag = GetHillEntity()
+				--render.SetBlend( 1 )
+				--flag:SetupBones()
+				flag.HandDraw = true
+				flag:DrawModel()
+				flag.HandDraw = false
+				--render.SetBlend( 1 )
+				
+			end
 			
 			
-			--render.PopCustomClipPlane()
-			--render.EnableClipping( false )
-			//hands:AddEffects(EF_BONEMERGE)
-			
-			//hands:SetRenderOrigin()
-			//hands:SetRenderAngles()
-
-			//if Weapon.ViewModelFlip then render.CullMode(MATERIAL_CULLMODE_CCW) end
 		end
 
 	end
 
-
-	
 end
 
 
@@ -592,9 +602,9 @@ end
 
 
 local dash_lerp = 0
-function GM:GetMotionBlurValues( x, y, fwd, spin )	
+function GM:_GetMotionBlurValues( x, y, fwd, spin )	
 	
-	dash_lerp = math.Approach(dash_lerp, (LocalPlayer():IsDashing() and 1) or 0, FrameTime() * ((dash_lerp + 1) ^ 1.1))
+	dash_lerp = math.Approach(dash_lerp, (MySelf:IsDashing() and 1) or 0, FrameTime() * ((dash_lerp + 1) ^ 1.1))
 	
 	if dash_lerp > 0 then
 		return 0, 0, dash_lerp * 0.4, spin
@@ -620,14 +630,14 @@ local tab = {}
 
 function GM:_RenderScreenspaceEffects()
 
-	ghosting_lerp = math.Approach(ghosting_lerp, (LocalPlayer():IsGhosting() and 1) or 0, FrameTime() * ((ghosting_lerp + 1) ^ 1.1))
+	ghosting_lerp = math.Approach(ghosting_lerp, (MySelf:IsGhosting() and 1) or 0, FrameTime() * ((ghosting_lerp + 1) ^ 1.1))
 	
 	if ghosting_lerp > 0 then
 		tab[ "$pp_colour_colour" ] = 1 - 0.85 * ghosting_lerp
 		DrawColorModify( tab )
 	end
 	
-	adrenaline_lerp = math.Approach(adrenaline_lerp, (LocalPlayer():HasAdrenaline() and 1) or 0, FrameTime() * ((adrenaline_lerp + 1) ^ 1.6))
+	adrenaline_lerp = math.Approach(adrenaline_lerp, (MySelf:HasAdrenaline() and 1) or 0, FrameTime() * ((adrenaline_lerp + 1) ^ 1.6))
 	
 	if adrenaline_lerp > 0 then
 		tab[ "$pp_colour_mulr" ] = 0.8 * adrenaline_lerp
@@ -743,14 +753,14 @@ function GM:_CalcView( pl, origin, angles, fov, znear, zfar )
 	
 end
 
-function GM:CreateMove( cmd ) 
+function GM:_CreateMove( cmd ) 
 	
-	if LocalPlayer().SwitchToWeapon and LocalPlayer().SwitchToWeapon:IsValid() then
+	if MySelf.SwitchToWeapon and MySelf.SwitchToWeapon:IsValid() then
 		
-		cmd:SelectWeapon( LocalPlayer().SwitchToWeapon )
+		cmd:SelectWeapon( MySelf.SwitchToWeapon )
 		
-		if LocalPlayer():GetActiveWeapon() == LocalPlayer().SwitchToWeapon then
-			LocalPlayer().SwitchToWeapon = nil
+		if MySelf:GetActiveWeapon() == MySelf.SwitchToWeapon then
+			MySelf.SwitchToWeapon = nil
 		end
 		
 	end
@@ -986,7 +996,7 @@ local function ThugVision()
 	
 	if light and light:IsValid() then
 	
-		local MySelf = LocalPlayer()
+		--local MySelf = LocalPlayer()
 		
 		local todraw = MySelf and IsValid(MySelf) and MySelf:Alive() and MySelf:Team() == TEAM_THUG
 		
@@ -996,7 +1006,7 @@ local function ThugVision()
 				light:SetNoDraw(false)
 			end
 			
-			light:SetOwner(LocalPlayer())
+			light:SetOwner(MySelf)
 			light:SetPos(EyePos())
 			light:SetAngles(EyeAngles())
 		else

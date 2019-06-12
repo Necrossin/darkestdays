@@ -66,7 +66,12 @@ end
 
 function ENT:Think()
 	if SERVER then
-		if not self:IsActive() then return end
+		if not self:IsActive() then 
+			if self:IsBeingHeld() then
+				self:SetHoldingTeam()
+			end
+			return
+		end
 		
 		local ct = CurTime()
 		
@@ -384,6 +389,10 @@ function ENT:SetStartTime(time)
 	self:SetDTFloat(3,time) 
 end
 
+function ENT:GetStartCooldown()
+	return math.Round( math.Clamp( self:GetDTFloat(3) - CurTime(), 0, 100 ) ) 
+end
+
 function ENT:MoveHill()
 	
 	if not KOTHPoints then return end
@@ -416,6 +425,7 @@ function ENT:MoveHill()
 		GAMEMODE:HUDMessage(nil, "Hill has been reset!", nil, 0)
 		
 		self:SetStartTime(CurTime() + 10)
+		self:SetHoldingTeam()
 	end
 	
 end

@@ -50,9 +50,9 @@ function EFFECT:Init( data )
 		particle:SetLighting(true)
 	end
 	
-	if LocalPlayer():EyePos():DistToSqr( pos ) < 8100 then
+	if MySelf:EyePos():DistToSqr( pos ) < 8100 then
 		AddBloodSplat( 3 )
-		LocalPlayer():AddBloodyStuff()		
+		MySelf:AddBloodyStuff()		
 	end
 	
 	emitter:Finish()

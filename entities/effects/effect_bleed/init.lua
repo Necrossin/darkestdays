@@ -100,7 +100,7 @@ local bones = {
 
 function EFFECT:Render()
 	
-	if self.Rag then
+	if IsValid( self.Rag ) then
 		
 		if self.Rag:GetPhysicsObjectNum(1) and self.Rag:GetPhysicsObjectNum(1):GetVelocity():Length() > 20 and self.StopTime2 >= CurTime() then
 			local emitter = ParticleEmitter(self.Rag:GetPos())	

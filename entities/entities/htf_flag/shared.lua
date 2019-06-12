@@ -60,8 +60,7 @@ function ENT:Initialize()
 		self:SetTeamTimer(self:TeamToHill(TEAM_RED),HTF_FLAG_TIME)
 		self:SetTeamTimer(self:TeamToHill(TEAM_BLUE),HTF_FLAG_TIME)
 		
-		self:SetStartTime(CurTime() + 80)
-		//self:SetPointTime(CurTime()+80+math.random(35,60))
+		self:SetStartTime(CurTime() + 80) --80
 	end
 	
 	if CLIENT then 
@@ -170,6 +169,8 @@ function ENT:Draw()
 	
 	self.Entity:SetRenderBounds( vec, -vec) 
 
+	--self:SetNoDraw( false )
+	
 	if self:GetCarrier() and IsValid(self:GetCarrier()) then
 		local owner = self:GetCarrier()
 		
@@ -178,23 +179,62 @@ function ENT:Draw()
 			self.Entity:StopParticles()
 		end
 		
-		if owner == MySelf and not GAMEMODE.ThirdPerson then return end
+		if owner == MySelf and not GAMEMODE.ThirdPerson then 
+			
+			--self:SetNoDraw( true )
+			
+			local vm = owner:GetHands()
+			
+			if IsValid( vm ) then
+				
+				local bone = vm:LookupBone( "ValveBiped.Bip01_L_Forearm" ) 
 		
-		local bone = owner:LookupBone( "ValveBiped.Bip01_L_Hand" ) 
-	
-		if bone then  
-			local pos, ang = owner:GetBonePosition(bone)
-			
-			//self:SetPos(pos+ang:Forward()*-2)
-			
-			self:SetModelScale(0.7,0)
-			self:SetRenderOrigin( pos+ang:Forward()*-2)
-			self:DrawModel()
-			self:SetRenderOrigin()
+				if bone then 
+					local pos, ang = vm:GetBonePosition(bone)
+					if pos and ang then
+						if self:GetModelScale() ~= 0.35 then
+							self:SetModelScale(0.35,0)
+						end
+						
+						self:SetRenderOrigin( pos + ang:Forward() * 7  )
+						self:SetRenderAngles( ang )
+						render.SetBlend( self.HandDraw and 1 or 0 )
+						self:DrawModel()
+						render.SetBlend( 1 )
+						self:SetRenderOrigin()
+						self:SetRenderAngles()
+					end
+				end
+				
+			end
+		
+		else
+		
+		--	self:SetNoDraw( false )
+		
+			local bone = owner:LookupBone( "ValveBiped.Bip01_L_Hand" ) 
+		
+			if bone then  
+				local pos, ang = owner:GetBonePosition(bone)
+				if pos and ang then
+					if self:GetModelScale() ~= 0.5 then
+						self:SetModelScale(0.5,0)
+					end
+					self:SetRenderOrigin( pos+ang:Forward()*-2)
+					self:SetRenderAngles( ang )
+					self:DrawModel()
+					self:SetRenderOrigin()
+					self:SetRenderAngles()
+				end
+			end
 		end
 
 	else
-		self:SetModelScale(1,0)
+		--self:SetNoDraw( false )
+		if self:GetModelScale() ~= 1 then
+			self:SetModelScale(1,0)
+		end
+		
 		self:DrawModel()
 		
 		if not self.Particle then
@@ -398,6 +438,10 @@ end
 
 function ENT:SetStartTime(time)
 	self:SetDTFloat(3,time) 
+end
+
+function ENT:GetStartCooldown()
+	return math.Round( math.Clamp( self:GetDTFloat(3) - CurTime(), 0, 100 ) ) 
 end
 
 function ENT:ResetFlag()

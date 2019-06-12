@@ -120,7 +120,7 @@ function EFFECT:Init( data )
 	
 	self.DieTime = CurTime() + 2
 	
-	if LocalPlayer():EyePos():Distance( self.Origin ) < 90 then
+	if MySelf:EyePos():Distance( self.Origin ) < 90 then
 		AddBloodSplat( 3 )
 		AddBloodSplat( 3 )
 		AddBloodSplat( 3 )

@@ -7,6 +7,8 @@ ENT.AdminSpawnable = false
 ENT.Duration = 0.1
 ENT.Uses = 4
 
+ENT.DashSpeed = 2000
+
 if SERVER then
 	AddCSLuaFile("shared.lua")
 end
@@ -52,24 +54,11 @@ end
 function ENT:OnRemove()
 	if IsValid(self.EntOwner) then
 		self.EntOwner._efDash = nil
-		if SERVER then
-			//self.EntOwner:SetLocalVelocity( self.EntOwner:GetVelocity():GetNormal() * self.EntOwner:GetWalkSpeed() )
-		end
 	end
-	if CLIENT then
-		//if IsValid( self.EntOwner ) and self.Particle then
-			//self.EntOwner:StopParticlesNamed( "dash_red" ) 
-		//end
-	end
+
 end
 
 function ENT:Think()
-	if CLIENT then
-		--if self.Sound then
-		--	self.Sound:PlayEx(0.9, 95 + math.sin(RealTime())*5) 
-		--end
-	end
-
 	if SERVER then
 		if !IsValid(self.EntOwner) or not self.EntOwner:Alive() then
 			self:Remove()
@@ -79,43 +68,35 @@ function ENT:Think()
 		if self.DieTime <= CurTime() then
 			self:Remove()
 		end
+	end
+end
+
+function ENT:Move( mv )
+	
+	mv:SetMaxSpeed( self.DashSpeed )
+	mv:SetMaxClientSpeed( self.DashSpeed )	
+	
+	if not self.EntOwner:OnGround() or not ( self.EntOwner:KeyDown( IN_FORWARD ) or self.EntOwner:KeyDown( IN_BACK ) or self.EntOwner:KeyDown( IN_MOVELEFT ) or self.EntOwner:KeyDown( IN_MOVERIGHT ) ) then
 		
-		--self.EntOwner:SetLocalVelocity(vector_origin)
+		local norm = mv:GetVelocity()
+		
+		if norm:Length2DSqr() < 100 then
+			norm = self.EntOwner:SyncAngles():Forward()
+		else
+			norm.z = 0
+			norm = norm:GetNormal()
+		end
+
+		mv:SetVelocity( norm * self.DashSpeed / 2 )
 		
 	end
+	
 end
 
 if CLIENT then
 local mat = Material( "models/spawn_effect2" )
 function ENT:Draw()
-	
-	/*if self.Particle and MySelf == self.EntOwner and not GAMEMODE.ThirdPerson then
-		self.Particle = nil
-		self.EntOwner:StopParticlesNamed( "dash_red" ) 
-		return
-	end*/
-	
-	/*if !( MySelf == self.EntOwner and not GAMEMODE.ThirdPerson) then
-		render.MaterialOverride( mat )
-		render.SetColorModulation( 1, 0.1, 0.1 )
-		render.SetBlend( 0.6 )
 
-		self:SetModelScale( 1.2, 0 )
-			
-		self:SetupBones()
-		self:DrawModel()
-			
-		render.SetBlend( 1 )
-		render.SetColorModulation( 1, 1, 1 )		
-		render.MaterialOverride( nil )
-	end
-
-	*/
-	
-	
-	
-	
-	
 	if not self.Particle then
 		
 		local part = "dash_red"

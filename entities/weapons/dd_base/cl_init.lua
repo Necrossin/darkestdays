@@ -91,7 +91,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 	//pos = pos + ang:Up()*0.5 + ang:Right()*(self.ViewModelFlip and 0.7 or -0.7)
 	
 	if self.ViewmodelOffset then
-		local plang = LocalPlayer():EyeAngles()
+		local plang = MySelf:EyeAngles()
 		pos = pos + self.ViewmodelOffset.x * plang:Right() + self.ViewmodelOffset.y * plang:Forward() + self.ViewmodelOffset.z * plang:Up()
 	end
 	

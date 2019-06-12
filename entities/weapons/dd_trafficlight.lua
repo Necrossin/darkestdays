@@ -53,12 +53,27 @@ util.PrecacheSound("physics/metal/metal_box_break2.wav")
 util.PrecacheModel( "models/props/cs_assault/stoplight.mdl" )
 
 
+function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
+	if not block and hitent:IsValid() and hitent:IsPlayer() and not self.m_ChangingDamage and hitent:IsSprinting() then
+		self.m_ChangingDamage = true
+		self.MeleeDamage = self.MeleeDamage * 1.2
+	end
+end
+
+function SWEP:PostOnMeleeHit(hitent, hitflesh, tr, block)
+	if self.m_ChangingDamage then
+		self.m_ChangingDamage = false
+
+		self.MeleeDamage = self.MeleeDamage / 1.2
+	end
+end
+
 function SWEP:PlayHitSound()
-	self:EmitSound("physics/metal/metal_box_break"..math.random(1,2)..".wav",100, math.Rand(86, 110))
+	self:EmitSound("physics/metal/metal_box_break"..math.random(1,2)..".wav",70, math.Rand(86, 110))
 end
 
 function SWEP:PlayHitFleshSound()
-	self:EmitSound("physics/metal/metal_box_break"..math.random(1,2)..".wav",100, math.Rand(86, 110))
+	self:EmitSound("physics/metal/metal_box_break"..math.random(1,2)..".wav",45, math.Rand(86, 110), 1, CHAN_AUTO)
 	self:EmitSound("physics/body/body_medium_break"..math.random(2, 4)..".wav", 75, math.Rand(86, 90)) 
 end
 

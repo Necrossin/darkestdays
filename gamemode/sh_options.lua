@@ -581,6 +581,7 @@ Weapons = {
 		Name = "Traffic Light",
 		Melee = true,
 		Mat = Material( "darkestdays/icons/trafficlight_256x128.png", "smooth" ), 
+		Pr = "+20% extra damage done to\nsprinting enemies",
 		Co = "-20 max speed on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 20 end
@@ -599,16 +600,16 @@ Weapons = {
 		Mat = Material( "darkestdays/icons/highlander_256x128.png", "smooth" ), 
 		Melee = true,
 		Pr = "Temporary speed boost on kill", 
-		Co = "-30 max health on wearer\n-30 max speed on wearer",
+		Co = "-30 max health on wearer\n-20 max speed on wearer",
 		Description = "",
 		Special = "\"Don't you guys have swords?\"",
-		OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 30; pl._DefaultSpeed = pl._DefaultSpeed - 30 end
+		OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 30; pl._DefaultSpeed = pl._DefaultSpeed - 20 end
 	},
 	["dd_katana"] = {
 		Name = "Katana", 
 		Mat = Material( "darkestdays/icons/katana_256x128.png", "smooth" ), 
 		Melee = true,
-		Pr = "+20% faster block movement\n+15 max speed on wearer", 
+		Pr = "+15 max speed on wearer", 
 		Co = "-20 max health on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 20; pl._DefaultSpeed = pl._DefaultSpeed + 15 end
@@ -618,15 +619,15 @@ Weapons = {
 		Name = "\"Striker\" Minigun",
 		Mat = Material( "darkestdays/icons/striker_256x128.png", "smooth" ),
 		Pr = "It is a pretty big gun", 
-		Co = "Cannot use spells\n-75 max speed on wearer\nUnable to sprint\n-70% magic shield capacity",
-		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 75; pl._DefaultRunSpeedBonus = 0; if pl:GetMagicShield() then pl:GetMagicShield().ManaPercentage = pl:GetMagicShield().ManaPercentage * 0.3; pl:GetMagicShield():ResetShield() end end
+		Co = "Cannot use spells\n-65 max speed on wearer\nUnable to sprint\n-70% magic shield capacity",
+		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 65; pl._DefaultRunSpeedBonus = 0; if pl:GetMagicShield() then pl:GetMagicShield().ManaPercentage = pl:GetMagicShield().ManaPercentage * 0.3; pl:GetMagicShield():ResetShield() end end
 	},
 	["dd_sledge"] = {
 		Name = "Mr Sledge 3.0", 
 		Melee = true,
 		Mat = Material( "darkestdays/icons/sledge_256x128.png", "smooth" ), 
 		Pr = "Can deal some damage through blocks", 
-		Co = "-25 max speed on wearer\n50% slower speed when swinging",
+		Co = "-25 max speed on wearer\n50% slower speed when swinging\n30% slower speed when blocking",
 		Description = "",
 		Special = "\"Size does not matter\"",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 25 end
@@ -642,8 +643,7 @@ Weapons = {
 		Name = "Baseball Bat", 
 		Mat = Material( "darkestdays/icons/bat_256x128.png", "smooth" ), 
 		Melee = true, 
-		Pr = "Drains 15 mana on hit",
-		Pr = "Strong knockback",
+		Pr = "Drains 15 enemy mana on hit\nStrong knockback",
 		Co = "-25 max mana on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultMana = pl._DefaultMana - 25 end

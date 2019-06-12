@@ -209,6 +209,8 @@ function DrawAmmoSpells(MySelf)
 	
 end
 
+local string_sub = string.sub
+
 function DrawHealthMana(MySelf)
 	
 	local w,h = ScrW(),ScrH()
@@ -295,9 +297,9 @@ function DrawHealthMana(MySelf)
 	for i=1,2 do
 		if IsValid(MySelf:GetDTEntity(i)) then
 			if MySelf:GetDTEntity(i) == MySelf:GetCurrentSpell() then
-				active = string.sub(MySelf:GetDTEntity(i).ClassName,7)
+				active = string_sub(MySelf:GetDTEntity(i).ClassName,7)
 			else
-				passive = string.sub(MySelf:GetDTEntity(i).ClassName,7)
+				passive = string_sub(MySelf:GetDTEntity(i).ClassName,7)
 			end
 		end
 	end
@@ -313,6 +315,8 @@ function DrawHealthMana(MySelf)
 		surface.SetMaterial(Spells[passive].Mat)
 		surface.DrawTexturedRectRotated(posX+tW/2+30,posY+tH/4,50,50,0)
 	end
+	
+	--draw.SimpleText("/ Q", "Bison_35", posX+tW/2+50,posY + 25, Color (231, 231, 231, 170), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 	
 	//perk uses and shit
 	
@@ -532,8 +536,13 @@ function DrawKOTHNotify(MySelf)
 				col = team.GetColor(hill:HillToTeam(hill:GetHoldingTeam()))
 			end
 		else
-			text = HillText[1]
-			col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
+			if hill.GetStartCooldown and hill:GetStartCooldown() > 0 then
+				text = "Unlocking in: "..hill:GetStartCooldown()
+				col = COLOR_TEXT_SOFT_BRIGHT
+			else
+				text = HillText[1]
+				col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
+			end
 		end
 		
 		draw.SimpleText(text, "Bison_55", spos.x,spos.y, col, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
@@ -691,8 +700,13 @@ function DrawKOTHNotify(MySelf)
 				text = "Flag resets in "..math.Clamp(math.Round(hill:GetRespawnTime()-CurTime()),0,999).." seconds!"
 				col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
 			else
-				text = FlagText[1]
-				col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
+				if hill.GetStartCooldown and hill:GetStartCooldown() > 0 then
+					text = "Unlocking in: "..hill:GetStartCooldown()
+					col = COLOR_TEXT_SOFT_BRIGHT
+				else
+					text = FlagText[1]
+					col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
+				end
 			end
 		end
 		

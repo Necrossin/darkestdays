@@ -6,7 +6,7 @@ function EFFECT:Init( data )
 	
 	if !IsValid(wep) then return end
 		
-	local ent = wep:GetOwner() == LocalPlayer() and not GAMEMODE.ThirdPerson and LocalPlayer():GetViewModel() or wep
+	local ent = wep:GetOwner() == MySelf and not GAMEMODE.ThirdPerson and MySelf:GetViewModel() or wep
 	
 	//local start = ent.GetActiveWeapon and IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon():GetAttachment(1) and ent:GetActiveWeapon():GetAttachment(1).Pos or ent:GetShootPos()
 	local endpos = data:GetOrigin()

@@ -48,7 +48,7 @@ SWEP.NoHitSoundFlesh = true
 
 SWEP.CanSlice = true
 
-SWEP.BlockSpeed = 0.8
+--SWEP.BlockSpeed = 0.8
 
 SWEP.FixScale = true
 

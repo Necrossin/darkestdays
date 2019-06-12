@@ -107,7 +107,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 07/06/2019"
+GM.Version		= "v 12/06/2019"
 GM.Email 		= ""
 GM.Website 		= ""
 
@@ -170,12 +170,14 @@ function GM:Move( pl, mv )
 	end
 	
 	if pl:IsDefending() then
-		local mul = 0.5
+		local mul = 1
 		local wep = IsValid(pl:GetActiveWeapon()) and pl:GetActiveWeapon()
 		if wep and wep.BlockSpeed then
 			mul = wep.BlockSpeed
 		end
-		mv:SetMaxSpeed( math.abs( pl:GetMaxSpeed() ) * mul )
+		local speed = math.abs( pl:GetMaxSpeed() ) * mul
+		mv:SetMaxSpeed( speed )
+		mv:SetMaxClientSpeed( speed )
 	end
 	
 	if pl._efSlide and IsValid(pl._efSlide) then
@@ -212,67 +214,47 @@ function GM:Move( pl, mv )
 		pl._efWallRun:Move( mv )
 	end
 	
-	if pl:IsDashing() then
+	if IsValid( pl._efWallRun ) and pl._efWallRun.Move then
+		pl._efWallRun:Move( mv )
+	end
+	
+	if IsValid(pl._efDash) and pl._efDash.Move then
+		pl._efDash:Move( mv )
+	end
+	
+	/*if pl:IsDashing() then
 	
 		if not pl.SaveDashVel then 
 			pl.SaveDashVel = mv:GetVelocity()
 		end
 		
-		//if pl:IsOnGround() then
+		
+		local sp = 2400
+		
 			
-			/*local sp = 2400
+		if !pl:IsOnGround() then
+			sp = sp - 1200
+		end
 			
-			mv:SetMaxSpeed( sp )
-			mv:SetMaxClientSpeed( sp )
 			
-			if not pl._efDash.FwNormal and not pl._efDash.RgNormal then
-			
-				local forw_normal = mv:GetForwardSpeed() / pl:GetMaxSpeed()
-				local right_normal = mv:GetSideSpeed() / pl:GetMaxSpeed()
+		if not pl._efDash.Normal then
 				
-				pl._efDash.FwNormal = forw_normal
-				pl._efDash.RgNormal = right_normal
+			local norm 
 				
-				if math.abs( mv:GetForwardSpeed() ) < 1 and math.abs( mv:GetSideSpeed() ) < 1 then
-					pl._efDash.FwNormal = 1
-					pl._efDash.RgNormal = 0
-				end
-			
-			end
-			
-			mv:SetForwardSpeed( sp * pl._efDash.FwNormal )
-			mv:SetSideSpeed( sp * pl._efDash.RgNormal )*/
-			
-		//else
-			local sp = 2400
-			
-			//mv:SetMaxSpeed( sp )
-			//mv:SetMaxClientSpeed( sp )
-			
-			if !pl:IsOnGround() then
-				sp = sp - 1200
-			end
-			
-			
-			if not pl._efDash.Normal then
-				
-				local norm 
-				
-				if math.abs( mv:GetForwardSpeed() ) < 1 and math.abs( mv:GetSideSpeed() ) < 1  then//mv:GetVelocity():Length() < 1
+			if math.abs( mv:GetForwardSpeed() ) < 1 and math.abs( mv:GetSideSpeed() ) < 1  then//mv:GetVelocity():Length() < 1
 					norm = pl:GetForward()
-				else
-					norm = mv:GetVelocity():GetNormal()
-				end
-				
-				if norm.z > 0.2 then
-					norm.z = 0
-				end
-				
-				pl._efDash.Normal = norm
+			else
+				norm = mv:GetVelocity():GetNormal()
 			end
+				
+			if norm.z > 0.2 then
+				norm.z = 0
+			end
+				
+			pl._efDash.Normal = norm
+		end
 			
-			mv:SetVelocity( pl._efDash.Normal * sp )
-		//end
+		mv:SetVelocity( pl._efDash.Normal * sp )
 	else
 		if pl.SaveDashVel then
 			local vel = mv:GetVelocity()
@@ -281,7 +263,7 @@ function GM:Move( pl, mv )
 			pl.SaveDashVel = nil
 		end
 		
-	end
+	end*/
 	
 end
 

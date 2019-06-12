@@ -51,6 +51,8 @@ SWEP.FixScale = true
 SWEP.MeleePower = 130
 SWEP.BlockPower = 130
 
+SWEP.BlockSpeed = 0.7
+
 SWEP.AnimSpeed = 0.5
 
 util.PrecacheSound("physics/metal/metal_canister_impact_hard1.wav")

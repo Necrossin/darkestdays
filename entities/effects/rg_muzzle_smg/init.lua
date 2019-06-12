@@ -22,7 +22,7 @@ function EFFECT:Init(data)
 		ParticleEffect("dd_muzzleflash",self.Position,Angle(0,0,0),self.WeaponEnt)
 		//ParticleEffect("muzzle_autorifles",self.Position,self.Angle,self.WeaponEnt)
 		
-		local ent = self.WeaponEnt:GetOwner() == LocalPlayer() and not GAMEMODE.ThirdPerson and LocalPlayer():GetViewModel() or self.WeaponEnt
+		local ent = self.WeaponEnt:GetOwner() == MySelf and not GAMEMODE.ThirdPerson and MySelf:GetViewModel() or self.WeaponEnt
 		
 		ParticleEffectAttach("muzzle_smgs",PATTACH_POINT_FOLLOW,ent,self.Attachment)
 		

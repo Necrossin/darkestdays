@@ -207,7 +207,7 @@ function GM:InitializeVars()
 		
 		
 	//self:SetNight( true )
-	self:SetNight( self:GetGametype() == "ts" )
+	self:SetNight( self:GetGametype() == "ts" and TS_NIGHTMODE )
 	
 end
 
@@ -233,7 +233,7 @@ function GM:RestartRound( change_map )
 	//	net.WriteBool( self:IsNight() )
 	//net.Broadcast()
 	
-	for k, v in pairs(player.GetAll()) do
+	for k, v in ipairs(player.GetAll()) do
 		v:StopAllLuaAnimations()
 		self:PlayerInitialSpawn(v)
 		v:Spawn()
@@ -661,6 +661,7 @@ function GM:ShowSpare2( pl )
 end
 
 util.AddNetworkString( "RefreshPoints" )
+util.AddNetworkString( "Client:ShowLobby" )
 
 function GM:PlayerInitialSpawn( pl )
 	
@@ -720,7 +721,7 @@ function GM:PlayerSpawn( pl )
 	pl:ShouldDropWeapon( false )
 	
 	pl:SprintEnable()
-			
+	
 	if (pl.FirstSpawn and not ENROUND) then
 	
 		if ( pl:SteamID() == "BOT" ) then
@@ -740,10 +741,12 @@ function GM:PlayerSpawn( pl )
 				end
 			end)
 		else
-			pl:SendLua("DrawLobby()")
+			--pl:SendLua("DrawLobby()")
+			net.Start( "Client:ShowLobby" )
+			net.Send( pl )
 		end
 		
-	else		
+	else				
 		-- Normal spawning
 		pl:UnSpectate()
 		
@@ -1442,6 +1445,10 @@ function GM:ProceedEndRound()
 		
 		if oldgm != "ts" and self.Gametype == "ts" then
 			change_map = true
+		end
+		
+		if not TS_NIGHTMODE then 
+			change_map = false
 		end
 	
 		self:RestartRound( change_map )

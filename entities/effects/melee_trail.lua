@@ -6,7 +6,7 @@ function EFFECT:Init( data )
 	
 	if !IsValid(self.ent) then return end
 	
-	if self.ent == LocalPlayer() and !GAMEMODE.ThirdPerson then return end
+	if self.ent == MySelf and !GAMEMODE.ThirdPerson then return end
 
 	self.particle = "melee_trail_normal"
 	

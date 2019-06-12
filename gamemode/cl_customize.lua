@@ -1100,7 +1100,7 @@ function AchievementsMenu()
 	name.Paint = function(self,fw,fh)
 		draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
 		draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
-		draw.SimpleText( "Player info: "..(LocalPlayer():Nick() or "error"), "Bison_40", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText( "Player info: "..(MySelf:Nick() or "error"), "Bison_40", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 	
 	local temp = vgui.Create("DPanel",AchMenu)

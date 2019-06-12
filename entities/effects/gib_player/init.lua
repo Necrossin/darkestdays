@@ -253,11 +253,11 @@ function EFFECT:Init( data )
 		end
 	end
 	
-	if LocalPlayer():EyePos():DistToSqr( Pos ) < 8100 then
+	if MySelf:EyePos():DistToSqr( Pos ) < 8100 then
 		AddBloodSplat( 3 )
 		AddBloodSplat( 3 )
 		AddBloodSplat( 3 )
-		LocalPlayer():AddBloodyStuff()		
+		MySelf:AddBloodyStuff()		
 	end
 	
 end
