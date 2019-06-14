@@ -1102,7 +1102,7 @@ function GM:CheckGameGoal()
 	if self.Gametype == "koth" then
 		if IsValid(GetHillEntity()) then
 			local hill = GetHillEntity()
-			if hill.GetTeamTimer and hill:GetTeamTimer(hill:TeamToHill(TEAM_RED)) <= 0 or hill:GetTeamTimer(hill:TeamToHill(TEAM_BLUE)) <= 0 then
+			if hill.GetTeamTimer and hill.TeamToHill and hill:GetTeamTimer(hill:TeamToHill(TEAM_RED)) <= 0 or hill:GetTeamTimer(hill:TeamToHill(TEAM_BLUE)) <= 0 then
 				local winner = hill:GetTeamTimer(hill:TeamToHill(TEAM_RED)) <= 0 and team.GetName(TEAM_RED) or team.GetName(TEAM_BLUE)
 				self:EndRound(winner)
 			end
@@ -1110,7 +1110,7 @@ function GM:CheckGameGoal()
 	elseif self.Gametype == "htf" then
 		if IsValid(GetHillEntity()) then
 			local hill = GetHillEntity()
-			if hill.GetTeamTimer and hill:GetTeamTimer(hill:TeamToHill(TEAM_RED)) <= 0 or hill:GetTeamTimer(hill:TeamToHill(TEAM_BLUE)) <= 0 then
+			if hill.GetTeamTimer and hill.TeamToHill and hill:GetTeamTimer(hill:TeamToHill(TEAM_RED)) <= 0 or hill:GetTeamTimer(hill:TeamToHill(TEAM_BLUE)) <= 0 then
 				local winner = hill:GetTeamTimer(hill:TeamToHill(TEAM_RED)) <= 0 and team.GetName(TEAM_RED) or team.GetName(TEAM_BLUE)
 				self:EndRound(winner)
 			end
@@ -1155,7 +1155,7 @@ function GM:CheckGameGoal()
 		local winner = NULL
 		if hill.GetTimer and hill:GetTimer() <= 0 then
 			local max = 0
-			for k,v in pairs(team.GetPlayers(TEAM_FFA)) do
+			for k,v in ipairs(team.GetPlayers(TEAM_FFA)) do
 				if v:Frags() >= max then
 					if v:Frags() == max then
 						if v:Deaths() < (winner and winner.Deaths and winner:Deaths() or 10000) then
