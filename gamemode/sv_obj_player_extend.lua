@@ -325,7 +325,7 @@ end
 
 function meta:SpawnSuit(tbl)
 	
-	//if !ENABLE_OUTFITS then return end
+	if !ENABLE_OUTFITS then return end
 	
 	tbl = tbl or {}
 	

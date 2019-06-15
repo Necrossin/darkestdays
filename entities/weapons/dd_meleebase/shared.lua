@@ -887,11 +887,9 @@ function SWEP:MeleeSwing()
 	
 	//owner:DoAttackEvent()
 	owner:SetAnimation(PLAYER_ATTACK1)
-	local filter = owner:GetMeleeFilter()
-
 	owner:LagCompensation(true)
-	local traces = owner:PenetratingMeleeTrace( self.MeleeRange, self.MeleeSize, filter, self:GetHitDirection() ~= 0 )
-	local tr_decal = owner:TraceLine(self.MeleeRange, MASK_SOLID, filter)
+	local traces = owner:PenetratingMeleeTrace( self.MeleeRange, self.MeleeSize, owner:GetMeleeFilter(), self:GetHitDirection() ~= 0 )
+	local tr_decal = owner:TraceLine(self.MeleeRange, MASK_PLAYERSOLID, owner:GetMeleeFilter())
 	owner:LagCompensation(false)
 	
 	self.FirstHit = true
@@ -901,17 +899,7 @@ function SWEP:MeleeSwing()
 	
 	
 	if SERVER and self:IsTwoHanded() then
-		/*local trail = "melee_trail_normal"
-		
-		if self.DashBonus or self.Owner._efSpeedBoost or self.Owner._efAdrenaline then
-			trail = "melee_trail_red"
-			if self.Owner:Team() == TEAM_BLUE then
-				trail = "melee_trail_blue"
-			end
-		end
-		
-		ParticleEffectAttach( trail,PATTACH_POINT_FOLLOW,owner,owner:LookupAttachment("anim_attachment_RH"))*/
-		
+			
 		local e = EffectData()
 			e:SetOrigin( owner:GetPos() )
 			e:SetEntity( owner )
@@ -932,21 +920,20 @@ function SWEP:MeleeSwing()
 			self.Owner:ViewPunchReset() 
 			self.Owner:ViewPunch( punch )
 		end
-		
-		
+	
 	end
+	
+	local effectdata = EffectData()
+		effectdata:SetOrigin(tr_decal.HitPos)
+		effectdata:SetStart(tr_decal.StartPos)
+		effectdata:SetNormal(tr_decal.HitNormal)
+	util.Effect("RagdollImpact", effectdata)
 	
 	for _, tr in ipairs(traces) do
 
 		local block = false	
 		local parry_only = false
 		local blockmul = 0
-		
-		local effectdata = EffectData()
-			effectdata:SetOrigin(tr.HitPos)
-			effectdata:SetStart(tr.StartPos)
-			effectdata:SetNormal(tr.HitNormal)
-		util.Effect("RagdollImpact", effectdata)
 		
 		if tr.Hit then
 						
@@ -1007,36 +994,56 @@ function SWEP:MeleeSwing()
 			if block == false then
 				if hitflesh then
 					if tr_decal.Hit then
-						util.Decal(self.BloodDecal, tr_decal.HitPos + tr_decal.HitNormal*10, tr_decal.HitPos - tr_decal.HitNormal*10)
+						util.Decal(self.BloodDecal, tr_decal.HitPos + tr_decal.HitNormal, tr_decal.HitPos - tr_decal.HitNormal)
 					end
+					
+					--util.Decal("Blood", tr_decal.HitPos + tr_decal.HitNormal*10, tr_decal.HitPos - tr_decal.HitNormal*10)
+					--util.Decal("Blood", tr_decal.HitPos + tr_decal.HitNormal*10, tr_decal.HitPos - tr_decal.HitNormal*10)
+					--util.Decal("Blood", tr_decal.HitPos-vector_up*3 + tr_decal.HitNormal*10, tr_decal.HitPos-vector_up*3 - tr_decal.HitNormal*10)
+					
 					self:PlayHitFleshSound()
 					blood = true
 					
-					if SERVER then
-						local p = tr.HitPos
-						if hitent and hitent:IsValid() then
-							p = hitent:NearestPoint( tr.HitPos )
+					if hitent and hitent:IsValid() then
+						if tr_decal.HitGroup == HITGROUP_HEAD then
+							local e = EffectData()
+							e:SetOrigin(tr.HitPos)
+							e:SetNormal(tr.HitNormal)
+							util.Effect("melee_blood_hit",e)
+						else
+							local e = EffectData()
+							e:SetOrigin(tr.HitPos)
+							e:SetNormal(tr.HitNormal)
+							util.Effect("BloodImpact",e)
 						end
-						local e = EffectData()
-						e:SetOrigin(p)//tr.HitPos
-						e:SetNormal(tr.HitNormal*-1)//owner:GetAimVector():GetNormal()
-						util.Effect("melee_blood_hit",e,nil,true)
 					end
 					if not self.NoHitSoundFlesh then
 						self:PlayHitSound()
 					end
 				else
-					local mat = tr.MatType
-					if self.MatToParticle[mat] then
-						//if not hitent and hitent.NoImpactEffect then
-							if CLIENT then
-								ParticleEffect(self.MatToParticle[mat][1],tr.HitPos,tr.HitNormal:Angle(),nil)
-								sound.Play(self.MatToParticle[mat][3][math.random(1,#self.MatToParticle[mat][3])],tr.HitPos,math.random(90, 110), math.random(90, 110))
+					if IsFirstTimePredicted() then
+						if DD_NOIMPACTFX then
+		
+						else
+							local mat = tr.MatType
+							if self.MatToParticle[mat] then
+								if CLIENT then
+									ParticleEffect(self.MatToParticle[mat][1],tr.HitPos,tr.HitNormal:Angle(),nil)
+									--sound.Play(self.MatToParticle[mat][3][math.random(1,#self.MatToParticle[mat][3])],tr.HitPos,math.random(90, 110), math.random(90, 110))
+								end
 							end
-						//end
-					end
-					if tr_decal.Hit then
-						util.Decal(self.HitDecal,  tr_decal.HitPos + tr_decal.HitNormal*10, tr_decal.HitPos - tr_decal.HitNormal*10)//
+						end
+						if not tr.HitSky then
+							local effectdata = EffectData()
+							effectdata:SetSurfaceProp(tr.SurfaceProps)
+							effectdata:SetDamageType(self.DamageType)
+							effectdata:SetHitBox(tr.HitBox)
+							effectdata:SetEntity(hitent)
+							util.Effect("Impact", effectdata)
+						end
+						if tr_decal.Hit then
+							util.Decal(self.HitDecal,  tr_decal.HitPos + tr_decal.HitNormal, tr_decal.HitPos - tr_decal.HitNormal)//
+						end
 					end
 					self:PlayHitSound()
 				end
@@ -1415,6 +1422,11 @@ local blood_mat = Material( "models/flesh" )
 					ang:RotateAroundAxis(ang:Up(), v.angle.y)
 					ang:RotateAroundAxis(ang:Right(), v.angle.p)
 					ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				end
+				
+				-- this should fix "lagging behind" for spell particles
+				if name == "cast_point" then
+					model:SetParent( vm )
 				end
 
 				model:SetAngles(ang)

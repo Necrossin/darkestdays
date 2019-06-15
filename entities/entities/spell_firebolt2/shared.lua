@@ -261,7 +261,7 @@ function ENT:HandDraw(owner,reverse,point)
 		ParticleEffectAttach("v_firebolt2",PATTACH_ABSORIGIN_FOLLOW,point,0)
 		point.Particle = true
 		self.Flame = nil
-		point:EmitSound("ambient/fire/gascan_ignite1.wav",math.random(100,120),math.random(100,130))
+		--point:EmitSound("ambient/fire/gascan_ignite1.wav",math.random(100,120),math.random(100,130))
 	end
 	
 	if self:GetDTFloat(1) and self:GetDTFloat(1) >= CurTime() /*and (self:GetDTFloat(1) - CurTime() <= 0.15)*/ and self:GetDTBool(0) then

@@ -3,6 +3,10 @@ local PlayerVoicePanels = {}
 
 local hud_bg4 = Material( "darkestdays/hud/hud_bg4.png" )
 
+local surface_SetMaterial = surface.SetMaterial
+local surface_SetDrawColor = surface.SetDrawColor
+local surface_DrawTexturedRectRotated = surface.DrawTexturedRectRotated
+
 function PANEL:Init()
 
 	self.LabelName = vgui.Create( "DLabel", self )
@@ -42,9 +46,9 @@ function PANEL:Paint( w, h )
 
 	if ( !IsValid( self.ply ) ) then return end
 	//draw.RoundedBox( 4, 0, 0, w, h, Color( 0, self.ply:VoiceVolume() * 255, 0, 240 ) )
-	surface.SetDrawColor( 255, 255, 255, 170)
-	surface.SetMaterial(hud_bg4)
-	surface.DrawTexturedRectRotated(80,h/2,160,h,0)
+	surface_SetDrawColor( 255, 255, 255, 170)
+	surface_SetMaterial(hud_bg4)
+	surface_DrawTexturedRectRotated(80,h/2,160,h,0)
 end
 
 function PANEL:Think( )

@@ -71,6 +71,9 @@ local bones = {
 	["ValveBiped.Bip01_L_Finger0"] = { scale = Vector(1.83, 1.83, 1.83), pos = Vector(1.212, 0, 0), angle = Angle(0, 0, 0) }
 }
 
+local LocalToWorld = LocalToWorld
+local WorldToLocal = WorldToLocal
+
 function EFFECT:Init( data )
 
 	self.ent = data:GetEntity()
@@ -446,21 +449,38 @@ function EFFECT:BuildBonePositions(nbones)
 	end
 end
 
+local M_Entity = FindMetaTable("Entity")
+local M_VMatrix = FindMetaTable("VMatrix")
+
+local VM_SetTranslation = M_VMatrix.SetTranslation
+local VM_GetTranslation = M_VMatrix.GetTranslation
+local VM_GetAngles = M_VMatrix.GetAngles
+local VM_SetAngles = M_VMatrix.SetAngles
+local VM_SetScale = M_VMatrix.SetScale
+
+local E_GetBoneMatrix = M_Entity.GetBoneMatrix
+local E_SetBoneMatrix = M_Entity.SetBoneMatrix
+
 function EFFECT:BuildBonePositions2( nbones )
 	
 	local ragdoll = self.ent.GetRagdollEntity and self.ent:GetRagdollEntity()
 	
 	for bone, tbl in pairs( ragdoll.ReferencePoseTable ) do
 		
-		local m = self:GetBoneMatrix( bone )
+		local m = E_GetBoneMatrix( self, bone )--self:GetBoneMatrix( bone )
 		
 		if m then
 			local pos, ang = LocalToWorld( tbl.pos, tbl.ang, self:GetPos(), self:GetAngles() )
 			
-			m:SetTranslation( pos )
-			m:SetAngles( ang )
+			VM_SetTranslation( m, pos )
+			VM_SetAngles( m, ang )
 			
-			self:SetBoneMatrix( bone, m )
+			E_SetBoneMatrix( self, bone, m )
+			
+			--m:SetTranslation( pos )
+			--m:SetAngles( ang )
+			
+			--self:SetBoneMatrix( bone, m )
 			
 		end	
 	end

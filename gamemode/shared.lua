@@ -107,7 +107,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 14/06/2019"
+GM.Version		= "v 15/06/2019"
 GM.Email 		= ""
 GM.Website 		= ""
 
@@ -147,10 +147,6 @@ function GM:ShouldCollide( ent1, ent2 )
 		local collide = !ent1:IsTeammate(ent2)//ent1:Team() != ent2:Team()
 		return collide
 	end
-	
-	//if ent1:GetClass() == "projectile_crow" and ent2:GetClass() == "projectile_crow" or ent2:GetClass() == "projectile_crow" and ent1:GetClass() == "projectile_crow" then
-		//return false
-	//end
 	
 	return true
 end
@@ -221,49 +217,6 @@ function GM:Move( pl, mv )
 	if IsValid(pl._efDash) and pl._efDash.Move then
 		pl._efDash:Move( mv )
 	end
-	
-	/*if pl:IsDashing() then
-	
-		if not pl.SaveDashVel then 
-			pl.SaveDashVel = mv:GetVelocity()
-		end
-		
-		
-		local sp = 2400
-		
-			
-		if !pl:IsOnGround() then
-			sp = sp - 1200
-		end
-			
-			
-		if not pl._efDash.Normal then
-				
-			local norm 
-				
-			if math.abs( mv:GetForwardSpeed() ) < 1 and math.abs( mv:GetSideSpeed() ) < 1  then//mv:GetVelocity():Length() < 1
-					norm = pl:GetForward()
-			else
-				norm = mv:GetVelocity():GetNormal()
-			end
-				
-			if norm.z > 0.2 then
-				norm.z = 0
-			end
-				
-			pl._efDash.Normal = norm
-		end
-			
-		mv:SetVelocity( pl._efDash.Normal * sp )
-	else
-		if pl.SaveDashVel then
-			local vel = mv:GetVelocity()
-			vel.z = -100//pl.SaveDashVel.z
-			mv:SetVelocity( vel )
-			pl.SaveDashVel = nil
-		end
-		
-	end*/
 	
 end
 

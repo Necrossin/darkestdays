@@ -322,7 +322,12 @@ function SWEP:ViewModelDrawn()
 					ang:RotateAroundAxis(ang:Right(), v.angle.p)
 					ang:RotateAroundAxis(ang:Forward(), v.angle.r)
 				end
-
+				
+				-- this should fix "lagging behind" for spell particles
+				if name == "cast_point" then
+					model:SetParent( vm )
+				end
+				
 				model:SetAngles(ang)
 				
 				local size = (v.size.x + v.size.y + v.size.z)/3

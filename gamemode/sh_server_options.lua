@@ -92,6 +92,8 @@ cvars.AddChangeCallback("dd_options_enable_team_balance", function(cvar, oldvalu
 	TEAM_BALANCE = util.tobool( newvalue )
 end)
 
+MAX_VOTEMAPS = 6
+
 TS_DEADLINE = 0.3 // if time <= time * (1 - deadline) then join thugs
 TS_THUGS = 20 //% of people that needs to be thugs
 TS_SPEED_OVER_TIME = 140

@@ -126,6 +126,13 @@ function EFFECT:Think( )
 			--self:StopDeath()
 			self.StopDeathTime = nil
 		end
+		
+		if CurTime() > ( self.DieTime - 2 ) then
+			if self.BloodParticle then
+				self.BloodParticle:StopEmission( false, false ) --StopEmissionAndDestroyImmediately() 
+			end
+		end
+		
 	end
 	return CurTime() < self.DieTime or IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity())
 end
@@ -277,22 +284,11 @@ function EFFECT:Render()
 					rag:AddCallback( "BuildBonePositions", DoScaling )
 				
 					if self.dism == 1 then
-						--ParticleEffectAttach("dd_blood_headshot_2",PATTACH_POINT_FOLLOW,rag,rag:LookupAttachment("eyes"))
 						ParticleEffectAttach("dd_blood_headshot_2",PATTACH_POINT_FOLLOW,self.Entity,0)
-						ParticleEffectAttach("dd_blood_gib_trail",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
-						/*for i = 1, math.random(4) do
-							local effectdata = EffectData()
-								effectdata:SetOrigin( pos + VectorRand() * 2 )
-								effectdata:SetNormal( ang:Forward() )
-								effectdata:SetMagnitude(math.random(70,110))
-								effectdata:SetScale(1)
-								effectdata:SetRadius( 0 )
-							util.Effect( "gib", effectdata )
-						end*/
-						
+						self.BloodParticle = CreateParticleSystem( self.Entity, "dd_blood_gib_trail", PATTACH_ABSORIGIN_FOLLOW, 0 ) 
+						--ParticleEffectAttach("dd_blood_gib_trail",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
+												
 						-- tiny snippet from zs headshot effect 
-						
-						
 						local norm = ang:Forward()
 						for i=1, math.random(5, 8) do
 							local dir = (norm * 2 + VectorRand()) / 3

@@ -69,6 +69,24 @@ local body_bones = {
 
 local vector_zero = Vector( 0, 0, 0 )
 local vec_up = Vector( 0, 0, 1 )
+
+local M_Player = FindMetaTable("Player")
+local M_Entity = FindMetaTable("Entity")
+local M_VMatrix = FindMetaTable("VMatrix")
+
+local VM_SetTranslation = M_VMatrix.SetTranslation
+local VM_GetTranslation = M_VMatrix.GetTranslation
+local VM_GetAngles = M_VMatrix.GetAngles
+local VM_SetAngles = M_VMatrix.SetAngles
+local VM_SetScale = M_VMatrix.SetScale
+
+local P_SyncAngles = M_Player.SyncAngles
+local E_GetBonePosition = M_Entity.GetBonePosition
+local E_GetBoneMatrix = M_Entity.GetBoneMatrix
+local E_SetBoneMatrix = M_Entity.SetBoneMatrix
+local P_Crouching = M_Player.Crouching
+local E_OnGround = M_Entity.OnGround
+
 local function BetterBonemerge( ent, bonecount )
 
     local vm = ent:GetParent()
@@ -107,28 +125,51 @@ local function BetterBonemerge( ent, bonecount )
 		end
                 
         for i=0, bonecount do
-            local name = ent:GetBoneName( i )
-            
-            if not name then continue end
-            
+		
+			if not ent.BoneTable then
+				ent.BoneTable = {}
+			end
+			
+			if not ent.BoneTable[i] then
+				ent.BoneTable[i] = {}
+			end
+		
+            local name
+			
+			if ent.BoneTable[ i ] and ent.BoneTable[ i ].bone_name then
+				name = ent.BoneTable[ i ].bone_name
+			else
+				name = ent:GetBoneName( i )   
+				ent.BoneTable[ i ].bone_name = name
+			end
+
+			if not name then continue end
+
             local bone = i
-            local bone_pl = pl:LookupBone( name )
+            local bone_pl
+			
+			if ent.BoneTable[ i ] and ent.BoneTable[ i ].pl_bone then
+				bone_pl = ent.BoneTable[ i ].pl_bone
+			else
+				bone_pl = pl:LookupBone( name )  
+				ent.BoneTable[ i ].pl_bone = bone_pl
+			end
 
             if bone then
-                local m = ent:GetBoneMatrix( bone )
+                local m = E_GetBoneMatrix( ent, bone )--ent:GetBoneMatrix( bone )
 
                 if viewmodel_bones[name] then continue end
                 if ent.ArmBones[name] then continue end
 
                 if bone_pl then
-                    local pos, ang = pl:GetBonePosition( bone_pl ) --bone matrix doesnt seem to work when I try to get player bones in first person
+                    local pos, ang = E_GetBonePosition( pl, bone_pl )--pl:GetBonePosition( bone_pl ) --bone matrix doesnt seem to work when I try to get player bones in first person
 
                     if m then
 						if pos and ang then
-							local translation = pos - pl:SyncAngles():Forward() * 18
+							local translation = pos - ( P_SyncAngles( pl ) ):Forward() * 18
 							local offset
 							
-							if pl:Crouching() and !pl:OnGround() then
+							if P_Crouching( pl ) and !E_OnGround( pl ) then
 								offset = vec_up * -22
 							end
 							-- make sure so it doesnt gets in our face when we crouching with shotguns and looking up/climbing ladders
@@ -139,19 +180,24 @@ local function BetterBonemerge( ent, bonecount )
 								translation = translation + offset
 							end
 
-							m:SetTranslation( translation )
-							m:SetAngles( ang )
+							VM_SetTranslation( m, translation )
+							VM_SetAngles( m, ang )
+							--m:SetTranslation( translation )
+							--m:SetAngles( ang )
 						end
 
                         if not body_bones[name] and ent.HideToBone then
-                            local m_to = ent:GetBoneMatrix( ent.HideToBone )
+                            local m_to = E_GetBoneMatrix( ent, ent.HideToBone ) --ent:GetBoneMatrix( ent.HideToBone )
                             if m_to then
-                                m:SetScale( vector_zero )
-                                m:SetTranslation( m_to:GetTranslation() )
+                                --m:SetScale( vector_zero )
+                               -- m:SetTranslation( m_to:GetTranslation() )
+							   VM_SetScale( m, vector_zero )
+							   VM_SetTranslation( m, VM_GetTranslation( m_to ) )
                             end
                         end
 
-                        ent:SetBoneMatrix( bone, m )
+						E_SetBoneMatrix( ent, bone, m )
+                        --ent:SetBoneMatrix( bone, m )
                     end	
                 end			
             end

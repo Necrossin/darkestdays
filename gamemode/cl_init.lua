@@ -1,3 +1,82 @@
+local render = render
+local surface = surface
+local draw = draw
+local cam = cam
+local player = player
+local ents = ents
+local util = util
+local math = math
+local string = string
+local gamemode = gamemode
+local hook = hook
+local Vector = Vector
+local VectorRand = VectorRand
+local Angle = Angle
+local AngleRand = AngleRand
+local Entity = Entity
+local Color = Color
+local FrameTime = FrameTime
+local RealFrameTime = RealFrameTime
+local RealTime = RealTime
+local CurTime = CurTime
+local SysTime = SysTime
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local pairs = pairs
+local ipairs = ipairs
+local tostring = tostring
+local tonumber = tonumber
+local type = type
+local ScrW = ScrW
+local ScrH = ScrH
+local Lerp = Lerp
+
+
+local vector_up = Vector(0, 0, 1)
+
+local surface_SetMaterial = surface.SetMaterial
+local surface_SetDrawColor = surface.SetDrawColor
+local surface_DrawRect = surface.DrawRect
+local surface_DrawOutlinedRect = surface.DrawOutlinedRect
+local surface_DrawTexturedRect = surface.DrawTexturedRect
+local surface_DrawTexturedRectRotated = surface.DrawTexturedRectRotated
+local surface_PlaySound = surface.PlaySound
+local surface_SetFont = surface.SetFont
+local surface_GetTextSize = surface.GetTextSize
+
+local render_SetBlend = render.SetBlend
+local render_ModelMaterialOverride = render.ModelMaterialOverride
+local render_MaterialOverride = render.MaterialOverride
+local render_SetColorModulation = render.SetColorModulation
+local render_SuppressEngineLighting = render.SuppressEngineLighting
+local cam_IgnoreZ = cam.IgnoreZ
+local render_SetMaterial = render.SetMaterial
+local render_DrawQuadEasy = render.DrawQuadEasy
+local cam_Start3D = cam.Start3D
+local cam_End3D = cam.End3D
+local cam_Start3D2D = cam.Start3D2D
+local cam_End3D2D = cam.End3D2D
+local render_FogMode = render.FogMode
+local render_FogStart = render.FogStart
+local render_FogEnd = render.FogEnd
+local render_FogColor = render.FogColor
+local render_FogMaxDensity = render.FogMaxDensity
+local render_GetFogDistances = render.GetFogDistances
+local render_GetFogColor = render.GetFogColor
+local render_GetFogMode = render.GetFogMode
+
+local draw_SimpleText = draw.SimpleText
+local draw_GetFontHeight = draw.GetFontHeight
+
+local math_Approach = math.Approach
+local math_Round = math.Round
+local math_Clamp = math.Clamp
+local math_random = math.random
+
+local M_Player = FindMetaTable("Player")
+local P_Team = M_Player.Team
+
+
 SpellIcons = {}
 
 local def = Material("HUD/killicons/default")
@@ -25,9 +104,9 @@ function DrawSpellIcon(x, y, name, alpha)
 	y = y - h * 0.5
 	
 	local mat = SpellIcons[name]
-	surface.SetMaterial( mat )
-	surface.SetDrawColor( 255, 255, 255, alpha )
-	surface.DrawTexturedRect( x, y, w, h )
+	surface_SetMaterial( mat )
+	surface_SetDrawColor( 255, 255, 255, alpha )
+	surface_DrawTexturedRect( x, y, w, h )
 
 	
 end
@@ -88,9 +167,9 @@ effects.Register(
                 Init = function(self, data)
 				
                     local pos = data:GetOrigin()
-					local maxrange = math.Round(data:GetRadius())
-					local damage = math.Round(data:GetMagnitude())
-					local dmgtype = math.Round(data:GetScale())
+					local maxrange = math_Round(data:GetRadius())
+					local damage = math_Round(data:GetMagnitude())
+					local dmgtype = math_Round(data:GetScale())
 					
 					ExplosiveEffect(pos, maxrange, damage, dmgtype)
 				
@@ -191,7 +270,7 @@ for i=1, 8 do
 end
 
 local function NewScreenScale( size )
-	return math.Clamp(ScrH() / 1080, 0.6, 1) * size
+	return math_Clamp(ScrH() / 1080, 0.6, 1) * size
 end
 
 MySelf = MySelf or NULL
@@ -375,7 +454,7 @@ function GM:Initialize( )
 	
 	
 	if RadioOn then
-		RadioPlay(math.random(1,#Radio))
+		RadioPlay(math_random(1,#Radio))
 	end
 
 end
@@ -458,7 +537,7 @@ function ToggleRadio( pl,commandName,args )
 		if MySelf._CurSong then
 			MySelf._CurSong:Stop()
 		end
-		RadioPlay(math.random(1,#Radio))
+		RadioPlay(math_random(1,#Radio))
 	else 
 		RunConsoleCommand("_dd_enableradio","0")
 		if Org then
@@ -543,27 +622,27 @@ function GM:PostDrawViewModel( ViewModel, Player, Weapon )
 						
 				GAMEMODE.PlayerBloodMaterial:SetFloat( "$detailblendfactor", hands.Bloody * 1.5 )
 			
-				render.SetBlend( 1 )
-				render.MaterialOverride( GAMEMODE.PlayerBloodMaterial )
-				render.SetColorModulation(0.5, 0, 0)
+				render_SetBlend( 1 )
+				render_MaterialOverride( GAMEMODE.PlayerBloodMaterial )
+				render_SetColorModulation(0.5, 0, 0)
 				
 				hands:SetupBones()
 				hands:DrawModel()
 				
-				render.SetColorModulation(1, 1, 1)
-				render.MaterialOverride( )
-				render.SetBlend( 1 )
+				render_SetColorModulation(1, 1, 1)
+				render_MaterialOverride( )
+				render_SetBlend( 1 )
 			end
 			
 			if Player:IsCarryingFlag() then
 				
 				local flag = GetHillEntity()
-				--render.SetBlend( 1 )
+				--render_SetBlend( 1 )
 				--flag:SetupBones()
 				flag.HandDraw = true
 				flag:DrawModel()
 				flag.HandDraw = false
-				--render.SetBlend( 1 )
+				--render_SetBlend( 1 )
 				
 			end
 			
@@ -604,7 +683,7 @@ end
 local dash_lerp = 0
 function GM:_GetMotionBlurValues( x, y, fwd, spin )	
 	
-	dash_lerp = math.Approach(dash_lerp, (MySelf:IsDashing() and 1) or 0, FrameTime() * ((dash_lerp + 1) ^ 1.1))
+	dash_lerp = math_Approach(dash_lerp, (MySelf:IsDashing() and 1) or 0, RealFrameTime() * ((dash_lerp + 1) ^ 1.1))
 	
 	if dash_lerp > 0 then
 		return 0, 0, dash_lerp * 0.4, spin
@@ -630,14 +709,14 @@ local tab = {}
 
 function GM:_RenderScreenspaceEffects()
 
-	ghosting_lerp = math.Approach(ghosting_lerp, (MySelf:IsGhosting() and 1) or 0, FrameTime() * ((ghosting_lerp + 1) ^ 1.1))
+	ghosting_lerp = math_Approach(ghosting_lerp, (MySelf:IsGhosting() and 1) or 0, RealFrameTime() * ((ghosting_lerp + 1) ^ 1.1))
 	
 	if ghosting_lerp > 0 then
 		tab[ "$pp_colour_colour" ] = 1 - 0.85 * ghosting_lerp
 		DrawColorModify( tab )
 	end
 	
-	adrenaline_lerp = math.Approach(adrenaline_lerp, (MySelf:HasAdrenaline() and 1) or 0, FrameTime() * ((adrenaline_lerp + 1) ^ 1.6))
+	adrenaline_lerp = math_Approach(adrenaline_lerp, (MySelf:HasAdrenaline() and 1) or 0, RealFrameTime() * ((adrenaline_lerp + 1) ^ 1.6))
 	
 	if adrenaline_lerp > 0 then
 		tab[ "$pp_colour_mulr" ] = 0.8 * adrenaline_lerp
@@ -664,7 +743,7 @@ local shrink = false
 function GM:_CalcView( pl, origin, angles, fov, znear, zfar )
 		
 	local ct = CurTime()
-	local frt = FrameTime()
+	local frt = RealFrameTime()
 		
 	local rag = pl:GetRagdollEntity()
 	
@@ -729,7 +808,8 @@ function GM:_CalcView( pl, origin, angles, fov, znear, zfar )
 		pl.RollLeft = 0
 	end
 	
-	addroll = math.Approach(addroll, targetroll, math.max(0.25, math.sqrt(math.abs(addroll)))*frt*30 )
+	--addroll = math_Approach(addroll, targetroll, math.max(0.25, math.sqrt(math.abs(addroll)))*frt*30 )
+	addroll = math_Approach(addroll, targetroll, frt * 25 )
 	
 	angles.roll = angles.roll + addroll
 	
@@ -822,12 +902,12 @@ function GM:_HUDDrawTargetID()
 	local text = "ERROR"
 	local font = "Bison_45"//"Arial_Bold_25"//"TargetID"
 	
-	if (trace.Entity:IsPlayer()) then
+	if trace.Entity:IsPlayer() then
 		text = trace.Entity:Nick()
 		if not MySelf:IsTeammate(trace.Entity) then//trace.Entity:Team() ~= LocalPlayer():Team() then
 			text = text.." (ENEMY)"
 		end
-		if self:GetGametype() == "ts" and trace.Entity:Team() == TEAM_THUG and !MySelf:IsTeammate(trace.Entity) then return end
+		if self:GetGametype() == "ts" and P_Team ( trace.Entity ) == TEAM_THUG and !MySelf:IsTeammate(trace.Entity) then return end
 	else
 		return
 		//text = trace.Entity:GetClass()
@@ -835,8 +915,8 @@ function GM:_HUDDrawTargetID()
 	
 	if trace.Entity:IsPlayer() and ValidEntity(trace.Entity:GetDTEntity(0)) then return end
 	
-	surface.SetFont( font )
-	local w, h = surface.GetTextSize( text )
+	surface_SetFont( font )
+	local w, h = surface_GetTextSize( text )
 	
 	local MouseX, MouseY = gui.MousePos()
 	
@@ -854,9 +934,9 @@ function GM:_HUDDrawTargetID()
 	y = y + 30
 	
 	// The fonts internal drop shadow looks lousy with AA on
-	--draw.SimpleText( text, font, x+1, y+1, Color(0,0,0,120) )
-	--draw.SimpleText( text, font, x+2, y+2, Color(0,0,0,50) )
-	draw.SimpleText( text, font, x, y, self:GetTeamColor( trace.Entity ),nil,nil )
+	--draw_SimpleText( text, font, x+1, y+1, Color(0,0,0,120) )
+	--draw_SimpleText( text, font, x+2, y+2, Color(0,0,0,50) )
+	draw_SimpleText( text, font, x, y, self:GetTeamColor( trace.Entity ),nil,nil )
 	
 	y = y + h// + 5
 	
@@ -865,18 +945,18 @@ function GM:_HUDDrawTargetID()
 	local text = trace.Entity:Health() .. "%"
 	local font = "Bison_35"//"Arial_Bold_20"//"TargetIDSmall"
 	
-	surface.SetFont( font )
-	local w, h = surface.GetTextSize( text )
+	surface_SetFont( font )
+	local w, h = surface_GetTextSize( text )
 	local x =  MouseX  - w / 2
 	
-	//draw.SimpleText( text, font, x+1, y+1, Color(0,0,0,120) )
-	//draw.SimpleText( text, font, x+2, y+2, Color(0,0,0,50) )
-	draw.SimpleText( text, font, x, y, self:GetTeamColor( trace.Entity ),nil,nil )
+	//draw_SimpleText( text, font, x+1, y+1, Color(0,0,0,120) )
+	//draw_SimpleText( text, font, x+2, y+2, Color(0,0,0,50) )
+	draw_SimpleText( text, font, x, y, self:GetTeamColor( trace.Entity ),nil,nil )
 
 end
 
 function GM:RoundTimeLeft()
-	return( math.Clamp( ROUNDTIME - CurTime(), 0, ROUNDLENGTH) )
+	return( math_Clamp( ROUNDTIME - CurTime(), 0, ROUNDLENGTH) )
 end
 
 usermessage.Hook("ResetSpells",function(um)
@@ -931,7 +1011,7 @@ function ExplosiveEffect(pos, maxrange, damage, dmgtype)
 									effectdata:SetEntity(rag)
 									rag:SetColor(Color(20,20,20,255))
 								util.Effect("burningplayer", effectdata)
-								rag:EmitSound("ambient/fire/mtov_flame2.wav", 50, math.random(105, 110))
+								rag:EmitSound("ambient/fire/mtov_flame2.wav", 50, math_random(105, 110))
 							end
 						elseif dmgtype == DMG_SHOCK then
 							phys:ApplyForceOffset(damage * 1000 * maxrange / dist * (physpos - pos):GetNormal(), pos2)
@@ -963,13 +1043,13 @@ end
 
 local function AddNightFog()
 
-	render.FogMode( 1 ) 
-	render.FogStart( 0 )
-	render.FogEnd( 650  )
-	render.FogMaxDensity( 1 )
+	render_FogMode( 1 ) 
+	render_FogStart( 0 )
+	render_FogEnd( 650  )
+	render_FogMaxDensity( 1 )
 
 	
-	render.FogColor( 0.0 * 255, 0.0 * 255, 0.0 * 255 )
+	render_FogColor( 0.0 * 255, 0.0 * 255, 0.0 * 255 )
 
 	return true
 
@@ -977,13 +1057,13 @@ end
 
 local function AddNightFogSkybox(skyboxscale)
 
-	render.FogMode( 1 ) 
-	render.FogStart( 0*skyboxscale )
-	render.FogEnd( 650*skyboxscale  )
-	render.FogMaxDensity( 1 )
+	render_FogMode( 1 ) 
+	render_FogStart( 0*skyboxscale )
+	render_FogEnd( 650*skyboxscale  )
+	render_FogMaxDensity( 1 )
 
 	
-	render.FogColor( 0.0 * 255, 0.0 * 255, 0.0 * 255 )
+	render_FogColor( 0.0 * 255, 0.0 * 255, 0.0 * 255 )
 
 	return true
 
@@ -998,7 +1078,7 @@ local function ThugVision()
 	
 		--local MySelf = LocalPlayer()
 		
-		local todraw = MySelf and IsValid(MySelf) and MySelf:Alive() and MySelf:Team() == TEAM_THUG
+		local todraw = MySelf and IsValid(MySelf) and MySelf:Alive() and P_Team( MySelf ) == TEAM_THUG
 		
 		if todraw then
 			

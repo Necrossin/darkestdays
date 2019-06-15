@@ -198,7 +198,7 @@ end
 function ENT:HandDraw(owner,reverse,point)
 	
 	if point and not point.Particle then
-		point:EmitSound("ambient/fire/gascan_ignite1.wav",math.random(100,120),math.random(100,130))
+		--point:EmitSound("ambient/fire/gascan_ignite1.wav",math.random(100,120),math.random(100,130))
 		ParticleEffectAttach("v_firebolt2",PATTACH_ABSORIGIN_FOLLOW,point,0)
 		point.Particle = true
 	end

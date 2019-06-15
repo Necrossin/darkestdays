@@ -1,6 +1,7 @@
 MapCycle = {}
 MapCycleBackup = {}
 MapCycleLimits = {}
+
 local tab
 local function AddMap( name, minpl, maxpl )
 	tab = { map = name, minplayers = minpl, maxplayers = maxpl }
@@ -168,7 +169,7 @@ function GM:GetVoteMaps()
 		end
 			
 		local nextmap = MapCycle[mappos + 1]
-		if #VoteMaps < 4 then
+		if #VoteMaps < MAX_VOTEMAPS then
 			//if MapCycleLimits and MapCycleLimits[nextmap].minplayers <= #player.GetAll() and MapCycleLimits[nextmap].maxplayers >= #player.GetAll() or players == 0 then
 				table.insert ( VoteMaps, nextmap )
 			//end
@@ -190,7 +191,7 @@ function GM:GetVoteMaps()
 			end
 				
 			local nextmap = MapCycle[mappos + 1]
-			if #VoteMaps < 4 then
+			if #VoteMaps < MAX_VOTEMAPS then
 				table.insert ( VoteMaps, nextmap )
 			end
 				

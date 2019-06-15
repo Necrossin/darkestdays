@@ -33,6 +33,12 @@ include("boneanimlib_v2/boneanimlib.lua")
 
 hook.Remove("PlayerTick","TickWidgets")
 
+local M_Player = FindMetaTable("Player")
+
+local P_Team = M_Player.Team
+local P_Alive = M_Player.Alive
+local player_GetAll = player.GetAll
+
 //Content
 
 function GM:AddResources()
@@ -196,7 +202,7 @@ function GM:InitializeVars()
 	team.SetScore(TEAM_BLUE,0)
 	
 	VotePointTable = {}
-	for i = 1,5 do
+	for i = 1,( MAX_VOTEMAPS + 1 ) do
 		VotePointTable[i] = 0
 	end
 	
@@ -233,7 +239,7 @@ function GM:RestartRound( change_map )
 	//	net.WriteBool( self:IsNight() )
 	//net.Broadcast()
 	
-	for k, v in ipairs(player.GetAll()) do
+	for k, v in ipairs(player_GetAll()) do
 		v:StopAllLuaAnimations()
 		self:PlayerInitialSpawn(v)
 		v:Spawn()
@@ -288,7 +294,7 @@ concommand.Add("lobby_teamselect",ProceedLobbyTeam)
 local function ProceedLobbySpawn(ply,commandName,args)
 	
 	if not ply.FirstSpawn then return end
-	if ply:Team() == TEAM_SPECTATOR then return end
+	if P_Team( ply ) == TEAM_SPECTATOR then return end
 	
 	if GAMEMODE:GetGametype() == "ts" then
 		if GAMEMODE.DeadPeople[tostring(ply:SteamID())] or IsValid(GetHillEntity()) and GetHillEntity():GetTimer() <= TS_TIME * (1 - TS_DEADLINE) then
@@ -309,7 +315,7 @@ local function GetPlayerByID( id )
 	
 	local target = NULL
 	
-	for _, guy in pairs( player.GetAll() ) do
+	for _, guy in pairs( player_GetAll() ) do
 		if IsValid( guy ) and Entity( tonumber( id ) ) == guy then
 			target = guy
 			break
@@ -530,6 +536,7 @@ function ApplyEquipment(pl, com, args)
 
 	if not ValidEntity(pl) then return end
 	if not args then return end
+	if not ENABLE_OUTFITS then return end
 	if #args <= 0 then 
 	
 	pl.Suit = {}
@@ -594,7 +601,7 @@ end
 concommand.Add("actual_spawn",ActualSpawn) 
 
 function SwitchSpells(pl,cmd,args)
-	if !pl:Alive() then return end
+	if !P_Alive( pl ) then return end
 	
 	pl:SwitchSpell()
 	
@@ -750,9 +757,9 @@ function GM:PlayerSpawn( pl )
 		-- Normal spawning
 		pl:UnSpectate()
 		
-		net.Start("RefreshPoints")
-			net.WriteDouble(CONQUEST_CAPTURE_TIME)
-		net.Send(pl)
+		--net.Start("RefreshPoints")
+		--	net.WriteDouble(CONQUEST_CAPTURE_TIME)
+		--net.Send(pl)
 				
 		if ENDROUND then 
 			pl:Lock()
@@ -824,7 +831,7 @@ function GM:PlayerSpawn( pl )
 		
 		pl:SetDTBool(3,false)
 
-		pl:SetBloodColor(-1)
+		--pl:SetBloodColor(-1)
 
 		local speed = pl._DefaultSpeed
 		local jump = pl._DefaultJumpPower
@@ -837,7 +844,7 @@ function GM:PlayerSpawn( pl )
 
 		local otherteam = TEAM_RED
 		
-		if pl:Team() == otherteam then
+		if P_Team( pl ) == otherteam then
 			otherteam = TEAM_BLUE
 		end
 		
@@ -934,7 +941,7 @@ function GM:PlayerLoadout( pl )
 	
 
 	
-	if THUG_MODE or self:GetGametype() == "ts" and pl:Team() == TEAM_THUG then
+	if THUG_MODE or self:GetGametype() == "ts" and P_Team( pl ) == TEAM_THUG then
 		pl:SetPerk("thug")
 	else
 		if pl.PerksToGive then
@@ -1024,7 +1031,7 @@ end
 
 function GM:PlayerSwitchFlashlight( ply, SwitchOn )
 	
-	if self:GetGametype() == "ts" and ply:Team() == TEAM_THUG then
+	if self:GetGametype() == "ts" and P_Team( pl ) == TEAM_THUG then
 		return false
 	end
 
@@ -1051,7 +1058,7 @@ end
    Name: gamemode:Think( )
    Desc: Called every frame
 ---------------------------------------------------------*/
-local player_GetAll = player.GetAll
+
 function GM:Think( )
 	
 	local ct = CurTime()
@@ -1198,7 +1205,7 @@ util.AddNetworkString( "RecVotemaps" )
 function GM:SendVotemaps ( to )
 	local Maps = self:GetVoteMaps()
 	
-	if (#Maps < 4) then return end
+	if (#Maps < MAX_VOTEMAPS) then return end
 	
 	net.Start("RecVotemaps")
 		if self:GetGametype() == "ffa" then
@@ -1207,7 +1214,7 @@ function GM:SendVotemaps ( to )
 			net.WriteString(ROUNDWINNER)
 		end
 		net.WriteBit(self.CanRestart)
-		for i = 1,4 do 
+		for i = 1,MAX_VOTEMAPS do 
 			net.WriteString ( Maps[i] )
 		end
 		
@@ -1226,7 +1233,7 @@ function GM:SendVotemaps ( to )
 end
 
 VotePointTable = {}
-for i = 1,5 do
+for i = 1,( MAX_VOTEMAPS + 1 ) do
 	VotePointTable[i] = 0
 end
 
@@ -1292,11 +1299,11 @@ function UpdateClientVotePoints ( pl, slot )
 	pl.Voted = slot
 	
 	net.Start ("RecVoteChange")
-		for i = 1,4 do
+		for i = 1,MAX_VOTEMAPS do
 			net.WriteInt ( VotePointTable[i], 32 )
 		end
 		if GAMEMODE.CanRestart then
-			net.WriteInt ( VotePointTable[5], 32 )
+			net.WriteInt ( VotePointTable[MAX_VOTEMAPS+1], 32 )
 		end
 	net.Broadcast()
 end
@@ -1323,11 +1330,11 @@ function GM:EndRound(winner)
 	
 	self:ManageGametypeLocking( self:GetGametype() )
 	
-	for _,pl in pairs(player.GetAll()) do
+	for _,pl in pairs(player_GetAll()) do
 		self:SendVotemaps ( pl )
 		pl:Lock()
 		
-		if team.GetName(pl:Team()) == winner or pl == winner then
+		if team.GetName(P_Team( pl )) == winner or pl == winner then
 			pl:UnlockAchievement("fwin")
 			
 			pl:AddScore( "rndwon", 1 )
@@ -1342,7 +1349,7 @@ function GM:EndRound(winner)
 				pl:UnlockAchievement("ffawin")
 			end
 			
-			if #player.GetAll() > 1 then
+			if #player_GetAll() > 1 then
 				pl:AddXP(SKILL_XP_PER_VICTORY)
 				if pl.UsedOnlyMelee then
 					pl:UnlockAchievement("hammer")
@@ -1360,7 +1367,7 @@ function GM:EndRound(winner)
 				pl:AddScore( "htflost", 1 )
 			end
 			
-			if #player.GetAll() > 1 then
+			if #player_GetAll() > 1 then
 				pl:AddXP(15)
 			end
 		end
@@ -1371,7 +1378,7 @@ function GM:EndRound(winner)
 	//GAMEMODE:SynchronizeTime()
 	
 	timer.Simple(0.2, function()
-		for _,pl in pairs(player.GetAll()) do
+		for _,pl in pairs(player_GetAll()) do
 			pl:SendLua("DrawEndround("..ROUNDTIME..")")
 		end
 	end)
@@ -1394,7 +1401,7 @@ local function MaxResult(tbl)
 		local CurrentPoint = v
 		if CurrentPoint > MaximumPoint then
 			MaximumPoint = CurrentPoint
-			Winner = k~=5 and Maps[k] or "restart"
+			Winner = ( k ~= ( MAX_VOTEMAPS + 1 ) ) and Maps[k] or "restart"
 		end
 	end
 	
@@ -1420,7 +1427,7 @@ end
 
 function GM:ProceedEndRound()
 
-	for _,pl in pairs(player.GetAll()) do
+	for _,pl in pairs(player_GetAll()) do
 		pl:SendLua("CloseEndround()")
 	end
 	
@@ -1457,7 +1464,7 @@ function GM:ProceedEndRound()
 		
 		game.ConsoleCommand( "dd_saverestarts -1" )
 	
-		for _,pl in pairs(player.GetAll()) do
+		for _,pl in pairs(player_GetAll()) do
 			pl:ConCommand("stopsounds")
 		end
 		
@@ -1466,7 +1473,7 @@ function GM:ProceedEndRound()
 		timer.Simple(1,function() game.ConsoleCommand("changelevel "..Next.."\n") end)
 		
 		timer.Simple(6,function()
-			for k,v in pairs(player.GetAll()) do
+			for k,v in pairs(player_GetAll()) do
 				v:ChatPrint("[SERVER] Hmm... Looks like its this bug again. Don't worry.")
 			end
 		end)
@@ -1764,7 +1771,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 			end
 			
 			if attacker:GetPerk("bff") then
-				for _, al in pairs(team.GetPlayers(attacker:Team())) do
+				for _, al in pairs(team.GetPlayers(P_Team( attacker ))) do
 					if IsValid(al) and al ~= attacker and attacker:IsTeammate(al) and al:GetPos():DistToSqr(attacker:GetPos()) <= 48400 then
 						al:RefillHealth(20)
 						local e = EffectData()
@@ -1785,11 +1792,11 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 			attacker:AddXP(ply:IsCarryingFlag() and SKILL_XP_PER_KILL*5 or SKILL_XP_PER_KILL)
 			
 			if self:GetGametype() ~= "ffa" then
-				team.AddScore(attacker:Team(), #player.GetAll() < 9 and 2 or 1 )
+				team.AddScore(P_Team( attacker ), #player_GetAll() < 9 and 2 or 1 )
 			end
 			
 			if self:GetGametype() == "conquest" then
-				local tm = ply:Team() == TEAM_RED and 1 or 2
+				local tm = P_Team( ply ) == TEAM_RED and 1 or 2
 				self:DrainTickets(tm)
 			end
 			//attacker:RefillMana(15)
@@ -1810,7 +1817,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	
 	ply:BalanceTeams()
 	
-	if self:GetGametype() == "ts" and ply:Team() ~= TEAM_THUG then
+	if self:GetGametype() == "ts" and P_Team( ply ) ~= TEAM_THUG then
 		ply:SetTeam(TEAM_THUG)
 		
 		self.DeadPeople[tostring(ply:SteamID())] = true
@@ -1879,7 +1886,7 @@ function GM:KeyPress( pl, key )
 		pl:DropKick()
 	end
 	
-	if pl:Alive() then
+	if P_Alive( pl ) then
 	
 		if key == IN_SPEED and pl:GetPerk( "ghosting" ) then
 			pl:DoGhosting()
@@ -2190,7 +2197,7 @@ function GM:EntityTakeDamage( ent,dmginfo )
 			local e = EffectData()
 			e:SetOrigin(dmginfo:GetDamagePosition()+norm*-16)
 			e:SetNormal(norm)
-			e:SetScale(ent:Team() == TEAM_BLUE and 0 or 1)
+			e:SetScale(P_Team( ent ) == TEAM_BLUE and 0 or 1)
 			util.Effect("magic_shield_impact",e,nil,true)
 		end
 		
@@ -2543,7 +2550,7 @@ end
 
 function GM:PlayerSelectSpawn( pl )
 
-	if pl:Team() == TEAM_RED or pl:Team() == TEAM_FFA and math.random(2) == 2 then	
+	if P_Team( pl ) == TEAM_RED or P_Team( pl ) == TEAM_FFA and math.random(2) == 2 then	
 		local Count = #self.RedSpawnPoints
 		if Count == 0 then return pl end
 		if !self.DeathMatchMap then
@@ -2676,17 +2683,17 @@ function GM:PlayerCanHearPlayersVoice( pListener, pTalker )
 	local alltalk = sv_alltalk:GetInt()
 	if ( alltalk > 0 ) then return true, alltalk == 2 end
 
-	return pListener:Team() == pTalker:Team(), false
+	return P_Team( pListener ) == P_Team( pTalker ), false
 	
 end
 
 function GM:CanPlayerSuicide( ply )
 	
-	if self:GetGametype() == "ts" and ply:Team() ~= TEAM_THUG and IsValid(GetHillEntity()) and GetHillEntity().IsActive and not GetHillEntity():IsActive() then
+	if self:GetGametype() == "ts" and P_Team( ply ) ~= TEAM_THUG and IsValid(GetHillEntity()) and GetHillEntity().IsActive and not GetHillEntity():IsActive() then
 		return false
 	end
 	
-	return ply:Team() ~= TEAM_SPECTATOR or not ply.FirstSpawn
+	return P_Team( ply ) ~= TEAM_SPECTATOR or not ply.FirstSpawn
 	
 end
 

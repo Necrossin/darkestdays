@@ -28,6 +28,43 @@ local ValidEntity = IsValid
 local Color = Color
 local string = string
 
+local surface_SetMaterial = surface.SetMaterial
+local surface_SetDrawColor = surface.SetDrawColor
+local surface_DrawRect = surface.DrawRect
+local surface_DrawTexturedRect = surface.DrawTexturedRect
+local surface_DrawTexturedRectRotated = surface.DrawTexturedRectRotated
+local surface_PlaySound = surface.PlaySound
+local surface_SetFont = surface.SetFont
+local surface_GetTextSize = surface.GetTextSize
+
+local render_SetScissorRect = render.SetScissorRect
+
+local draw_SimpleText = draw.SimpleText
+
+local team_GetPlayers = team.GetPlayers
+local team_GetColor = team.GetColor
+local team_GetScore = team.GetScore
+local team_NumPlayers = team.NumPlayers
+
+local math_Round = math.Round
+local math_Clamp = math.Clamp
+local math_random = math.random
+local math_Approach = math.Approach
+
+local ScrW = ScrW
+local ScrH = ScrH
+local EF_DIMLIGHT = EF_DIMLIGHT
+local TEXT_ALIGN_CENTER = TEXT_ALIGN_CENTER
+local TEXT_ALIGN_LEFT = TEXT_ALIGN_LEFT
+local TEXT_ALIGN_RIGHT = TEXT_ALIGN_RIGHT
+local TEXT_ALIGN_TOP = TEXT_ALIGN_TOP
+local TEXT_ALIGN_BOTTOM = TEXT_ALIGN_BOTTOM
+
+local M_Player = FindMetaTable("Player")
+local P_Team = M_Player.Team
+
+local col_231_231_231_170 = Color (231, 231, 231, 170)
+
 DD_HUD = util.tobool( CreateClientConVar("_dd_hud", 1, true, false):GetInt() )
 cvars.AddChangeCallback("_dd_hud", function(cvar, oldvalue, newvalue)
 	DD_HUD = util.tobool( newvalue )
@@ -94,7 +131,7 @@ function DrawVoiceMenu(MySelf)
 		local msangle = math.deg(math.atan2(my,-mx)) - 270 - 180
 		while (msangle < 0) do msangle = msangle + 360 end
 
-		//draw.SimpleText(msangle ,"Default",gui.MouseX(),gui.MouseY(), Color(231, 231, 231, 170),TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+		//draw_SimpleText(msangle ,"Default",gui.MouseX(),gui.MouseY(), Color(231, 231, 231, 170),TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 	
 		local angle = 0
 		for i,item in pairs(VoiceAdvanced[MySelf:GetVoiceSet()].Commands or {}) do
@@ -126,7 +163,7 @@ function DrawVoiceMenu(MySelf)
 			end
 			
 
-			draw.SimpleText( VoiceKeys[i] or i,font,x,y, Color(231, 231, 231, 170),TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )//VoiceKeys[i] or i
+			draw_SimpleText( VoiceKeys[i] or i,font,x,y, Color(231, 231, 231, 170),TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )//VoiceKeys[i] or i
 		
 			angle = angle + step
 		end
@@ -161,11 +198,11 @@ function DrawAmmoSpells(MySelf)
 		
 		local nadeW,nadeH = 75,75
 		
-		surface.SetDrawColor( 255, 255, 255, 240)
-		surface.SetMaterial(hud_grenade)
+		surface_SetDrawColor( 255, 255, 255, 240)
+		surface_SetMaterial(hud_grenade)
 		
-		surface.DrawTexturedRect(posX+tW/2-nadeW*1.4,posY-tH/2-nadeH*0.8,nadeW,nadeH)
-		draw.SimpleText("G", "Bison_45", posX+tW/2-nadeW*.4,posY-tH/2, Color (231, 231, 231, 170), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+		surface_DrawTexturedRect(posX+tW/2-nadeW*1.4,posY-tH/2-nadeH*0.8,nadeW,nadeH)
+		draw_SimpleText("G", "Bison_45", posX+tW/2-nadeW*.4,posY-tH/2, col_231_231_231_170, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 		
 		
 	end
@@ -176,9 +213,9 @@ function DrawAmmoSpells(MySelf)
 	
 
 	
-	surface.SetDrawColor( 255, 255, 255, 170)
-	surface.SetMaterial(hud_bg3)
-	surface.DrawTexturedRectRotated(posX,posY,tW,tH,0)
+	surface_SetDrawColor( 255, 255, 255, 170)
+	surface_SetMaterial(hud_bg3)
+	surface_DrawTexturedRectRotated(posX,posY,tW,tH,0)
 	
 	local bulletH = 22	
 	local bulletW = bulletH/2.419354
@@ -187,8 +224,8 @@ function DrawAmmoSpells(MySelf)
 		bulletH = bulletH*0.8
 	end
 	
-	surface.SetDrawColor( 255, 255, 255, 140)
-	surface.SetMaterial(hud_bullet)
+	surface_SetDrawColor( 255, 255, 255, 140)
+	surface_SetMaterial(hud_bullet)
 	
 	local moveY = posY+tH/4
 	local moveX = posX+tW/3
@@ -200,16 +237,20 @@ function DrawAmmoSpells(MySelf)
 			moveY = moveY + bulletH + 1
 		end
 		
-		surface.DrawTexturedRectRotated(moveX-(bulletW+1)*i,moveY,bulletW,bulletH,0)
+		surface_DrawTexturedRectRotated(moveX-(bulletW+1)*i,moveY,bulletW,bulletH,0)
 	end
 	
-	draw.SimpleText(clip, "Bison_50", posX-2,posY-10, Color (231, 231, 231, 170), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-	draw.SimpleText("/", "Bison_50", posX+4,posY-10, Color (231, 231, 231, 170), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-	draw.SimpleText(ammo, "Bison_35", posX+12,posY-10, Color (231, 231, 231, 170), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+	draw_SimpleText(clip, "Bison_50", posX-2,posY-10, col_231_231_231_170, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+	draw_SimpleText("/", "Bison_50", posX+4,posY-10, col_231_231_231_170, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+	draw_SimpleText(ammo, "Bison_35", posX+12,posY-10, col_231_231_231_170, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 	
 end
 
 local string_sub = string.sub
+
+local col_hp = Color (249, 10, 10, 230)
+local col_mana = Color (47, 155, 245, 230)
+local col_mana_override = Color (147, 47, 245, 230)
 
 function DrawHealthMana(MySelf)
 	
@@ -219,37 +260,37 @@ function DrawHealthMana(MySelf)
 	local tW,tH = 150,150
 	local posX,posY = 100+tW/2,h-50-tH/2
 	
-	surface.SetDrawColor( 255, 255, 255, 170)
-	surface.SetMaterial(hud_bg)
-	surface.DrawTexturedRectRotated(posX,posY,tW,tH,0)
+	surface_SetDrawColor( 255, 255, 255, 170)
+	surface_SetMaterial(hud_bg)
+	surface_DrawTexturedRectRotated(posX,posY,tW,tH,0)
 	
-	surface.SetDrawColor( 255, 255, 255, 170)
-	surface.SetMaterial(hud_bg2)
-	surface.DrawTexturedRectRotated(posX+37,posY,700/2.666666,500/2.666666,0)
+	surface_SetDrawColor( 255, 255, 255, 170)
+	surface_SetMaterial(hud_bg2)
+	surface_DrawTexturedRectRotated(posX+37,posY,700/2.666666,500/2.666666,0)
 	
 	local hp = MySelf:Health()
 	local maxhp = MySelf:GetMaxHealthClient()
-	local am = math.Clamp(hp/maxhp,0,1)
+	local am = math_Clamp(hp/maxhp,0,1)
 	
-	render.SetScissorRect( posX-tW/2,posY-tH/2,posX-5,posY+tH/2, true )
-	surface.SetDrawColor( 255, 255, 255, 255)
-	surface.SetMaterial(hud_health)
-	surface.DrawTexturedRectRotated(posX,posY,tW,tH,180-math.Round(180*am))
-	render.SetScissorRect( posX-tW/2,posY-tH/2,posX-5,posY+tH/2, false )
+	render_SetScissorRect( posX-tW/2,posY-tH/2,posX-5,posY+tH/2, true )
+	surface_SetDrawColor( 255, 255, 255, 255)
+	surface_SetMaterial(hud_health)
+	surface_DrawTexturedRectRotated(posX,posY,tW,tH,180-math_Round(180*am))
+	render_SetScissorRect( posX-tW/2,posY-tH/2,posX-5,posY+tH/2, false )
 	
 	--Mana
 	local mana = MySelf:GetMana()
 	local maxmana = MySelf:GetMaxMana()
 		
-	local am = math.Clamp(mana/maxmana,0,1)
+	local am = math_Clamp(mana/maxmana,0,1)
 
-	surface.SetDrawColor(68, 68, 68, 255)
+	surface_SetDrawColor(68, 68, 68, 255)
 		
 	local sp = MySelf:GetCurrentSpell()
 		
 	if IsValid(sp) then
 		if sp.CanCast and sp:CanCast() then
-			surface.SetDrawColor(255, 255, 255, 255)
+			surface_SetDrawColor(255, 255, 255, 255)
 		end
 	end
 	
@@ -262,33 +303,33 @@ function DrawHealthMana(MySelf)
 		local wep_am, wep_max, wep_hidenum = wep:OverrideManaBar()
 		
 		if wep_am and wep_max then
-			am = math.Clamp( wep_am / wep_max, 0, 1)
+			am = math_Clamp( wep_am / wep_max, 0, 1)
 			
 			if am >= 1 then
-				surface.SetDrawColor( 255, 0, 105, 255)
+				surface_SetDrawColor( 255, 0, 105, 255)
 			end
 			
-			mana = math.Round( wep_max - wep_am )
+			mana = math_Round( wep_max - wep_am )
 			
 		end
 		hide_mana_text = wep_hidenum
 		mana_override = true
 	end
 	
-	render.SetScissorRect( posX+6,posY-tH/2,posX+tW/2,posY+tH/2, true )
-	//surface.SetDrawColor( 255, 255, 255, 255)
-	surface.SetMaterial(hud_mana)
-	surface.DrawTexturedRectRotated(posX,posY,tW,tH,-1*(180-math.Round(180*am)))
-	render.SetScissorRect( posX+6,posY-tH/2,posX+tW/2,posY+tH/2, false )
+	render_SetScissorRect( posX+6,posY-tH/2,posX+tW/2,posY+tH/2, true )
+	//surface_SetDrawColor( 255, 255, 255, 255)
+	surface_SetMaterial(hud_mana)
+	surface_DrawTexturedRectRotated(posX,posY,tW,tH,-1*(180-math_Round(180*am)))
+	render_SetScissorRect( posX+6,posY-tH/2,posX+tW/2,posY+tH/2, false )
 	
 	if DD_NUMERIC_HUD then
-		draw.SimpleText(hp, "Bison_40", posX-4,posY+1, Color (249, 10, 10, 230), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+		draw_SimpleText(hp, "Bison_40", posX-4,posY+1, col_hp, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 		if mana_override then
 			if not hide_mana_text then
-				draw.SimpleText(mana, "Bison_40", posX+4,posY+1, Color (147, 47, 245, 230), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+				draw_SimpleText(mana, "Bison_40", posX+4,posY+1, col_mana_override, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 			end
 		else
-			draw.SimpleText(mana, "Bison_40", posX+4,posY+1, Color (47, 155, 245, 230), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+			draw_SimpleText(mana, "Bison_40", posX+4,posY+1, col_mana, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 		end
 	end
 	
@@ -305,18 +346,18 @@ function DrawHealthMana(MySelf)
 	end
 	
 	if active ~= "none" and Spells[active].Mat then
-		surface.SetDrawColor( 225, 225, 225, 240)
-		surface.SetMaterial(Spells[active].Mat)
-		surface.DrawTexturedRectRotated(posX+tW/2+50,posY-tH/5,70,70,0)
+		surface_SetDrawColor( 225, 225, 225, 240)
+		surface_SetMaterial(Spells[active].Mat)
+		surface_DrawTexturedRectRotated(posX+tW/2+50,posY-tH/5,70,70,0)
 	end
 	
 	if passive ~= "none" and Spells[passive].Mat then
-		surface.SetDrawColor( 225, 225, 225, 240)
-		surface.SetMaterial(Spells[passive].Mat)
-		surface.DrawTexturedRectRotated(posX+tW/2+30,posY+tH/4,50,50,0)
+		surface_SetDrawColor( 225, 225, 225, 240)
+		surface_SetMaterial(Spells[passive].Mat)
+		surface_DrawTexturedRectRotated(posX+tW/2+30,posY+tH/4,50,50,0)
 	end
 	
-	--draw.SimpleText("/ Q", "Bison_35", posX+tW/2+50,posY + 25, Color (231, 231, 231, 170), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+	--draw_SimpleText("/ Q", "Bison_35", posX+tW/2+50,posY + 25, col_231_231_231_170, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 	
 	//perk uses and shit
 	
@@ -327,9 +368,9 @@ function DrawHealthMana(MySelf)
 			
 		local bgX,bgY = 200 + bgW/2, h - 15 - bgH/2
 					
-		surface.SetDrawColor( 255, 255, 255, 170)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
+		surface_SetDrawColor( 255, 255, 255, 170)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
 		local mana = MySelf:GetMana()
 		local maxmana = MySelf:GetMaxMana()
@@ -348,7 +389,7 @@ function DrawHealthMana(MySelf)
 			end
 		end
 		
-		draw.SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw_SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				
 	end
 	
@@ -365,29 +406,29 @@ function DrawHelpStuff()
 		
 		local leftX,leftY = 18.75,h-h/4.5
 		
-		surface.SetFont("Arial_Bold_34")
-		draw.SimpleTextOutlined("Use spells -" , "Arial_Bold_34", leftX,leftY, Color (255, 255, 255, 255), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+		surface_SetFont("Arial_Bold_34")
+		draw_SimpleTextOutlined("Use spells -" , "Arial_Bold_34", leftX,leftY, Color (255, 255, 255, 255), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 		
-		local tw,th = surface.GetTextSize("Use spells -")
+		local tw,th = surface_GetTextSize("Use spells -")
 		
 		draw.RoundedBox( 6,leftX+10+tw,leftY-(th*1.2)/2, th*1.2, th*1.2, Color(0, 0, 0, 220))
 		
-		surface.SetMaterial( ms_right )
-		surface.SetDrawColor( Color(255, 255, 255, 255) )
-		surface.DrawTexturedRectRotated( leftX+10+tw+(th*1.2)/2,leftY, th*1.2,th*1.2,0 )
+		surface_SetMaterial( ms_right )
+		surface_SetDrawColor( Color(255, 255, 255, 255) )
+		surface_DrawTexturedRectRotated( leftX+10+tw+(th*1.2)/2,leftY, th*1.2,th*1.2,0 )
 		
 		leftY = leftY + 50
 		
-		surface.SetFont("Arial_Bold_34")
-		draw.SimpleTextOutlined("Switch spells -" , "Arial_Bold_34", leftX,leftY, Color (255, 255, 255, 255), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+		surface_SetFont("Arial_Bold_34")
+		draw_SimpleTextOutlined("Switch spells -" , "Arial_Bold_34", leftX,leftY, Color (255, 255, 255, 255), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 		
-		local tw,th = surface.GetTextSize("Switch spells -")
+		local tw,th = surface_GetTextSize("Switch spells -")
 		
-		local tw1,th1 = surface.GetTextSize("Q or C")
+		local tw1,th1 = surface_GetTextSize("Q or C")
 		
 		draw.RoundedBox( 6,leftX+10+tw,leftY-(th*1.2)/2, tw1*1.2, th*1.2, Color(0, 0, 0, 220))
 		
-		draw.SimpleTextOutlined("Q or C" , "Arial_Bold_34", leftX+10+tw+(tw1*1.2)/2,leftY, Color (255, 255, 255, 255), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+		draw_SimpleTextOutlined("Q or C" , "Arial_Bold_34", leftX+10+tw+(tw1*1.2)/2,leftY, Color (255, 255, 255, 255), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 	
 	end
 	
@@ -409,7 +450,7 @@ function GM:_HUDPaint()
 		GotTeamHud = true
 	end
 	
-	if MySelf:Team() ~= TEAM_SPECTATOR then
+	if P_Team( MySelf ) ~= TEAM_SPECTATOR then
 		if MySelf:Alive() then
 			DrawHealthMana(MySelf)
 			DrawAmmoSpells(MySelf)
@@ -431,9 +472,9 @@ function DrawSpellStatus(MySelf)
 	
 	if MySelf:IsCrow() then
 		if IsValid(MySelf._efCOTN) then
-			local time = math.Round(MySelf._efCOTN:GetDTFloat(0) - CurTime())
+			local time = math_Round(MySelf._efCOTN:GetDTFloat(0) - CurTime())
 			
-			draw.SimpleText("Left click to cancel ( "..time.." )", "Bison_40", w/2,h*0.7, Color (231, 231, 231, 170), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+			draw_SimpleText("Left click to cancel ( "..time.." )", "Bison_40", w/2,h*0.7, col_231_231_231_170, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			
 		end
 	end
@@ -462,7 +503,7 @@ local FridgeText = {
 
 local function GetFFAScore(MySelf)
 	
-	local max = team.GetPlayers(TEAM_FFA)
+	local max = team_GetPlayers(TEAM_FFA)
 	local myscore = #max
 	
 	for _,pl in ipairs(max) do
@@ -495,23 +536,23 @@ function DrawKOTHNotify(MySelf)
 			
 		local bgX,bgY = 100+bgW/2,50+bgH/2
 			
-		surface.SetDrawColor( 255, 255, 255, 170)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
+		surface_SetDrawColor( 255, 255, 255, 170)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
-		draw.SimpleText(GetPlayerSkills( SelectedLoadout ).ToSpend.." unused point(s)", "Bison_30", bgX,bgY,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(GetPlayerSkills( SelectedLoadout ).ToSpend.." unused point(s)", "Bison_30", bgX,bgY,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
 	
 	if LoadoutSelection and LoadoutSelection.IsVisible and not LoadoutSelection:IsVisible() and not MySelf:Alive() and NoDeathHUD and NoDeathHUD < CurTime() then
 		if not (LoadoutSwitcher and LoadoutSwitcher.IsVisible and LoadoutSwitcher:IsVisible()) then
 			if ENABLE_OUTFITS then
-				draw.SimpleText("F1 - Help  |  F2 - Outfit  |  F3 - Achievements  |  F4 - Options", "Bison_50", w/2,50,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+				draw_SimpleText("F1 - Help  |  F2 - Outfit  |  F3 - Achievements  |  F4 - Options", "Bison_50", w/2,50,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			else
-				draw.SimpleText("F1 - Help  |  F3 - Achievements  |  F4 - Options", "Bison_50", w/2,50,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+				draw_SimpleText("F1 - Help  |  F3 - Achievements  |  F4 - Options", "Bison_50", w/2,50,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			end
 			
 			if GAMEMODE:GetGametype() ~= "ts" then//and MySelf:Team() == TEAM_THUG
-				draw.SimpleText("Right click to change loadouts", "Bison_50", w/2,h-h/5,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+				draw_SimpleText("Right click to change loadouts", "Bison_50", w/2,h-h/5,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			end
 		end
 	end
@@ -528,12 +569,12 @@ function DrawKOTHNotify(MySelf)
 		local col = Color(220,220,220,255)
 		
 		if hill:IsBeingHeld() then
-			if hill:GetHoldingTeam() == hill:TeamToHill(MySelf:Team()) then
+			if hill:GetHoldingTeam() == hill:TeamToHill( P_Team( MySelf ) ) then
 				text = HillText[2]
-				col = team.GetColor(MySelf:Team())
+				col = team_GetColor( P_Team( MySelf ) )
 			else
 				text = HillText[1]
-				col = team.GetColor(hill:HillToTeam(hill:GetHoldingTeam()))
+				col = team_GetColor(hill:HillToTeam(hill:GetHoldingTeam()))
 			end
 		else
 			if hill.GetStartCooldown and hill:GetStartCooldown() > 0 then
@@ -545,7 +586,7 @@ function DrawKOTHNotify(MySelf)
 			end
 		end
 		
-		draw.SimpleText(text, "Bison_55", spos.x,spos.y, col, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(text, "Bison_55", spos.x,spos.y, col, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		
 		local rscore = ToMinutesSeconds(hill:GetTeamTimer(hill:TeamToHill(TEAM_RED)))
 		local bscore = ToMinutesSeconds(hill:GetTeamTimer(hill:TeamToHill(TEAM_BLUE)))
@@ -555,9 +596,9 @@ function DrawKOTHNotify(MySelf)
 		
 		local bgX,bgY = w/2, h-25-bgH/2//5+bgH/2
 		
-		surface.SetDrawColor( 255, 255, 255, 170)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
+		surface_SetDrawColor( 255, 255, 255, 170)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
 		local hill = GetHillEntity()
 		local rbig = false
@@ -566,17 +607,17 @@ function DrawKOTHNotify(MySelf)
 		rbig = hill:IsBeingHeld() and hill:HillToTeam(hill:GetHoldingTeam()) == TEAM_RED
 		bbig = hill:IsBeingHeld() and hill:HillToTeam(hill:GetHoldingTeam()) == TEAM_BLUE
 		
-		local rcol = team.GetColor(TEAM_RED)
+		local rcol = team_GetColor(TEAM_RED)
 		rcol.a = 230
 		
-		local bcol = team.GetColor(TEAM_BLUE)
+		local bcol = team_GetColor(TEAM_BLUE)
 		bcol.a = 230
 		
-		draw.SimpleText(rscore, rbig and "Bison_65" or "Bison_50", bgX-15,bgY, rcol, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-		draw.SimpleText(bscore, bbig and "Bison_65" or "Bison_50", bgX+15,bgY, bcol, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+		draw_SimpleText(rscore, rbig and "Bison_65" or "Bison_50", bgX-15,bgY, rcol, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+		draw_SimpleText(bscore, bbig and "Bison_65" or "Bison_50", bgX+15,bgY, bcol, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 		
-		//draw.SimpleText(rscore, "Bison_40", spos.x-5,spos.y+55, team.GetColor(TEAM_RED), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-		//draw.SimpleText(bscore, "Bison_40", spos.x+5,spos.y+55, team.GetColor(TEAM_BLUE), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+		//draw_SimpleText(rscore, "Bison_40", spos.x-5,spos.y+55, team_GetColor(TEAM_RED), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+		//draw_SimpleText(bscore, "Bison_40", spos.x+5,spos.y+55, team_GetColor(TEAM_BLUE), TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 		
 		/*if hill:IsActive() then
 			
@@ -588,7 +629,7 @@ function DrawKOTHNotify(MySelf)
 			
 			draw.RoundedBox( 4,nx,ny, nw,nh, Color(0, 0, 0, 120))
 					
-			draw.RoundedBox( 4,nx+2,ny+2, nw-4,nh-4, hill:GetHoldingTeam() ~= 0 and team.GetColor(hill:HillToTeam(hill:GetHoldingTeam())) or Color(200,200,200,255))
+			draw.RoundedBox( 4,nx+2,ny+2, nw-4,nh-4, hill:GetHoldingTeam() ~= 0 and team_GetColor(hill:HillToTeam(hill:GetHoldingTeam())) or Color(200,200,200,255))
 					
 			local txt = "Hold this hill!"
 			
@@ -609,8 +650,8 @@ function DrawKOTHNotify(MySelf)
 		local nx,ny = w/2-nw/2,40+4+4
 		
 		
-		surface.SetDrawColor( 0, 0, 0, 120)
-		surface.DrawRect(nx,ny,nw,nh)
+		surface_SetDrawColor( 0, 0, 0, 120)
+		surface_DrawRect(nx,ny,nw,nh)
 		
 		local time = ToMinutesSeconds(hill:GetDTFloat(3) - CurTime())
 		
@@ -628,12 +669,12 @@ function DrawKOTHNotify(MySelf)
 		
 		local bgX,bgY = w/2, h-25-bgH/2//5+bgH/2
 		
-		surface.SetDrawColor( 255, 255, 255, 170)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
+		surface_SetDrawColor( 255, 255, 255, 170)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
-		local rscore = team.GetScore(TEAM_RED).."/"..TDM_WIN_SCORE
-		local bscore = team.GetScore(TEAM_BLUE).."/"..TDM_WIN_SCORE
+		local rscore = team_GetScore(TEAM_RED).."/"..TDM_WIN_SCORE
+		local bscore = team_GetScore(TEAM_BLUE).."/"..TDM_WIN_SCORE
 		
 		local hill = GetHillEntity()
 		local rbig = false
@@ -646,27 +687,27 @@ function DrawKOTHNotify(MySelf)
 			bbig = hill:IsBeingHeld() and hill:HillToTeam(hill:GetHoldingTeam()) == TEAM_BLUE
 			
 			if MySelf:IsCarryingFlag() then
-				draw.SimpleText("Holding the flag","Bison_55", bgX,bgY-bgH/2-20, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+				draw_SimpleText("Holding the flag","Bison_55", bgX,bgY-bgH/2-20, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			end
 			
 		else
-			rbig = team.GetScore(TEAM_RED) > team.GetScore(TEAM_BLUE)
-			bbig = team.GetScore(TEAM_RED) < team.GetScore(TEAM_BLUE)
+			rbig = team_GetScore(TEAM_RED) > team_GetScore(TEAM_BLUE)
+			bbig = team_GetScore(TEAM_RED) < team_GetScore(TEAM_BLUE)
 		end
 		
-		local rcol = team.GetColor(TEAM_RED)
+		local rcol = team_GetColor(TEAM_RED)
 		rcol.a = 230
 		
-		local bcol = team.GetColor(TEAM_BLUE)
+		local bcol = team_GetColor(TEAM_BLUE)
 		bcol.a = 230
 		
 		if GAMEMODE:GetGametype() == "tdm" and IsValid(hill) and hill.GetTimer then
-			draw.SimpleText(rscore, rbig and "Bison_65" or "Bison_50", bgX-15,bgY-bgH/2-20, rcol, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-			draw.SimpleText(bscore, bbig and "Bison_65" or "Bison_50", bgX+15,bgY-bgH/2-20, bcol, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
-			draw.SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+			draw_SimpleText(rscore, rbig and "Bison_65" or "Bison_50", bgX-15,bgY-bgH/2-20, rcol, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+			draw_SimpleText(bscore, bbig and "Bison_65" or "Bison_50", bgX+15,bgY-bgH/2-20, bcol, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+			draw_SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		else
-			draw.SimpleText(rscore, rbig and "Bison_65" or "Bison_50", bgX-15,bgY, rcol, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-			draw.SimpleText(bscore, bbig and "Bison_65" or "Bison_50", bgX+15,bgY, bcol, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+			draw_SimpleText(rscore, rbig and "Bison_65" or "Bison_50", bgX-15,bgY, rcol, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+			draw_SimpleText(bscore, bbig and "Bison_65" or "Bison_50", bgX+15,bgY, bcol, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 		end
 	
 	
@@ -684,20 +725,20 @@ function DrawKOTHNotify(MySelf)
 		local col = Color(220,220,220,255)
 		
 		if hill:IsBeingHeld() then
-			if hill:GetHoldingTeam() == hill:TeamToHill(MySelf:Team()) then
+			if hill:GetHoldingTeam() == hill:TeamToHill( P_Team( MySelf ) ) then
 				if MySelf:IsCarryingFlag() then
 					text = ""
 				else
 					text = FlagText[2]
 				end
-				col = team.GetColor(MySelf:Team())
+				col = team_GetColor( P_Team( MySelf ) )
 			else
 				text = FlagText[1]
-				col = team.GetColor(hill:HillToTeam(hill:GetHoldingTeam()))
+				col = team_GetColor(hill:HillToTeam(hill:GetHoldingTeam()))
 			end
 		else
 			if hill:GetRespawnTime() ~= 0 then
-				text = "Flag resets in "..math.Clamp(math.Round(hill:GetRespawnTime()-CurTime()),0,999).." seconds!"
+				text = "Flag resets in "..math_Clamp(math_Round(hill:GetRespawnTime()-CurTime()),0,999).." seconds!"
 				col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
 			else
 				if hill.GetStartCooldown and hill:GetStartCooldown() > 0 then
@@ -710,7 +751,7 @@ function DrawKOTHNotify(MySelf)
 			end
 		end
 		
-		draw.SimpleText(text, "Bison_55", spos.x,spos.y, col, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(text, "Bison_55", spos.x,spos.y, col, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		
 		/*if hill:IsActive() then
 			
@@ -721,7 +762,7 @@ function DrawKOTHNotify(MySelf)
 			
 			draw.RoundedBox( 4,nx,ny, nw,nh, Color(0, 0, 0, 120))
 					
-			draw.RoundedBox( 4,nx+2,ny+2, nw-4,nh-4, hill:GetHoldingTeam() ~= 0 and team.GetColor(hill:HillToTeam(hill:GetHoldingTeam())) or Color(200,200,200,255))
+			draw.RoundedBox( 4,nx+2,ny+2, nw-4,nh-4, hill:GetHoldingTeam() ~= 0 and team_GetColor(hill:HillToTeam(hill:GetHoldingTeam())) or Color(200,200,200,255))
 					
 			local txt = "Hold this flag!"
 			
@@ -742,8 +783,8 @@ function DrawKOTHNotify(MySelf)
 		local nx,ny = w/2-nw/2,40+4+4
 		
 		
-		surface.SetDrawColor( 0, 0, 0, 120)
-		surface.DrawRect(nx,ny,nw,nh)
+		surface_SetDrawColor( 0, 0, 0, 120)
+		surface_DrawRect(nx,ny,nw,nh)
 		
 		local time = ToMinutesSeconds(hill:GetDTFloat(3) - CurTime())
 		
@@ -765,15 +806,15 @@ function DrawKOTHNotify(MySelf)
 		local text = "The Fridge"
 		local col = Color(220,220,220,255)
 		
-		if hill:Team() == MySelf:Team() then
+		if hill:Team() == P_Team( MySelf ) then
 			text = FridgeText[2]
-			col = team.GetColor(TEAM_BLUE)
+			col = team_GetColor(TEAM_BLUE)
 		else
 			text = FridgeText[1]
-			col = team.GetColor(TEAM_RED)
+			col = team_GetColor(TEAM_RED)
 		end
 		
-		draw.SimpleText(text, "Bison_55", spos.x,spos.y, col, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(text, "Bison_55", spos.x,spos.y, col, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		
 		
 		local bgW = 160
@@ -781,31 +822,31 @@ function DrawKOTHNotify(MySelf)
 		
 		local bgX,bgY = w/2, h-25-bgH/2//5+bgH/2
 		
-		surface.SetDrawColor( 255, 255, 255, 170)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
+		surface_SetDrawColor( 255, 255, 255, 170)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
-		surface.DrawTexturedRectRotated(bgX,bgY-bgH/2-20,bgW*1.3,bgH,0)
+		surface_DrawTexturedRectRotated(bgX,bgY-bgH/2-20,bgW*1.3,bgH,0)
 		
 		
 		local hill = GetHillEntity()
 
 
 		//if MySelf:IsCarryingFlag() then
-		//	draw.SimpleText("Holding the flag","Bison_55", bgX,bgY-bgH/2-20, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		//	draw_SimpleText("Holding the flag","Bison_55", bgX,bgY-bgH/2-20, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		//end
 	
 		
-		local bcol = team.GetColor(TEAM_BLUE)
+		local bcol = team_GetColor(TEAM_BLUE)
 		bcol.a = 230
 		
-		local rcol = team.GetColor(TEAM_RED)
+		local rcol = team_GetColor(TEAM_RED)
 		rcol.a = 230
 		
 		
 		
-		draw.SimpleText("Fridge: "..math.Round(hill:GetHealth() or 0),"Bison_55", bgX,bgY-bgH/2-20, bcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		draw.SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, rcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText("Fridge: "..math_Round(hill:GetHealth() or 0),"Bison_55", bgX,bgY-bgH/2-20, bcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, rcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	
 	end
 	
@@ -816,22 +857,22 @@ function DrawKOTHNotify(MySelf)
 		
 		local bgX,bgY = w/2, h-25-bgH/2//5+bgH/2
 		
-		surface.SetDrawColor( 255, 255, 255, 170)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
+		surface_SetDrawColor( 255, 255, 255, 170)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
-		surface.DrawTexturedRectRotated(bgX,bgY-bgH/2-20,bgW*1.3,bgH,0)
+		surface_DrawTexturedRectRotated(bgX,bgY-bgH/2-20,bgW*1.3,bgH,0)
 		
 		
 		local hill = GetHillEntity()
 		
-		local fcol = team.GetColor(TEAM_FFA)
+		local fcol = team_GetColor(TEAM_FFA)
 		fcol.a = 230
 		
 		local score,max = GetFFAScore(MySelf)
 		
-		draw.SimpleText(score.." out of "..max,"Bison_55", bgX,bgY-bgH/2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		draw.SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(score.." out of "..max,"Bison_55", bgX,bgY-bgH/2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	
 	end
 	
@@ -842,26 +883,26 @@ function DrawKOTHNotify(MySelf)
 		
 		local bgX,bgY = w/2, h-25-bgH/2//5+bgH/2
 		
-		surface.SetDrawColor( 255, 255, 255, 170)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
+		surface_SetDrawColor( 255, 255, 255, 170)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
-		surface.DrawTexturedRectRotated(bgX,bgY-bgH/2-20,bgW*1.3,bgH,0)
+		surface_DrawTexturedRectRotated(bgX,bgY-bgH/2-20,bgW*1.3,bgH,0)
 		
 		
 		local hill = GetHillEntity()
 		
-		local fcol = team.GetColor(MySelf:Team())
+		local fcol = team_GetColor( P_Team( MySelf ) )
 		fcol.a = 230
 				
-		draw.SimpleText(MySelf:Team() == TEAM_THUG and "Kill all weaklings!" or "Survive","Bison_55", bgX,bgY-bgH/2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		draw.SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText( P_Team( MySelf ) == TEAM_THUG and "Kill all weaklings!" or "Survive","Bison_55", bgX,bgY-bgH/2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		
-		if MySelf:Team() == TEAM_THUG then
-			for _,pl in ipairs(team.GetPlayers(TEAM_BLUE)) do
+		if P_Team( MySelf ) == TEAM_THUG then
+			for _,pl in ipairs(team_GetPlayers(TEAM_BLUE)) do
 				if IsValid(pl) and pl:Alive() then
 					local p = pl:GetShootPos():ToScreen()
-					draw.SimpleText("Kill", "Bison_50", p.x,p.y, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+					draw_SimpleText("Kill", "Bison_50", p.x,p.y, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 				end
 			end
 		end
@@ -885,39 +926,39 @@ function DrawKOTHNotify(MySelf)
 			
 			local total = CONQUEST_CAPTURE_TIME or 5
 			
-			local mytime, enemytime = math.Clamp(cap:GetCaptureTimer(cap:TeamToHill(myteam)),0,total), math.Clamp(cap:GetCaptureTimer(cap:TeamToHill(enemytm)),0,total)
+			local mytime, enemytime = math_Clamp(cap:GetCaptureTimer(cap:TeamToHill(myteam)),0,total), math_Clamp(cap:GetCaptureTimer(cap:TeamToHill(enemytm)),0,total)
 			
 			local cw,ch = 300,40
 			cx,cy = cx-cw/2,cy + 25/2
 			
-			surface.SetDrawColor( 0, 0, 0, 150)
-			surface.DrawRect(cx,cy,cw,ch)
-			surface.DrawRect(cx+3, cy+3, cw-6, ch-6)
+			surface_SetDrawColor( 0, 0, 0, 150)
+			surface_DrawRect(cx,cy,cw,ch)
+			surface_DrawRect(cx+3, cy+3, cw-6, ch-6)
 			
 			
 			
 			if not mysize[cap] then
-				mysize[cap] = (cw-6)*math.Clamp(mytime/total,0,1)
+				mysize[cap] = (cw-6)*math_Clamp(mytime/total,0,1)
 			end
 			if not enemysize[cap] then
-				enemysize[cap] = (cw-6)*math.Clamp(enemytime/total,0,1)
+				enemysize[cap] = (cw-6)*math_Clamp(enemytime/total,0,1)
 			end
 			
-			mysize[cap],enemysize[cap] = math.Approach(mysize[cap],(cw-6)*math.Clamp(mytime/total,0,1),FrameTime()*60),math.Approach(enemysize[cap],(cw-6)*math.Clamp(enemytime/total,0,1),FrameTime()*60)
+			mysize[cap],enemysize[cap] = math.Approach(mysize[cap],(cw-6)*math_Clamp(mytime/total,0,1),FrameTime()*60),math.Approach(enemysize[cap],(cw-6)*math_Clamp(enemytime/total,0,1),FrameTime()*60)
 			
 			local todr = mysize[cap]
 			if enemytime > 0 then
 				todr = enemysize[cap]
 			end
 			
-			surface.SetDrawColor(enemytime > 0 and team.GetColor(enemytm) or team.GetColor(myteam))
-			surface.DrawRect(cx+3, cy+3, todr, ch-6)
+			surface_SetDrawColor(enemytime > 0 and team_GetColor(enemytm) or team_GetColor(myteam))
+			surface_DrawRect(cx+3, cy+3, todr, ch-6)
 			
-			surface.SetDrawColor(Color(200,200,200,100))
-			surface.DrawRect(cx+3 + todr, cy+3, (cw-6) - todr, ch-6)
+			surface_SetDrawColor(Color(200,200,200,100))
+			surface_DrawRect(cx+3 + todr, cy+3, (cw-6) - todr, ch-6)
 			
-			surface.SetDrawColor(Color(0,0,0,255))
-			surface.DrawRect(cx+3 + math.Clamp(todr - 2,0,(cw-6)), cy, 4, ch)
+			surface_SetDrawColor(Color(0,0,0,255))
+			surface_DrawRect(cx+3 + math_Clamp(todr - 2,0,(cw-6)), cy, 4, ch)
 			
 		else
 			mysize, enemysize = {},{}
@@ -937,7 +978,7 @@ function DrawKOTHNotify(MySelf)
 			
 					draw.RoundedBox( 4,nx,ny, nw,nh, Color(0, 0, 0, 120))
 					
-					draw.RoundedBox( 4,nx+2,ny+2, nw-4,nh-4, p:GetHoldingTeam() ~= 0 and team.GetColor(p:HillToTeam(p:GetHoldingTeam())) or Color(200,200,200,255))
+					draw.RoundedBox( 4,nx+2,ny+2, nw-4,nh-4, p:GetHoldingTeam() ~= 0 and team_GetColor(p:HillToTeam(p:GetHoldingTeam())) or Color(200,200,200,255))
 					
 					nx = nx + 40 + 4
 				end
@@ -945,8 +986,8 @@ function DrawKOTHNotify(MySelf)
 			
 			draw.SimpleTextOutlined("Hold all "..count.." points!", "Arial_Bold_14", w/2,ny+nh+4+7, Color(220,220,220,255), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 			
-			//surface.SetDrawColor( 0, 0, 0, 120)			
-			//surface.DrawRect(nx,ny,nw,nh)
+			//surface_SetDrawColor( 0, 0, 0, 120)			
+			//surface_DrawRect(nx,ny,nw,nh)
 			
 		end
 		
@@ -958,8 +999,8 @@ function DrawKOTHNotify(MySelf)
 		local nx,ny = w/2-nw/2,40+4+4
 		
 		
-		surface.SetDrawColor( 0, 0, 0, 120)
-		surface.DrawRect(nx,ny,nw,nh)
+		surface_SetDrawColor( 0, 0, 0, 120)
+		surface_DrawRect(nx,ny,nw,nh)
 		
 		local time = ToMinutesSeconds(hill:GetDTEntity(0):GetDTFloat(3) - CurTime())
 		
@@ -1009,9 +1050,7 @@ TeamCount[TEAM_BLUE] = 0
 function CreateTeamHud()
 	
 	local w,h = ScrW(),ScrH()
-	local notdr = MySelf:Team() == TEAM_SPECTATOR
-	
-	
+	local notdr = P_Team( MySelf ) == TEAM_SPECTATOR
 	
 	local Tw,Th = w*0.7,40
 	
@@ -1028,12 +1067,12 @@ function CreateTeamHud()
 	TeamHUD.Paint = function()
 		//left part
 		surface.SetTexture(gradright)
-		surface.SetDrawColor( 0, 0, 0, 120)
-		surface.DrawTexturedRect(-2,0,TeamHUD:GetWide()/2,TeamHUD:GetTall())
+		surface_SetDrawColor( 0, 0, 0, 120)
+		surface_DrawTexturedRect(-2,0,TeamHUD:GetWide()/2,TeamHUD:GetTall())
 		//right part
 		surface.SetTexture(gradleft)
-		surface.SetDrawColor( 0, 0, 0, 120)
-		surface.DrawTexturedRect(Tw/2+2,0,TeamHUD:GetWide()/2,TeamHUD:GetTall())
+		surface_SetDrawColor( 0, 0, 0, 120)
+		surface_DrawTexturedRect(Tw/2+2,0,TeamHUD:GetWide()/2,TeamHUD:GetTall())
 		
 		local rscore,bscore 
 		
@@ -1045,13 +1084,13 @@ function CreateTeamHud()
 			rscore = GetHillEntity():GetDTEntity(0):GetDTInt(1)
 			bscore = GetHillEntity():GetDTEntity(0):GetDTInt(2)
 		else
-			rscore = team.GetScore(TEAM_RED)
-			bscore = team.GetScore(TEAM_BLUE)
+			rscore = team_GetScore(TEAM_RED)
+			bscore = team_GetScore(TEAM_BLUE)
 		end
 		
 		
-		draw.SimpleTextOutlined(rscore, "Arial_Bold_38", TeamHUD:GetWide()/2-side,TeamHUD:GetTall()/2, team.GetColor(TEAM_RED), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-		draw.SimpleTextOutlined(bscore, "Arial_Bold_38", TeamHUD:GetWide()/2+side,TeamHUD:GetTall()/2, team.GetColor(TEAM_BLUE), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+		draw.SimpleTextOutlined(rscore, "Arial_Bold_38", TeamHUD:GetWide()/2-side,TeamHUD:GetTall()/2, team_GetColor(TEAM_RED), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+		draw.SimpleTextOutlined(bscore, "Arial_Bold_38", TeamHUD:GetWide()/2+side,TeamHUD:GetTall()/2, team_GetColor(TEAM_BLUE), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 		
 	end
 	/*TeamHUD.Think = function()
@@ -1091,7 +1130,7 @@ function CreateTeamHud()
 			
 			TeamHUDList[tm].NextCheck = CurTime() + 0.6
 			
-			if TeamCount[tm] ~= team.NumPlayers(tm) then
+			if TeamCount[tm] ~= team_NumPlayers(tm) then
 				
 				for _,c in ipairs(TeamHUDList[tm].Cards) do
 					if c then
@@ -1099,7 +1138,7 @@ function CreateTeamHud()
 					end
 				end
 				
-				for _,p in ipairs(team.GetPlayers(tm)) do
+				for _,p in ipairs(team_GetPlayers(tm)) do
 					if IsValid(p) then
 						local Card = vgui.Create( "DLabel", TeamHUDList[tm] )
 						Card:SetText("")
@@ -1107,12 +1146,12 @@ function CreateTeamHud()
 						Card.Paint = function()
 							--if InLobby then return end
 							if p == MySelf then
-								surface.SetDrawColor( 160, 160, 160, 50)
+								surface_SetDrawColor( 160, 160, 160, 50)
 							else
-								surface.SetDrawColor( 0, 0, 0, 50)
+								surface_SetDrawColor( 0, 0, 0, 50)
 							end
-							surface.DrawRect(0,0,Th,Th)
-							--surface.DrawRect(2, 2, Th-4, Th-4)
+							surface_DrawRect(0,0,Th,Th)
+							--surface_DrawRect(2, 2, Th-4, Th-4)
 						end
 						
 						local a = Th/2-64/2
@@ -1131,7 +1170,7 @@ function CreateTeamHud()
 					end
 				end	
 				
-				TeamCount[tm] = team.NumPlayers(tm)
+				TeamCount[tm] = team_NumPlayers(tm)
 				
 			end
 		end
@@ -1166,19 +1205,19 @@ local function DrawAchievements( y, notice, notice_delay )
 	
 	local fadeout = (notice.Time + notice_delay) - CurTime()
 	
-	local alpha = math.Clamp( fadeout * 255, 0, 255 )
+	local alpha = math_Clamp( fadeout * 255, 0, 255 )
 	
 	local bW,bH = 250, 75
 	local bX,bY = w-bW
 
-	//surface.SetDrawColor( 0, 0, 0, math.Clamp( fadeout * 190, 0, 190 ))
+	//surface_SetDrawColor( 0, 0, 0, math_Clamp( fadeout * 190, 0, 190 ))
 	//surface.SetTexture(gradright)
-	//surface.DrawTexturedRect(bX,y,bW,bH)
+	//surface_DrawTexturedRect(bX,y,bW,bH)
 	
 	local col = Color(231,231,231,alpha)
 	
-	draw.SimpleText("Achievement unlocked!", "Bison_30", w-120,y+bH/4, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-	draw.SimpleText(notice.Name, "Bison_40", w-120,y+2*bH/3, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+	draw_SimpleText("Achievement unlocked!", "Bison_30", w-120,y+bH/4, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+	draw_SimpleText(notice.Name, "Bison_40", w-120,y+2*bH/3, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 	
 	//draw.SimpleTextOutlined("Achievement unlocked!", "Arial_Bold_26", w-18.75,y+bH/4, Color(50,255,50,alpha), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER,1,Color(0,0,0,alpha))
 	//draw.SimpleTextOutlined(notice.Name, "Arial_Bold_Italic_32", w-18.75,y+2*bH/3, Color(255,255,255,alpha), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER,1,Color(0,0,0,alpha))
@@ -1252,18 +1291,18 @@ function AddBloodSplat( limit )
 	
 	local splat = {}
 	
-	splat.mat = blood_splats[math.random(1,5)]
-	splat.x = math.random(ScrW()*0.15,ScrW()*0.85)
-	splat.y = math.random(ScrH()*0.15,ScrH()*0.85)
-	splat.size = math.random(400,900)
-	splat.time = CurTime() + math.random(3,4)
+	splat.mat = blood_splats[math_random(1,5)]
+	splat.x = math_random(ScrW()*0.15,ScrW()*0.85)
+	splat.y = math_random(ScrH()*0.15,ScrH()*0.85)
+	splat.size = math_random(400,900)
+	splat.time = CurTime() + math_random(3,4)
 	
 	if #actual_splats >= limit then return end
 
 	table.insert(actual_splats,splat)
 	
-	if math.random(3) == 3 then
-		surface.PlaySound("physics/flesh/flesh_squishy_impact_hard"..math.random(1,4)..".wav")
+	if math_random(3) == 3 then
+		surface_PlaySound("physics/flesh/flesh_squishy_impact_hard"..math_random(1,4)..".wav")
 	end
 	
 end
@@ -1278,11 +1317,11 @@ function DrawBloodSplats(MySelf)
 			
 			local fadeout = splat.time - CurTime()
 	
-			local alpha = math.Clamp( fadeout * 210, 0, 210 )
+			local alpha = math_Clamp( fadeout * 210, 0, 210 )
 			
-			surface.SetDrawColor(Color(205,205,205,alpha))
-			surface.SetMaterial(splat.mat)
-			surface.DrawTexturedRectRotated(splat.x,splat.y,splat.size,splat.size,0)
+			surface_SetDrawColor(Color(205,205,205,alpha))
+			surface_SetMaterial(splat.mat)
+			surface_DrawTexturedRectRotated(splat.x,splat.y,splat.size,splat.size,0)
 			
 		end
 		
@@ -1324,7 +1363,7 @@ local NotifySounds = {
 	[1] = "npc/roller/mine/rmine_taunt1.wav",//your team picked up flag
 	[2] = "npc/roller/mine/rmine_predetonate.wav",//enemy team picked up flag
 	[3] = "npc/roller/mine/rmine_tossed1.wav",//dropped flag
-	[4] = "npc/zombie_poison/pz_alert"..math.random(1,2)..".wav",//thugs
+	[4] = "npc/zombie_poison/pz_alert"..math_random(1,2)..".wav",//thugs
 	[5] = "ambient/creatures/town_child_scream1.wav",//thugs #2
 	
 }
@@ -1350,15 +1389,15 @@ function DrawHUDMessages()
 	if curmsg then
 	
 		local fadeout = curmsgtime - CurTime()
-		local alpha = math.Clamp( fadeout * 250, 0, 250 )
-		local alpha2 = math.Clamp( fadeout * 170, 0, 170 )
+		local alpha = math_Clamp( fadeout * 250, 0, 250 )
+		local alpha2 = math_Clamp( fadeout * 170, 0, 170 )
 		curcolor.a = alpha
 
-		surface.SetDrawColor( 255, 255, 255, alpha2)
-		surface.SetMaterial(hud_bg4)
-		surface.DrawTexturedRectRotated(w/2,h-h/3.3,180,75,0)
+		surface_SetDrawColor( 255, 255, 255, alpha2)
+		surface_SetMaterial(hud_bg4)
+		surface_DrawTexturedRectRotated(w/2,h-h/3.3,180,75,0)
 		
-		draw.SimpleText(curmsg,"Bison_50",w/2,h-h/3.3,curcolor,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText(curmsg,"Bison_50",w/2,h-h/3.3,curcolor,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		
 		if curmsgtime < CurTime() then
 			curmsg = nil

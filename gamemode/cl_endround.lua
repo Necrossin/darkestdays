@@ -28,7 +28,7 @@ local function ReceiveVotemaps ( len )
 	
 	Votemaplist = {}
 	
-	for i = 1,4 do
+	for i = 1,MAX_VOTEMAPS do
 		Votemaplist[i] = net.ReadString()
 	end
 	
@@ -42,12 +42,12 @@ net.Receive("RecVotemaps", ReceiveVotemaps)
 
 
 local function ReceiveVotePoints ( len ) 
-	for i = 1,4 do
+	for i = 1,MAX_VOTEMAPS do
 		VotePoints[i] = net.ReadInt( 32 )
 	end
 	
 	if ShowRestart then
-		VotePoints[5] = net.ReadInt( 32 )
+		VotePoints[MAX_VOTEMAPS+1] = net.ReadInt( 32 )
 	end
 	
 end
@@ -71,7 +71,7 @@ local function MaxResult(tbl)
 		local CurrentPoint = v
 		if CurrentPoint > MaximumPoint then
 			MaximumPoint = CurrentPoint
-			Winner = k~=5 and Votemaplist[k] or "restart"
+			Winner = k ~= ( MAX_VOTEMAPS + 1 ) and Votemaplist[k] or "restart"
 		end
 	end
 	
@@ -182,9 +182,9 @@ function DrawEndround(time)
 		restartbtn:SetTall(restartsize)
 		restartbtn:SetText("")
 		restartbtn.DoClick = function()
-			if MySelf.Voted ~= 5 then
-				RunConsoleCommand ( "VoteAddMap", tostring(5) )
-				MySelf.Voted = 5
+			if MySelf.Voted ~= ( MAX_VOTEMAPS + 1 ) then
+				RunConsoleCommand ( "VoteAddMap", tostring( MAX_VOTEMAPS + 1 ) )
+				MySelf.Voted = MAX_VOTEMAPS + 1
 			end
 		end
 		restartbtn.OnCursorEntered = function() 
@@ -201,13 +201,13 @@ function DrawEndround(time)
 				draw.SimpleText ( "Restart current map","Arial_Bold_20", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				
 				draw.RoundedBox( 2,fw-fh+2,2,fh-4,fh-4, COLOR_DESELECTED_BRIGHT)
-				draw.SimpleText ( VotePoints[5] or 0,"Arial_Bold_20", fw-fh/2-2,fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( VotePoints[MAX_VOTEMAPS + 1] or 0,"Arial_Bold_20", fw-fh/2-2,fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			else
 				draw.RoundedBox( 2,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT)
 				draw.SimpleText ( "Restart current map","Arial_Bold_20", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				
 				draw.RoundedBox( 2,fw-fh+2,2,fh-4,fh-4, COLOR_BACKGROUND_DARK)
-				draw.SimpleText ( VotePoints[5] or 0,"Arial_Bold_20", fw-fh/2-2,fh/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( VotePoints[MAX_VOTEMAPS + 1] or 0,"Arial_Bold_20", fw-fh/2-2,fh/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 			//draw.SimpleTextOutlined ( name.." "..((VotePoints[i] and VotePoints[i] > 0 and ("| Votes: "..VotePoints[i])) or ""), "Arial_Bold_23", MapButton:GetWide()/2, MapButton:GetTall()/2, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 		end
@@ -234,17 +234,17 @@ function DrawEndround(time)
 		//draw.RoundedBox( 8,0,0, fw, fh, Color(255,0,0,255))
 	end
 	
-	for i=1,4 do
+	for i=1,MAX_VOTEMAPS do
 	
 		local name = Votemaplist[i] or "no name"
 	
-		local MapButton = vgui.Create("DButton",i < 3 and mappanel_l or mappanel_r)
-		MapButton:Dock( TOP )//i < 3 and LEFT or RIGHT
+		local MapButton = vgui.Create("DButton",i <= ( MAX_VOTEMAPS / 2 ) and mappanel_l or mappanel_r)
+		MapButton:Dock( TOP )
 		MapButton:SetZPos(math.random(-2,2))
 		MapButton:SetWide(mappanel:GetWide()/2)
 		MapButton:SetText("")
 		MapButton.Think = function(self)
-			self:SetTall(mappanel_l:GetTall()/2)
+			self:SetTall(mappanel_l:GetTall()/(MAX_VOTEMAPS/2))
 		end
 		MapButton.DoClick = function()
 			if MySelf.Voted ~= i then
@@ -261,6 +261,8 @@ function DrawEndround(time)
 		MapButton.Paint = function(self,fw,fh)
 			//local min = math.min(fw,fh)
 			
+			local len = string.len( name )
+			
 			draw.RoundedBox( 2,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
 			draw.RoundedBox( 2,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
 			
@@ -273,7 +275,7 @@ function DrawEndround(time)
 				end
 				
 				draw.RoundedBoxEx( 2,2,fh*4/5-2,fw-4,fh/5, COLOR_DESELECTED_BRIGHT, false, false, true, true )
-				draw.SimpleText ( name,"Arial_Bold_20", fw/2, fh*4/5-2 + fh/5/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( name, len > 20 and "Arial_Bold_16" or "Arial_Bold_20", fw/2, fh*4/5-2 + fh/5/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				
 				draw.RoundedBox( 2,fw-2-fh/5,2,fh/5,fh/5, COLOR_DESELECTED_BRIGHT)
 				draw.SimpleText ( VotePoints[i] or 0,"Arial_Bold_20", fw-2-fh/5/2, 2+fh/5/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -286,7 +288,7 @@ function DrawEndround(time)
 				end
 				
 				draw.RoundedBoxEx( 2,2,fh*4/5-2,fw-4,fh/5, COLOR_BACKGROUND_DARK, false, false, true, true )
-				draw.SimpleText ( name,"Arial_Bold_20", fw/2, fh*4/5-2 + fh/5/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( name, len > 20 and "Arial_Bold_16" or "Arial_Bold_20", fw/2, fh*4/5-2 + fh/5/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				
 				draw.RoundedBox( 2,fw-2-fh/5,2,fh/5,fh/5, COLOR_BACKGROUND_DARK)
 				draw.SimpleText ( VotePoints[i] or 0,"Arial_Bold_20", fw-2-fh/5/2, 2+fh/5/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -322,9 +324,9 @@ function DrawEndround(time)
 			end
 		end
 		
+		local len = string.len( result )
 		
-		
-		draw.SimpleText( result, "Arial_Bold_23", 10, fh/4, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText( result, len > 35 and "Arial_Bold_18" or "Arial_Bold_23", 10, fh/4, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw.SimpleText( "Next gametype: "..wingm, "Arial_Bold_20", 10, fh*3/4, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		
 	end
@@ -407,105 +409,12 @@ function DrawEndround(time)
 					draw.SimpleText (  VotePointsGM[k] or 0,"Arial_Bold_25", fw*5/6-2+fw/6/2, fh/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				
 				end
-				//draw.RoundedBoxEx( 2,2,fh*4/5-2,fw-4,fh/5, COLOR_BACKGROUND_DARK, false, false, true, true )
-				//draw.SimpleText ( name,"Arial_Bold_20", fw/2, fh*4/5-2 + fh/5/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-				
-				//draw.RoundedBox( 2,fw-2-fh/5,2,fh/5,fh/5, COLOR_BACKGROUND_DARK)
-				//draw.SimpleText ( VotePoints[i] or 0,"Arial_Bold_20", fw-2-fh/5/2, 2+fh/5/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-				//draw.SimpleText ( "Loadout "..i,"Arial_Bold_30", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
 			end
 		end
 		
 	end
 	
-	//"pp/blurscreen"
-	
-	/*EndMenu.Paint = function() 
-		
-		surface.SetTexture(grad)
-		surface.SetDrawColor(0, 0, 0, 220 )
-		surface.DrawTexturedRectRotated(EndMenu:GetWide()/2,EndMenu:GetTall()/2,EndMenu:GetWide(),EndMenu:GetTall()*0.85,0)
-		
-		
-		local result = "Next map will be "..(Votemaplist[1] or "cs_assault").." in "..math.Clamp(math.floor(time-CurTime()),0,9999)
-		local win = MaxResult(VotePoints)
-		
-		if win == "restart" then
-			result = "Restarting current map in "..math.Clamp(math.floor(time-CurTime()),0,9999)
-		else
-			if win ~= "" then
-				result = "Next map will be "..win.." in "..math.Clamp(math.floor(time-CurTime()),0,9999)
-			end
-		end
-		
-		local col = Color(255, 255, 255, 255)
-		
-		for i=3,4 do
-			if ROUNDWINNER ~= "Noone" and team.GetName(i) == ROUNDWINNER then
-				col = team.GetColor(i)
-				break
-			end
-		end
-		
-	
-		
-		draw.SimpleTextOutlined ( (ROUNDWINNER or "Noone").." won the round!", "Arial_Bold_60", EndMenu:GetWide()/2, EndMenu:GetTall()*1/5, col , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-		
-		draw.SimpleTextOutlined ( result, "Arial_Bold_23", EndMenu:GetWide()/2, EndMenu:GetTall()*4/5, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-	
-	end
-	EndMenu.Think = function ()
-		gui.EnableScreenClicker(true)
-	end
-	
-	local lW,lH = ScaleW(230),ScaleH(60)
-	local lX,lY = w/2-lW/2,h/3
-	
-	local step = 0
-	for i=1,(ShowRestart and 5 or 4) do
-		
-		local Restart = i==5 and ShowRestart
-		
-		local addstep = 2
-		if Restart then
-			addstep = lH
-		end
-		
-		local name = Votemaplist[i] or "Error!"
-		
-		if Restart then
-			name = "Restart current map"
-		end
-		
-		local MapButton = vgui.Create("DButton",EndMenu)
-		MapButton:SetPos(lX,lY+step*(lH+6)+addstep)
-		MapButton:SetSize(lW,lH)
-		MapButton:SetText("")
-		MapButton.DoClick = function()
-			if not LocalPlayer().Voted then
-				RunConsoleCommand ( "VoteAddMap", tostring(i) )
-				LocalPlayer().Voted = true
-			end
-		end
-		MapButton.OnCursorEntered = function() 
-			MapButton.Overed = true 
-		end
-		MapButton.OnCursorExited = function () 
-			MapButton.Overed = false
-		end
-		MapButton.Paint = function()
-			surface.SetTexture(grad)
-			if MapButton.Overed then
-				surface.SetDrawColor(60, 60, 60, 200 )
-			else
-				surface.SetDrawColor(0, 0, 0, 220 )
-			end
-			surface.DrawTexturedRectRotated(MapButton:GetWide()/2,MapButton:GetTall()/2,MapButton:GetWide(),MapButton:GetTall(),0)
-			draw.SimpleTextOutlined ( name.." "..((VotePoints[i] and VotePoints[i] > 0 and ("| Votes: "..VotePoints[i])) or ""), "Arial_Bold_23", MapButton:GetWide()/2, MapButton:GetTall()/2, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-		end
-		
-		step = step + 1
-		*/
 	end
 
 
@@ -586,9 +495,9 @@ function DrawEndroundOld(time)
 	local lX,lY = w/2-lW/2,h/3
 	
 	local step = 0
-	for i=1,(ShowRestart and 5 or 4) do
+	for i=1,(ShowRestart and ( MAX_VOTEMAPS + 1 ) or MAX_VOTEMAPS) do
 		
-		local Restart = i==5 and ShowRestart
+		local Restart = ( i == ( MAX_VOTEMAPS + 1 ) ) and ShowRestart
 		
 		local addstep = 2
 		if Restart then

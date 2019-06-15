@@ -278,6 +278,7 @@ function SWEP:UpdateBonePositions(vm)
 
 end*/
 
+
 function SWEP:UpdateBonePositions(vm)
 	
 	if self.ViewModelBoneMods then //MySelf:GetActiveWeapon() == self and 
@@ -863,20 +864,6 @@ local fleshsound ={
 
 function SWEP:DoImpactEffect( tr, dmg ) 
 
-	/*if SERVER then
-		if self.Tracer ~= "" then
-			local e = EffectData()
-			e:SetOrigin(tr.HitPos)
-			e:SetEntity(self.Owner)
-			if self.UseCursedTracer then
-				e:SetScale(1)
-			else
-				e:SetScale(2)
-			end
-			util.Effect("dd_effect_tracer",e,nil,true)
-		end
-	end*/
-
 	local ent = tr.Entity
 	if IsValid(ent) then
 		if ent:IsPlayer() then
@@ -886,22 +873,17 @@ function SWEP:DoImpactEffect( tr, dmg )
 			end
 		end
 	end
-	local mat = tr.MatType
-
-	if self.MatToParticle[mat] then
-		if ent and ent.NoImpactEffect then return true end
-		local toreturn = true
-		if CLIENT then
-			if not DD_NOIMPACTFX then
-				ParticleEffect(self.MatToParticle[mat][1],tr.HitPos,tr.HitNormal:Angle(),nil)
-			else
-				toreturn = false
-			end
-			sound.Play(self.MatToParticle[mat][3][math.random(1,#self.MatToParticle[mat][3])],tr.HitPos,55, math.random(90, 110), 0.5)
+	
+	if ent and ent.NoImpactEffect then return true end
+	
+	if CLIENT and not DD_NOIMPACTFX then
+		local mat = tr.MatType
+		if self.MatToParticle[mat] then
+			ParticleEffect(self.MatToParticle[mat][1],tr.HitPos,tr.HitNormal:Angle(),nil)
 		end
-		util.Decal(self.MatToParticle[mat][2], tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
-		return toreturn
 	end
+	
+	return false
 	
 end
 
@@ -968,14 +950,12 @@ function GenericBulletCallback(attacker, tr, dmginfo)//function GenericBulletCal
 				util.Decal("Blood", tr.HitPos + tr.HitNormal*10, tr.HitPos - tr.HitNormal*10)
 				util.Decal("Blood", tr.HitPos-vector_up*3 + tr.HitNormal*10, tr.HitPos-vector_up*3 - tr.HitNormal*10)
 				if CLIENT then
-					//local e = EffectData()
-					//e:SetOrigin(tr.HitPos)
-					//e:SetNormal(tr.HitNormal)
-					//util.Effect("BloodImpact",e)
-					local e = EffectData()
-					e:SetOrigin(tr.HitPos)
-					e:SetNormal(tr.HitNormal)
-					util.Effect(tr.HitGroup == HITGROUP_HEAD and "melee_blood_hit" or "BloodImpact",e)//math.random(2) == 2 and "melee_blood_hit" or "BloodImpact"
+					if tr.HitGroup == HITGROUP_HEAD then
+						local e = EffectData()
+						e:SetOrigin(tr.HitPos)
+						e:SetNormal(tr.HitNormal)
+						util.Effect("melee_blood_hit",e)
+					end
 				end
 				local inflictor = dmginfo:GetInflictor()
 				--if !(inflictor and inflictor:IsValid() and inflictor:IsPlayer() and inflictor:GetActiveWeapon() and inflictor:GetActiveWeapon():IsValid() and inflictor:GetActiveWeapon().IsShotgun) then

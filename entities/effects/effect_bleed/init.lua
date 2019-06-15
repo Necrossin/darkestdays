@@ -7,9 +7,35 @@ function EFFECT:Init(data)
 	
 	self.IsThug = math.Round(data:GetMagnitude()) == 1//self.ent:IsThug()
 	
+	self.Entity:SetRenderBounds(Vector(-128, -128, -128), Vector(128, 128, 128))
+	
+	if IsValid( self.Rag ) then
+		local emitter = ParticleEmitter(self.Rag:GetPos())	
+		for i=0, 25, 4 do
+			local bone = self.Rag:GetBoneMatrix(i)
+			if bone and emitter then
+				local pos = bone:GetTranslation()
+				//local emitter = ParticleEmitter(self.Entity:GetPos())
+				local particle = emitter:Add("Decals/flesh/Blood"..math.random(1,5), pos)
+				particle:SetVelocity(VectorRand() * 16)
+				particle:SetDieTime(0.8)
+				particle:SetStartAlpha(0)
+				particle:SetStartSize(3)
+				particle:SetEndSize(8)
+				particle:SetRoll(180)
+				particle:SetColor(255, 0, 0)
+				particle:SetLighting(true)
+				particle:SetCollide(true)
+				particle:SetAirResistance(12)
+				particle:SetCollideCallback(CollideCallbackSmall)
+			end	
+		end
+		emitter:Finish() emitter = nil collectgarbage("step", 64)
+	end
+	
 	--self.Emitter = ParticleEmitter(self.Entity:GetPos())
-	self.StopTime = CurTime() + 2.5
-	self.StopTime2 = CurTime() + 0.7
+	self.StopTime = CurTime() + 1.5
+	--self.StopTime2 = CurTime() + 0.7
 end
 
 function EFFECT:Think()
@@ -17,7 +43,6 @@ function EFFECT:Think()
 		--self.Emitter:Finish()
 		return false
 	else
-		self.Entity:SetRenderBounds(Vector(-128, -128, -128), Vector(128, 128, 128))
 		self.Entity:SetPos(self.Rag:GetPos())
 		
 		if IsValid(self.Rag) and not self.ChangedMass then
@@ -36,7 +61,7 @@ function EFFECT:Think()
 				local phys = self.Rag:GetPhysicsObjectNum(i)
 				if phys and phys:IsValid() then
 					phys:Wake()
-					phys:AddVelocity( VectorRand()*math.Rand(-46,46) )
+					phys:AddVelocity( VectorRand()*math.random(-46,46) )
 				end
 			end
 		end
@@ -102,7 +127,7 @@ function EFFECT:Render()
 	
 	if IsValid( self.Rag ) then
 		
-		if self.Rag:GetPhysicsObjectNum(1) and self.Rag:GetPhysicsObjectNum(1):GetVelocity():Length() > 20 and self.StopTime2 >= CurTime() then
+		/*if self.Rag:GetPhysicsObjectNum(1) and self.Rag:GetPhysicsObjectNum(1):GetVelocity():Length() > 20 and self.StopTime2 >= CurTime() then
 			local emitter = ParticleEmitter(self.Rag:GetPos())	
 			for i=0, 25, 4 do
 				local bone = self.Rag:GetBoneMatrix(i)
@@ -124,15 +149,18 @@ function EFFECT:Render()
 				end	
 			end
 			emitter:Finish() emitter = nil collectgarbage("step", 64)
-		end
+		end*/
 		
 		if self.IsThug then
-			for k, v in pairs( bones ) do
-				local bone = self.Rag:LookupBone(k)
-				if (!bone) then continue end
-				self.Rag:ManipulateBoneScale( bone, v.scale  )
-				self.Rag:ManipulateBoneAngles( bone, v.angle  )
-				self.Rag:ManipulateBonePosition( bone, v.pos  )
+			if not self.DoneThug then
+				for k, v in pairs( bones ) do
+					local bone = self.Rag:LookupBone(k)
+					if (!bone) then continue end
+					self.Rag:ManipulateBoneScale( bone, v.scale  )
+					self.Rag:ManipulateBoneAngles( bone, v.angle  )
+					self.Rag:ManipulateBonePosition( bone, v.pos  )
+				end
+				self.DoneThug = true
 			end
 			if not self.Rag.HandleDraw then
 				self.Rag.HandleDraw = self

@@ -351,6 +351,9 @@ function meta:MeleeTrace(distance, size, filter, start)
 end
 
 local trace = { mask = MASK_SHOT }
+local function InsertTBL(tbl, stuff)
+    tbl[#tbl + 1] = stuff
+end
 function meta:PenetratingMeleeTrace(distance, size, filter, swipe)
 	
 	local start = self:GetShootPos()
@@ -367,12 +370,8 @@ function meta:PenetratingMeleeTrace(distance, size, filter, swipe)
 		trace.mins = Vector(-size, -size, -size )
 		trace.maxs = Vector(size, size, size)
 	end
-	
 
 	trace.filter = filter or { self }
-	
-	
-	
 
 	/*if not swipe then
 		debugoverlay.Box( trace.start, trace.mins, trace.maxs, 5, Color( 255, 255, 255, 100) )
@@ -409,12 +408,15 @@ function meta:PenetratingMeleeTrace(distance, size, filter, swipe)
 		
 		if ent and ent:IsValid() then
 			if not ent.IgnoreTracing then
-				table.insert(t, tr)
+				--table.insert(t, tr)
+				InsertTBL( t, tr )
 			end
-			table.insert(trace.filter, ent)
+			InsertTBL( trace.filter, ent )
+			--table.insert(trace.filter, ent)
 		else
 			if tr.HitWorld then
-				table.insert(t, tr)
+				--table.insert(t, tr)
+				InsertTBL( t, tr )
 				break
 			end
 		end

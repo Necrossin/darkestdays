@@ -180,7 +180,6 @@ local function GetPlayerText()
 end
 
 net.Receive( "Client:ShowLobby", function( len )
-	print"got lobby"
 	timer.Simple( 0.2, function() DrawLobby() end )
 end)
 

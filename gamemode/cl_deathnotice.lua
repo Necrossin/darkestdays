@@ -1,8 +1,19 @@
 local hud_deathnotice_time = CreateConVar( "hud_deathnotice_time", "6", FCVAR_REPLICATED, "Amount of time to show death notice" )
 
 // These are our kill icons
-local Color_Icon = Color(231,231,231,255)//Color( 255, 255, 255, 255 ) 
+local Color_Icon = Color(231,231,231,255)
 local NPC_Color = Color( 250, 50, 50, 255 ) 
+
+local surface_SetMaterial = surface.SetMaterial
+local surface_SetDrawColor = surface.SetDrawColor
+local surface_DrawRect = surface.DrawRect
+local surface_DrawTexturedRect = surface.DrawTexturedRect
+local surface_DrawTexturedRectRotated = surface.DrawTexturedRectRotated
+local surface_PlaySound = surface.PlaySound
+local surface_SetFont = surface.SetFont
+local surface_GetTextSize = surface.GetTextSize
+
+local draw_SimpleText = draw.SimpleText
 
 killicon.AddFont( "prop_physics", 		"HL2MPTypeDeath", 	"9", 	Color_Icon )
 killicon.AddFont( "prop_physics_multiplayer", 		"HL2MPTypeDeath", 	"9", 	Color_Icon )
@@ -164,9 +175,9 @@ local function DrawDeath( x, y, death, hud_deathnotice_time )
 		w,h = GetSpellIconSize()
 	end
 	
-	surface.SetFont("Bison_30")
-	local lw,lh = surface.GetTextSize(death.left or "test")
-	local rw,rh = surface.GetTextSize(death.left or "test")
+	surface_SetFont("Bison_30")
+	local lw,lh = surface_GetTextSize(death.left or "test")
+	local rw,rh = surface_GetTextSize(death.left or "test")
 	
 	local gw,gh = math.max(lw,rw),math.max(lh,rh)
 	
@@ -177,11 +188,11 @@ local function DrawDeath( x, y, death, hud_deathnotice_time )
 	death.color2.a = alpha
 	
 	//surface.SetTexture(grad)
-	surface.SetMaterial(hud_bg4)
-	surface.SetDrawColor(0, 0, 0, math.Clamp( fadeout * 200, 0, 200 ) )//255
+	surface_SetMaterial(hud_bg4)
+	surface_SetDrawColor(0, 0, 0, math.Clamp( fadeout * 200, 0, 200 ) )//255
 	local bW = 200//gw+w+32
 	local bH = bW/3
-	surface.DrawTexturedRectRotated(x,y,bW,bH,0)
+	surface_DrawTexturedRectRotated(x,y,bW,bH,0)
 	
 	// Draw Icon
 	if IsSpellIcon(death.icon) then
@@ -192,11 +203,11 @@ local function DrawDeath( x, y, death, hud_deathnotice_time )
 		
 	// Draw KILLER
 	if (death.left) then
-		draw.SimpleText( death.left, 	"Bison_30", x - (w/2) - 16, y, 		death.color1, 	TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER )
+		draw_SimpleText( death.left, 	"Bison_30", x - (w/2) - 16, y, 		death.color1, 	TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER )
 	end
 	
 	// Draw VICTIM
-	draw.SimpleText( death.right, 		"Bison_30", x + (w/2) + 16, y, 		death.color2, 	TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER )
+	draw_SimpleText( death.right, 		"Bison_30", x + (w/2) + 16, y, 		death.color2, 	TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER )
 	
 	return (y + h*0.70)
 
