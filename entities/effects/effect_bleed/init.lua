@@ -1,6 +1,14 @@
 local math = math
 local table = table
 
+local function CollideCallbackSmall(particle, hitpos, hitnormal)
+	if not particle.HitAlready then
+		particle.HitAlready = true
+		util.Decal("Blood", hitpos + hitnormal, hitpos - hitnormal)
+		particle:SetDieTime(0)
+	end	
+end
+
 function EFFECT:Init(data)
 	self.Ent = data:GetEntity()
 	self.Rag = self.Ent:GetRagdollEntity()
@@ -17,16 +25,17 @@ function EFFECT:Init(data)
 				local pos = bone:GetTranslation()
 				//local emitter = ParticleEmitter(self.Entity:GetPos())
 				local particle = emitter:Add("Decals/flesh/Blood"..math.random(1,5), pos)
-				particle:SetVelocity(VectorRand() * 16)
-				particle:SetDieTime(0.8)
+				particle:SetVelocity(VectorRand() * 46)
+				particle:SetDieTime(2)
 				particle:SetStartAlpha(0)
-				particle:SetStartSize(3)
-				particle:SetEndSize(8)
+				particle:SetStartSize(2)
+				particle:SetEndSize(2)
 				particle:SetRoll(180)
 				particle:SetColor(255, 0, 0)
 				particle:SetLighting(true)
 				particle:SetCollide(true)
 				particle:SetAirResistance(12)
+				particle:SetGravity( vector_up * - 400 )
 				particle:SetCollideCallback(CollideCallbackSmall)
 			end	
 		end
@@ -67,14 +76,6 @@ function EFFECT:Think()
 		end
 	end
 	return true
-end
-
-local function CollideCallbackSmall(particle, hitpos, hitnormal)
-	if not particle.HitAlready then
-		particle.HitAlready = true
-		util.Decal("Blood", hitpos + hitnormal, hitpos - hitnormal)
-		particle:SetDieTime(0)
-	end	
 end
 
 local bones = {

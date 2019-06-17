@@ -279,6 +279,10 @@ function SWEP:ViewModelDrawn()
 			end
 		end
 		
+		if self.OnDrawViewModel then
+			self:OnDrawViewModel()
+		end
+		
 		if (!self.VElements) then return end
 		
 		if (!self.vRenderOrder) then

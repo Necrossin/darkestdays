@@ -310,25 +310,18 @@ function SWEP:Think()
 		spinning = 5
 	end
 	
-	if CLIENT then
-		self.SpinRate = math.Approach(self.SpinRate, spinning, FrameTime()*((self.SpinRate+1) ^ 1.5))
+	/*if CLIENT then
+		self.SpinRate = math.Approach(self.SpinRate, spinning, RealFrameTime()*0.5*((self.SpinRate+1) ^ 1.5))
 		if self.VElements then
 			if self.VElements["rotate_main"] then
 				self.VElements["rotate_main"].angle.y = self.VElements["rotate_main"].angle.y + self.SpinRate//math.Approach(self.VElements["rotate_main"].angle.y, self.BarrelAngle, FrameTime()*860)
-				/*if self:IsShooting() and self:Clip1() > 0 and !GAMEMODE.ThirdPerson and IsValid(self.VElements["rotate_main"].modelEnt) then
-					local effectdata = EffectData() 
-					effectdata:SetOrigin( self.VElements["rotate_main"].modelEnt:GetPos()+self.VElements["rotate_main"].modelEnt:GetAngles():Up()*4 ) 
-					effectdata:SetAngles( self.Owner:GetAimVector():Angle() ) 
-					effectdata:SetScale( 2 )
-					util.Effect( "MuzzleEffect", effectdata ) 
-				end*/
 			end
 			if self.VElements["small_gear"] then
 				self.VElements["small_gear"].angle.y = self.VElements["small_gear"].angle.y - self.SpinRate*2//math.Approach(self.VElements["rotate_main"].angle.y, self.BarrelAngle, FrameTime()*860)
 			end
 			
 		end
-	end
+	end*/
 	
 	if self:IsCharging() then
 
@@ -420,6 +413,36 @@ function SWEP:OnRemove()
      
 end
 
+function SWEP:OnDrawViewModel()
+	
+	local spinning = 0
+	
+	if self:IsSpinning() then
+		spinning = 5
+	end
+	
+	if self:IsShooting() then
+		spinning = 5
+	end
+	
+	if self:IsCharging() then
+		spinning = 5
+	end
+	
+	self.SpinRate = math.Approach(self.SpinRate, spinning, RealFrameTime()*((self.SpinRate+1) ^ 1.5))
+	if self.VElements then
+		if self.VElements["rotate_main"] then
+			self.VElements["rotate_main"].angle.y = self.VElements["rotate_main"].angle.y + self.SpinRate//math.Approach(self.VElements["rotate_main"].angle.y, self.BarrelAngle, FrameTime()*860)
+		end
+		if self.VElements["small_gear"] then
+			self.VElements["small_gear"].angle.y = self.VElements["small_gear"].angle.y - self.SpinRate*2//math.Approach(self.VElements["rotate_main"].angle.y, self.BarrelAngle, FrameTime()*860)
+		end
+			
+	end
+	
+	
+end
+
 SWEP.wSpinRate = 0
 function SWEP:OnDrawWorldModel()
 
@@ -437,7 +460,7 @@ function SWEP:OnDrawWorldModel()
 		spinning = 6
 	end
 	
-	self.wSpinRate = math.Approach(self.wSpinRate, spinning, FrameTime()*((self.wSpinRate+1) ^ 2))
+	self.wSpinRate = math.Approach(self.wSpinRate, spinning, RealFrameTime()*((self.wSpinRate+1) ^ 2))
 	if self.WElements then
 		if self.WElements["rotate_main"] then
 			self.WElements["rotate_main"].angle.y = self.WElements["rotate_main"].angle.y + self.wSpinRate*2//math.Approach(self.VElements["rotate_main"].angle.y, self.BarrelAngle, FrameTime()*860)

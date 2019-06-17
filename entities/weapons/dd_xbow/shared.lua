@@ -249,7 +249,7 @@ if CLIENT then
 local zoom_lerp = 0
 function SWEP:TranslateFOV( fov )
 	
-	zoom_lerp = math.Approach(zoom_lerp, ( self.Owner:KeyDown( IN_RELOAD ) and self:GetNextReload() <= CurTime() and 1 ) or 0, FrameTime() * ((zoom_lerp + 1) ^ 0.2))
+	zoom_lerp = math.Approach(zoom_lerp, ( self.Owner:KeyDown( IN_RELOAD ) and self:GetNextReload() <= CurTime() and 1 ) or 0, RealFrameTime() * 0.5 * ((zoom_lerp + 1) ^ 0.2))
 
 	return math.Clamp( fov - zoom_lerp * 60, 10, fov ) 
 end
@@ -269,13 +269,13 @@ function SWEP:GetViewModelPosition(pos, ang)
 	return pos, ang*/
 	
 	if self:GetNextReload() > CurTime() then
-		lerp = math.Approach(lerp, ((self:GetNextReload() > CurTime()) and 1) or 0, FrameTime() * ((lerp + 1) ^ 3))
+		lerp = math.Approach(lerp, ((self:GetNextReload() > CurTime()) and 1) or 0, RealFrameTime() * ((lerp + 1) ^ 1.5))
 		ang:RotateAroundAxis(ang:Right(), -33 * lerp)
 		return pos, ang
 	else
-		if IsFirstTimePredicted() then
-			lerp = math.Approach(lerp, (self.Owner:IsSprinting() and not self.IgnoreSprint and 1) or 0, FrameTime() * 3*((lerp + 1) ^ 2))
-		end
+		--if IsFirstTimePredicted() then
+			lerp = math.Approach(lerp, (self.Owner:IsSprinting() and not self.IgnoreSprint and 1) or 0, RealFrameTime() * 1*((lerp + 1) ^ 2.5))
+		--end
 	
 		if self.SprintPos and self.SprintAng then
 			local rot = self.SprintAng
