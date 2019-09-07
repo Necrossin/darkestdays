@@ -94,8 +94,8 @@ function EFFECT:Init( data )
 						gib.Frozen = self.Frozen
 						gib:SetMaterial( self.Frozen and "models/shiny" or "models/flesh" )
 						
-						if PlayerGibs[ id ] and PlayerGibs[ id ].scale then
-							gib:SetModelScale( PlayerGibs[ id ].scale, 0 )
+						if PlayerGibs[ i ] and PlayerGibs[ i ].scale then
+							gib:SetModelScale( PlayerGibs[ i ].scale, 0 )
 						end
 						gib:SetPos(pos + ( PlayerGibs[i].offset or VectorRand() * 3 ))
 						gib:SetAngles( ang + ( PlayerGibs[i].angle or Angle( 0, 0, 0 ) ) )

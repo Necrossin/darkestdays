@@ -60,15 +60,15 @@ if SERVER then
 			if ent:IsJuggernaut() then return end
 			if ent:IsCrow() then return end
 			if ent:IsCarryingFlag() then return end
-			if ent:IsThug() then return end
-			if GAMEMODE:GetGametype() == "ffa" and ent:IsThug() then return end
+			//if ent:IsThug() then return end
+			//if GAMEMODE:GetGametype() == "ffa" and ent:IsThug() then return end
 			
 			local torestore = 35
 			
-			if ent:GetPerk("hpregen") then return end
+			//if ent:GetPerk("hpregen") then return end
 			if ent:GetPerk("adrenaline") then return end
 			
-			if ent:IsThug() then
+			if ent:IsThug() or ent:GetPerk("hpregen") then
 				torestore = 17
 			end
 			

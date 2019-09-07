@@ -122,11 +122,11 @@ function ENT:Attack(obj,hitpos, hitnormal)
 	
 	if obj and obj:IsPlayer() and not self.EntOwner:IsTeammate(obj) then//obj:Team() ~= self.EntOwner:Team() then
 		if self.NextAttack < CurTime() then
-			self.NextAttack = CurTime() + math.Rand(0.75,0.95)//0.74
+			self.NextAttack = CurTime() + math.Rand(0.95,1.1)//0.74
 			local Dmg = DamageInfo()
 			Dmg:SetAttacker(self.EntOwner or self.Entity)
 			Dmg:SetInflictor(self.Entity)
-			Dmg:SetDamage(math.random(1,2) * ( self.EntOwner:GetPerk( "crow" ) and 2 or 1 ))
+			Dmg:SetDamage(1 * ( self.EntOwner:GetPerk( "crow" ) and 2 or 1 ))
 			Dmg:SetDamageType(DMG_SLASH)
 			Dmg:SetDamagePosition(hitpos)	
 								

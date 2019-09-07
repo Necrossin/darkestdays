@@ -13,9 +13,23 @@ local CrossHairScale = 1
 if CLIENT then
 
 local hittime = 0
+local next_hitsound = 0
+
+local custom_hitsound = file.Exists( "sound/dd_hitsound.wav", "GAME" )
+
 net.Receive("Hitmarker",function( len ) 
 	
 	hittime = CurTime() + 0.4
+	
+	
+	if DD_HITSOUNDS and next_hitsound < CurTime() then
+		next_hitsound = CurTime() + 0.1
+		if custom_hitsound then
+			surface.PlaySound( "dd_hitsound.wav" )
+		else
+			surface.PlaySound( "physics/gore/flesh_impact_bullet"..math.random( 5 )..".wav" )
+		end
+	end
 
 end)
 

@@ -76,7 +76,7 @@ SWEP.HoldType = "ar2"
 SWEP.Caliber = CAL_12_GAUGE
 
 SWEP.Primary.Sound			= Sound( "Weapon_M3.SingleDD" )//Sound("Weapon_M3.Single")
-SWEP.Primary.Recoil			= 20 -- 3.5
+SWEP.Primary.Recoil			= 3//20 -- 3.5
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 10
 SWEP.Primary.ClipSize		= 5

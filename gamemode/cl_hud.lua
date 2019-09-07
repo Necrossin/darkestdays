@@ -202,7 +202,7 @@ function DrawAmmoSpells(MySelf)
 		surface_SetMaterial(hud_grenade)
 		
 		surface_DrawTexturedRect(posX+tW/2-nadeW*1.4,posY-tH/2-nadeH*0.8,nadeW,nadeH)
-		draw_SimpleText("G", "Bison_45", posX+tW/2-nadeW*.4,posY-tH/2, col_231_231_231_170, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+		draw_SimpleText(string.upper( input.GetKeyName( DD_GRENADEBUTTON or KEY_G )  ), "Bison_45", posX+tW/2-nadeW*.4,posY-tH/2, col_231_231_231_170, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 		
 		
 	end

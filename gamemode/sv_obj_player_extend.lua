@@ -309,16 +309,22 @@ end
 local string = string
 
 function meta:SetTeamColor()
-	local col = team.GetColor( self:Team() )
-	local mdl = self:GetModel()
 	
-	--if table.HasValue( NormalColor, string.lower(mdl) ) then
-		--self:SetColor(Color(math.Round(col.r*1.0),math.Round(col.g*1.0),math.Round(col.b*1.0),col.a))
-	if table.HasValue( GAMEMODE.NormalColorModels, string.lower( mdl ) ) then
-		self:SetColor( col )
+	if GAMEMODE:GetGametype() == "ffa" then
+		local col = self:GetInfo( "cl_playercolor" )
+		self:SetPlayerColor( Vector( col ) )
 	else
-		self:SetColor( color_white )
-		self:SetPlayerColor( Vector( col.r/255,col.g/255,col.b/255 ) )
+		local col = team.GetColor( self:Team() )
+		local mdl = self:GetModel()
+		
+		--if table.HasValue( NormalColor, string.lower(mdl) ) then
+			--self:SetColor(Color(math.Round(col.r*1.0),math.Round(col.g*1.0),math.Round(col.b*1.0),col.a))
+		if table.HasValue( GAMEMODE.NormalColorModels, string.lower( mdl ) ) then
+			self:SetColor( col )
+		else
+			self:SetColor( color_white )
+			self:SetPlayerColor( Vector( col.r/255,col.g/255,col.b/255 ) )
+		end
 	end
 	
 end

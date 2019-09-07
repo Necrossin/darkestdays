@@ -76,7 +76,7 @@ SWEP.HoldType = "smg"
 SWEP.Caliber = CAL_11_43
 
 SWEP.Primary.Sound			= Sound("Weapon_UMP45.Single")
-SWEP.Primary.Recoil			= 4.5
+SWEP.Primary.Recoil			= 0.7
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 26

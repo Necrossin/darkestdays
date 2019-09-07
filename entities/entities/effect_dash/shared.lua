@@ -4,10 +4,10 @@ ENT.RenderGroup         = RENDERGROUP_TRANSLUCENT
 ENT.Spawnable = false
 ENT.AdminSpawnable = false
 
-ENT.Duration = 0.1
+ENT.Duration = 0.5
 ENT.Uses = 4
 
-ENT.DashSpeed = 2000
+ENT.DashSpeed = 1000
 
 if SERVER then
 	AddCSLuaFile("shared.lua")
@@ -30,6 +30,25 @@ function ENT:Initialize()
 	//self:AddEffects( EF_BONEMERGE )
 	
 	self.EntOwner._efDash = self.Entity
+	
+	local vel = self.EntOwner:GetVelocity()
+	vel.z = 0
+	
+	vel = vel:GetNormal()
+	
+	local idle = false
+	
+	if vel:LengthSqr() < 0.1 then
+		vel = self.EntOwner:SyncAngles():Forward()
+		idle = true
+	end
+	
+	//print( vel * self.DashSpeed )
+	//self.EntOwner:SetGroundEntity( NULL )
+	if not self.EntOwner:OnGround() or idle then
+		self.EntOwner:SetGroundEntity( NULL )
+		self.EntOwner:SetLocalVelocity( vel * self.DashSpeed )
+	end
 	
 	self.EntOwner.DashFrames = CurTime() + 0.8 //just so we have enough time to hit
 	
@@ -73,11 +92,23 @@ end
 
 function ENT:Move( mv )
 	
-	mv:SetMaxSpeed( self.DashSpeed )
-	mv:SetMaxClientSpeed( self.DashSpeed )	
+	//self.EntOwner:SetGroundEntity(NULL)	
 	
+	local dash_speed = self.DashSpeed * math.Clamp( ( self.DieTime - CurTime() ) / self.Duration, 0, 1 )   //(1 - FrameTime() * 0.2)
+	
+	local speed = mv:GetMaxSpeed() + dash_speed
+	local speed_cl = mv:GetMaxClientSpeed() + dash_speed
+	
+	mv:SetMaxSpeed( speed )
+	mv:SetMaxClientSpeed( speed_cl )	
+	/*
 	if not self.EntOwner:OnGround() or not ( self.EntOwner:KeyDown( IN_FORWARD ) or self.EntOwner:KeyDown( IN_BACK ) or self.EntOwner:KeyDown( IN_MOVELEFT ) or self.EntOwner:KeyDown( IN_MOVERIGHT ) ) then
-		
+	
+		//self.EntOwner:SetGroundEntity(NULL)
+	
+		//mv:SetSideSpeed(0)
+		//mv:SetForwardSpeed(0)
+	
 		local norm = mv:GetVelocity()
 		
 		if norm:Length2DSqr() < 100 then
@@ -89,7 +120,8 @@ function ENT:Move( mv )
 
 		mv:SetVelocity( norm * self.DashSpeed / 2 )
 		
-	end
+	end*/
+	
 	
 end
 

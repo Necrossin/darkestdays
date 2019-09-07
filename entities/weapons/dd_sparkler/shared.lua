@@ -141,7 +141,7 @@ SWEP.HoldType = "revolver"
 SWEP.Caliber = CAL_5_7
 
 SWEP.Primary.Sound			= Sound("Weapon_AR2.NPC_Single")
-SWEP.Primary.Recoil			= 3.2
+SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= -1

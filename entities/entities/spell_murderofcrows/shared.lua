@@ -86,7 +86,7 @@ function ENT:CreateProjectile()
 	
 	local aimang = self.EntOwner:GetAimVector():Angle()
 		
-	for i=1,math.random(5,6) do
+	for i=1,4 do
 		local aimvec = aimang
 		aimvec.yaw = aimvec.yaw + math.Rand(-2, 2)
 		aimvec.pitch = aimvec.pitch + math.Rand(-2, 2)

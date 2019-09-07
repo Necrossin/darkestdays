@@ -95,6 +95,14 @@ local function MaxResultGM(tbl)
 	
 end
 
+local function CallEndRound ( len ) 
+
+	local time = net.ReadInt( 32 )
+	DrawEndround( time )
+
+end
+net.Receive("CallDrawEndRound",CallEndRound)
+
 function DrawEndround(time)
 	
 	local w,h = ScrW(),ScrH()

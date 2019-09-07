@@ -132,7 +132,7 @@ SWEP.HoldType = "ar2"
 SWEP.Caliber = CAL_9
 
 SWEP.Primary.Sound			= Sound("Weapon_MP5Navy.Single")
-SWEP.Primary.Recoil			= 2.2
+SWEP.Primary.Recoil			= 0.8//2.2
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 31
@@ -145,8 +145,8 @@ SWEP.Primary.Cone = 0.055
 SWEP.Primary.ConeMoving = 0.065
 SWEP.Primary.ConeCrouching = 0.04
 
-//SWEP.Tracer = "" //temp fix
-SWEP.NoSmoke = true
+SWEP.Tracer = "Tracer" //temp fix
+SWEP.NoSmoke = false
 
 SWEP.ShellEffect			= "rg_shelleject" 
 SWEP.MuzzleEffect			= "rg_muzzle_smg"

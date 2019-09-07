@@ -96,7 +96,7 @@ SWEP.HoldType = "ar2"
 SWEP.Caliber = CAL_5_56
 
 SWEP.Primary.Sound			= Sound("Weapon_M4A1.Single")
-SWEP.Primary.Recoil			= 1.7
+SWEP.Primary.Recoil			= 0.4
 SWEP.Primary.Unrecoil		= 8
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1

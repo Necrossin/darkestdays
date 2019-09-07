@@ -744,7 +744,10 @@ function GM:PlayerSpawn( pl )
 			self:SendVotemaps ( pl )
 			timer.Simple(0.2, function()
 				if IsValid(pl) then
-					pl:SendLua("DrawEndround("..ROUNDTIME..")")
+					//pl:SendLua("DrawEndround("..ROUNDTIME..")")
+					net.Start( "CallDrawEndRound" )
+						net.WriteInt( ROUNDTIME, 32 )
+					net.Send( pl ) 
 				end
 			end)
 		else
@@ -765,7 +768,10 @@ function GM:PlayerSpawn( pl )
 			pl:Lock()
 			self:SendVotemaps ( pl )
 			timer.Simple(0.2, function()
-				pl:SendLua("DrawEndround("..ROUNDTIME..")")
+				//pl:SendLua("DrawEndround("..ROUNDTIME..")")
+				net.Start( "CallDrawEndRound" )
+					net.WriteInt( ROUNDTIME, 32 )
+				net.Send( pl ) 
 			end)
 		end
 		
@@ -1031,7 +1037,7 @@ end
 
 function GM:PlayerSwitchFlashlight( ply, SwitchOn )
 	
-	if self:GetGametype() == "ts" and P_Team( pl ) == TEAM_THUG then
+	if self:GetGametype() == "ts" and P_Team( ply ) == TEAM_THUG then
 		return false
 	end
 
@@ -1159,7 +1165,7 @@ function GM:CheckGameGoal()
 		end
 	elseif self.Gametype == "ffa" and IsValid(GetHillEntity()) then
 		local hill = GetHillEntity()
-		local winner = NULL
+		local winner = nil
 		if hill.GetTimer and hill:GetTimer() <= 0 then
 			local max = 0
 			for k,v in ipairs(team.GetPlayers(TEAM_FFA)) do
@@ -1307,6 +1313,9 @@ function UpdateClientVotePoints ( pl, slot )
 		end
 	net.Broadcast()
 end
+
+util.AddNetworkString( "CallDrawEndRound" )
+
 //dont ask me why the hell I use team name instead of actual team enumeration. It's stupid but I can't be bothered to remake it right now
 function GM:EndRound(winner)
 
@@ -1378,9 +1387,14 @@ function GM:EndRound(winner)
 	//GAMEMODE:SynchronizeTime()
 	
 	timer.Simple(0.2, function()
-		for _,pl in pairs(player_GetAll()) do
-			pl:SendLua("DrawEndround("..ROUNDTIME..")")
-		end
+		//for _,pl in pairs(player_GetAll()) do
+		//	pl:SendLua("DrawEndround("..ROUNDTIME..")")
+		//end
+		
+		net.Start( "CallDrawEndRound" )
+			net.WriteInt( ROUNDTIME, 32 )
+		net.Broadcast()
+		
 	end)
 	
 	timer.Simple(INTERMISSIONTIME+1,function()
@@ -1532,6 +1546,12 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	
 	local gib = false
 	local frozen = ply._efFrozenTime and ply._efFrozenTime >= CurTime()
+	
+	if attacker and attacker.GetClass and attacker:GetClass() == "npc_antlionguard" then
+		if attacker.Owner then
+			attacker = attacker.Owner
+		end
+	end
 	
 	if (dmginfo:GetDamage() >= 100 or ply:Health() < -35 or frozen) and !( dmginfo:GetInflictor() and dmginfo:GetInflictor().CanSlice ) then
 		ply:Gib( dmginfo, frozen )
@@ -2031,7 +2051,11 @@ function GM:EntityTakeDamage( ent,dmginfo )
 		local wep = IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon()
 		
 		if attacker:GetClass() == "npc_antlionguard" then
-			dmginfo:ScaleDamage(5)
+			dmginfo:ScaleDamage(4)
+			if attacker.Owner then
+				inflictor = attacker
+				attacker = attacker.Owner
+			end
 		end
 			
 		if attacker:IsPlayer() then
@@ -2605,6 +2629,8 @@ function GM:ChooseMostFarSpawn(pl)
 		vec = vec+v:GetPos()
 	end
 
+	if c == 0 then c = 1 end
+	
 	local averageteampos = vec/c
 	local chosenpoint = self.RedSpawnPoints[1]
 	local dis = chosenpoint:GetPos():Distance(averageteampos)

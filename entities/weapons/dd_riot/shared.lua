@@ -73,7 +73,7 @@ SWEP.HoldType = "ar2"
 SWEP.Caliber = CAL_12_GAUGE
 
 SWEP.Primary.Sound			= Sound("Weapon_Riot.SingleDD")
-SWEP.Primary.Recoil			= 20 -- 3.5
+SWEP.Primary.Recoil			= 3.5
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 8
 SWEP.Primary.ClipSize		= 8

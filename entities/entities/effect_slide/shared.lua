@@ -24,7 +24,7 @@ function ENT:Initialize()
 	self.EntOwner._efSlide = self.Entity
 	if SERVER then
 		self.Entity:DrawShadow(false)
-		self.EntOwner:SetVelocity(self.EntOwner:GetVelocity() * 0.3)
+		//self.EntOwner:SetVelocity(self.EntOwner:GetVelocity() * 1.3)
 		
 		//self:DoBones()
 		
@@ -34,8 +34,10 @@ function ENT:Initialize()
 	
 	if CLIENT then
 		self.Sound = CreateSound(self.Entity, "physics/body/body_medium_scrape_smooth_loop1.wav")
-		self.Emitter = ParticleEmitter(self:GetPos())
+		//self.Emitter = ParticleEmitter(self:GetPos())
 	end
+	
+	self.EntOwner:SetVelocity(self.EntOwner:GetVelocity() * 0.5)
 	
 end
 
@@ -62,9 +64,9 @@ function ENT:OnRemove()
 		if self.Sound then
 			self.Sound:Stop()
 		end
-		if self.Emitter then
-			self.Emitter:Finish()
-		end
+		//if self.Emitter then
+			//self.Emitter:Finish()
+		//end
 	end
 end
 
@@ -82,10 +84,10 @@ function ENT:Think()
 		end
 		
 		
-		if self.EntOwner._NextKick and self.EntOwner._NextKick > CurTime() and self.EntOwner:GetVelocity():Length() > 100 then// and !self.EntOwner:OnGround() then
+		if self.EntOwner._NextKick and self.EntOwner._NextKick > CurTime() and self.EntOwner:GetVelocity():LengthSqr() > 10000 then// and !self.EntOwner:OnGround() then
 			//basically player is forced to slide for the duration of kick effect, otherwise obey the normal sliding rules
 		else
-			if self.EntOwner:KeyDown(IN_JUMP) or not self.EntOwner:KeyDown(IN_DUCK) or self.EntOwner:GetVelocity():Length() < 200 then
+			if self.EntOwner:KeyDown(IN_JUMP) or not self.EntOwner:KeyDown(IN_DUCK) or self.EntOwner:GetVelocity():LengthSqr() < 40000 then
 				self:Remove()
 				return
 			end
@@ -118,29 +120,36 @@ function ENT:Draw()
 	
 	if self.EntOwner and !self.EntOwner:OnGround() then return end
 	
-	if self.Emitter then
-		self.Emitter:SetPos(self.EntOwner:GetPos())
-	end
+	//if self.Emitter then
+	//	self.Emitter:SetPos(self.EntOwner:GetPos())
+	//end
 	
 	local rand = VectorRand()
 	rand.z = 0
 	local pos = self.EntOwner:GetPos() + vector_up*math.Rand(2,4) + rand*math.Rand(0,10)
 	
-	for i=1, 5 do
-		local particle = self.Emitter:Add("particle/smokestack", pos)
-		particle:SetVelocity(math.Rand(0.5, 1.4)*self.EntOwner:GetVelocity():Length()/4*VectorRand()+vector_up*math.random(30))
-		particle:SetDieTime(math.Rand(0.5, 1))
-		particle:SetStartAlpha(70)
-		particle:SetEndAlpha(0)
-		particle:SetStartSize(4)
-		particle:SetEndSize(7)
-		particle:SetRoll(math.Rand(-180, 180))
-		particle:SetColor(100, 100, 100)
-		particle:SetCollide(true)
-		particle:SetBounce(0.1)
-		particle:SetAirResistance(15)
-		particle:SetGravity(vector_up*-25)
+	local emitter = ParticleEmitter(self:GetPos())
+	
+	if emitter then
+		for i=1, 5 do
+			local particle = emitter:Add("particle/smokestack", pos)
+			particle:SetVelocity(math.Rand(0.5, 1.4)*self.EntOwner:GetVelocity():Length()/4*VectorRand()+vector_up*math.random(30))
+			particle:SetDieTime(math.Rand(0.5, 1))
+			particle:SetStartAlpha(70)
+			particle:SetEndAlpha(0)
+			particle:SetStartSize(4)
+			particle:SetEndSize(7)
+			particle:SetRoll(math.Rand(-180, 180))
+			particle:SetColor(100, 100, 100)
+			particle:SetCollide(true)
+			particle:SetBounce(0.1)
+			particle:SetAirResistance(15)
+			particle:SetGravity(vector_up*-25)
+		end
+	
+		emitter:Finish() emitter = nil collectgarbage("step", 64)
 	end
+	
 
 
 end

@@ -100,7 +100,7 @@ SWEP.HoldType = "revolver"
 SWEP.Caliber = CAL_11_20
 
 SWEP.Primary.Sound			= Sound("Weapon_357.Single")--Sound( "weapons/diamond_back_01.wav" )
-SWEP.Primary.Recoil			= 7.2
+SWEP.Primary.Recoil			= 4
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 6
@@ -128,13 +128,20 @@ SWEP.Tracer = ""
 SWEP.MuzzleEffect			= "rg_muzzle_hmg"
 
 function SWEP:OnReload()
-	for i=1,6 do
+	/*for i=1,6 do
 		local fx = EffectData()
 		fx:SetEntity(self.Weapon)
 		fx:SetNormal(self.Owner:GetAimVector())
 		fx:SetAttachment(1)
 		util.Effect("rg_shelleject_pistol",fx)
-	end
+	end*/
+end
+
+util.PrecacheSound( "weapons/357_fire2.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/357_fire2.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
 end
 
 SWEP.SprintPos = Vector(0, -17.555, -10.82)

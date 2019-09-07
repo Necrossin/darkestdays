@@ -74,7 +74,7 @@ SWEP.HoldType = "smg"
 SWEP.Caliber = CAL_5_56
 
 SWEP.Primary.Sound			= Sound("Weapon_AUG.Single")
-SWEP.Primary.Recoil			= 1.25
+SWEP.Primary.Recoil			= 0.35
 SWEP.Primary.Unrecoil		= 8
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1

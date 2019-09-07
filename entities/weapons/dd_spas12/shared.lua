@@ -76,15 +76,16 @@ SWEP.HoldType = "ar2"
 SWEP.Caliber = CAL_12_GAUGE
 
 SWEP.Primary.Sound			= Sound("Weapon_Shotgun.DoubleDD")//Sound("Weapon_Shotgun.Single")
-SWEP.Primary.Recoil			= 25 -- 3.5
+SWEP.Primary.Recoil			= 5//25 -- 3.5
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
-SWEP.Primary.NumShots		= 10
+SWEP.Primary.NumShots		= 5
 SWEP.Primary.ClipSize		= 2//4
 SWEP.Primary.Delay			= 0.35
 SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//16
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "buckshot"
 SWEP.IsShotgun = true
+SWEP.ReloadSound			= Sound("Weapon_Shotgun.Reload")
 
 SWEP.Primary.Cone = 0.2
 SWEP.Primary.ConeMoving = 0.22
@@ -109,7 +110,7 @@ SWEP.ShellEffect			= "rg_shelleject_shotgun"
 
 //SWEP.MuzzleAttachment = "muzzle"
 
-SWEP.ReloadDelay = 0.5
+SWEP.ReloadDelay = 0.3
 
 SWEP.reloadtimer = 0
 SWEP.nextreloadfinish = 0
@@ -151,6 +152,7 @@ function SWEP:DoReload()
 	end
 	
 	self:SendWeaponAnim(ACT_VM_RELOAD)
+	self:EmitSound( self.ReloadSound )
 	--self.Owner:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_HL2MP_GESTURE_RELOAD_SHOTGUN ) 
 
 	self:GetOwner():RemoveAmmo(1, self.Primary.Ammo, false)

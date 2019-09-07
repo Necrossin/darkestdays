@@ -79,6 +79,11 @@ cvars.AddChangeCallback("_dd_voicebutton", function(cvar, oldvalue, newvalue)
 	DD_VOICEBUTTON = tonumber( newvalue )
 end)
 
+DD_GRENADEBUTTON = CreateClientConVar("_dd_grenadebutton", KEY_G, true, true):GetInt()
+cvars.AddChangeCallback("_dd_grenadebutton", function(cvar, oldvalue, newvalue)
+	DD_GRENADEBUTTON = tonumber( newvalue )
+end)
+
 DD_BLOODYMODELS = util.tobool( CreateClientConVar("_dd_bloodymodels", 1, true, false):GetInt() )
 cvars.AddChangeCallback("_dd_bloodymodels", function(cvar, oldvalue, newvalue)
 	DD_BLOODYMODELS = util.tobool( newvalue )
@@ -87,6 +92,26 @@ end)
 DD_SPACEBARGRAB = util.tobool( CreateClientConVar("_dd_spacebargrab", 1, true, true):GetInt() )
 cvars.AddChangeCallback("_dd_spacebargrab", function(cvar, oldvalue, newvalue)
 	DD_SPACEBARGRAB = util.tobool( newvalue )
+end)
+
+DD_TEAMMATECIRCLES = util.tobool( CreateClientConVar("_dd_friendlycircle", 1, true, true):GetInt() )
+cvars.AddChangeCallback("_dd_friendlycircle", function(cvar, oldvalue, newvalue)
+	DD_TEAMMATECIRCLES = util.tobool( newvalue )
+end)
+
+DD_HITSOUNDS = util.tobool( CreateClientConVar("_dd_hitsounds", 0, true, true):GetInt() )
+cvars.AddChangeCallback("_dd_hitsounds", function(cvar, oldvalue, newvalue)
+	DD_HITSOUNDS = util.tobool( newvalue )
+end)
+
+DD_IMMERSIVESLIDE = util.tobool( CreateClientConVar("_dd_immersiveslide", 1, true, true):GetInt() )
+cvars.AddChangeCallback("_dd_immersiveslide", function(cvar, oldvalue, newvalue)
+	DD_IMMERSIVESLIDE = util.tobool( newvalue )
+end)
+
+DD_VIEWMODEL_Z = CreateClientConVar("_dd_viewmodelZ", 0, true, true):GetFloat()
+cvars.AddChangeCallback("_dd_viewmodelZ", function(cvar, oldvalue, newvalue)
+	DD_VIEWMODEL_Z = math.Clamp( tonumber( newvalue ), -10, 0 )
 end)
 
 
@@ -822,7 +847,7 @@ end
 function OptionsMenu()
 
 	local w,h = ScrW(),ScrH()
-	local Ow,Oh = math.max(w/4.2, 380),h/1.5
+	local Ow,Oh = math.max(w/4.2, 380),h/1.4
 	
 	if InLobby then return end
 	
@@ -909,7 +934,7 @@ function OptionsMenu()
 	VoiceLabel:Dock( TOP )
 	VoiceLabel:DockMargin( 0,2,0,0 )
 	VoiceLabel.Paint = function()
-		draw.SimpleText("Voice commands", "Arial_Bold_25", 15,VoiceLabel:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+		draw.SimpleText("Voice Commands", "Arial_Bold_25", 15,VoiceLabel:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 	end
 	
 	local VoiceButton = vgui.Create("DBinder",VoiceLabel)
@@ -921,6 +946,26 @@ function OptionsMenu()
 	VoiceButton.SetValue = function(self,num)
 		self:OldSetValue( num )
 		RunConsoleCommand("_dd_voicebutton",tostring(num))
+	end
+	
+	local GrenadeLabel = vgui.Create("DPanel",OpList)
+	GrenadeLabel:SetText("")
+	GrenadeLabel:SetTall(40)
+	GrenadeLabel:Dock( TOP )
+	GrenadeLabel:DockMargin( 0,2,0,0 )
+	GrenadeLabel.Paint = function()
+		draw.SimpleText("Throw Grenade", "Arial_Bold_25", 15,GrenadeLabel:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+	end
+	
+	local GrenadeButton = vgui.Create("DBinder",GrenadeLabel)
+	GrenadeButton:SetSize(110,23)
+	GrenadeButton:Dock( RIGHT )
+	GrenadeButton:DockMargin( 2,2,5,2 )
+	GrenadeButton:SetValue(GetConVarNumber("_dd_grenadebutton"))
+	GrenadeButton.OldSetValue = GrenadeButton.SetValue
+	GrenadeButton.SetValue = function(self,num)
+		self:OldSetValue( num )
+		RunConsoleCommand("_dd_grenadebutton",tostring(num))
 	end
 
 	
@@ -950,13 +995,13 @@ function OptionsMenu()
 	CrosshairMix:Dock ( FILL )
 	CrosshairPanel:DockMargin( 5,0,0,0 )
 	
-	local c = vgui.Create( "DCheckBoxLabel",OpList )
+	/*local c = vgui.Create( "DCheckBoxLabel",OpList )
 	c:Dock( TOP )
 	c:DockMargin( 5,2,5,0 )
 	c:SetText( "Draw hats and outfits" )
 	c:SetConVar( "_dd_drawsuits" )
 	c:SetValue( GetConVarNumber("_dd_drawsuits") )
-	c:SizeToContents()
+	c:SizeToContents()*/
 	
 	local c = vgui.Create( "DCheckBoxLabel",OpList )
 	c:Dock( TOP )
@@ -1032,8 +1077,39 @@ function OptionsMenu()
 	c:SetValue( GetConVarNumber("_dd_spacebargrab") )
 	c:SizeToContents()
 	
+	local c = vgui.Create( "DCheckBoxLabel",OpList )
+	c:Dock( TOP )
+	c:DockMargin( 5,2,5,0 )
+	c:SetText( "Enable teammate indication circles" )
+	c:SetConVar( "_dd_friendlycircle" )
+	c:SetValue( GetConVarNumber("_dd_friendlycircle") )
+	c:SizeToContents()
 	
+	local c = vgui.Create( "DCheckBoxLabel",OpList )
+	c:Dock( TOP )
+	c:DockMargin( 5,2,5,0 )
+	c:SetText( "Enable immersive view for sliding" )
+	c:SetConVar( "_dd_immersiveslide" )
+	c:SetValue( GetConVarNumber("_dd_immersiveslide") )
+	c:SizeToContents()
 	
+	local c = vgui.Create( "DCheckBoxLabel",OpList )
+	c:Dock( TOP )
+	c:DockMargin( 5,2,5,0 )
+	c:SetText( "Enable hitmarker sounds" )
+	c:SetConVar( "_dd_hitsounds" )
+	c:SetToolTip( "Use 'sound/dd_hitsound.wav' file for custom sound" )
+	c:SetValue( GetConVarNumber("_dd_hitsounds") )
+	c:SizeToContents()
+	
+	local vm_slider = vgui.Create("DNumSlider",OpList)
+	vm_slider:Dock( TOP )
+	vm_slider:DockMargin( 5,2,5,0 )
+	vm_slider:SetDecimals(1)
+	vm_slider:SetMinMax(-10, 0)
+	vm_slider:SetConVar("_dd_viewmodelZ")
+	vm_slider:SetText("Viewmodel Z pos")
+	vm_slider:SizeToContents()
 	
 	local sliderX = vgui.Create("DNumSlider",OpList)
 	sliderX:Dock( TOP )

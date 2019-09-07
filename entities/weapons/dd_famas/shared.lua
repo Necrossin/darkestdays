@@ -76,7 +76,7 @@ SWEP.Caliber = CAL_5_56
 SWEP.FirePower = 1.1
 
 SWEP.Primary.Sound			= Sound("Weapon_FAMAS.Single")
-SWEP.Primary.Recoil			= 1.5
+SWEP.Primary.Recoil			= 0.45
 SWEP.Primary.Unrecoil		= 11
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]*SWEP.FirePower
 SWEP.Primary.NumShots		= 1

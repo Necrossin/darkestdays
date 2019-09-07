@@ -82,12 +82,18 @@ function EFFECT:Init( data )
 	
 	if !IsValid(self.ent) then return end
 	
-	local col = team.GetColor( self.ent:Team() )
+	
+	
+	if GAMEMODE:GetGametype() == "ffa" then
+		local col = self.ent:GetPlayerColor() //self.ent:GetInfo( "cl_playercolor" )
+		self.GetPlayerColor = function() return Vector( col.x, col.y, col.z ) end
+	else
+		local col = team.GetColor( self.ent:Team() )
+		self.GetPlayerColor = function() return Vector( col.r/255,col.g/255,col.b/255 ) end
+	end
 	
 	self.Entity:SetRenderBounds(Vector(-128, -128, -128), Vector(128, 128, 128))
-	
-	self.GetPlayerColor = function() return Vector( col.r/255,col.g/255,col.b/255 ) end
-	
+
 	self.Origin = data:GetOrigin()
 
 	self.Ang = data:GetNormal()

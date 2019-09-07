@@ -33,6 +33,7 @@ local Lerp = Lerp
 
 
 local vector_up = Vector(0, 0, 1)
+local col_white = color_white
 
 local surface_SetMaterial = surface.SetMaterial
 local surface_SetDrawColor = surface.SetDrawColor
@@ -75,6 +76,8 @@ local math_random = math.random
 
 local M_Player = FindMetaTable("Player")
 local P_Team = M_Player.Team
+
+local team_GetColor = team.GetColor
 
 
 SpellIcons = {}
@@ -227,6 +230,8 @@ GM.PlayerBloodMaterial = GM.PlayerBloodMaterial or CreateMaterial( "dd_player_bl
 	} 
 )
 
+-- just so we can use this thing
+CreateConVar( "cl_playercolor", "0.24 0.34 0.41", { FCVAR_ARCHIVE, FCVAR_USERINFO }, "The value is a Vector - so between 0-1 - not between 0-255" )
 
 
 include( 'shared.lua' )
@@ -333,7 +338,7 @@ function GM:LocalPlayerFound()
 	self.GetMotionBlurValues = self._GetMotionBlurValues
 	self.HUDDrawTargetID = self._HUDDrawTargetID
 	--self.PrePlayerDraw = self._PrePlayerDraw
-	--self.PostPlayerDraw = self._PostPlayerDraw
+	self.PostPlayerDraw = self._PostPlayerDraw
 	--self.InputMouseApply = self._InputMouseApply
 	--self.GUIMousePressed = self._GUIMousePressed
 	--self.HUDWeaponPickedUp = self._HUDWeaponPickedUp
@@ -458,6 +463,65 @@ function GM:Initialize( )
 	end
 
 end
+
+local matTeammate = Material( "SGM/playercircle" )
+
+local mat_circle_bg = Material( "darkestdays/hud/hud_bg.png" )
+local mat_circle_red = Material( "darkestdays/hud/hud_health.png" )
+local mat_circle_blue = Material( "darkestdays/hud/hud_mana.png" )
+
+local team_circles = {
+	[ TEAM_RED ] = mat_circle_red,
+	[ TEAM_BLUE ] = mat_circle_blue,
+}
+
+function GM:_PostPlayerDraw( pl )
+	
+	if DD_TEAMMATECIRCLES and pl ~= MySelf and MySelf:IsTeammate( pl ) and self:GetGametype() ~= "ffa" then
+		
+		local pos = pl:GetPos()
+		local mat = team_circles[ pl:Team() ]
+		
+		if mat then
+			
+			local size = 40
+			local col = col_white //team_GetColor( P_Team( pl ) )
+			
+			local rot = math.NormalizeAngle( RealTime() * 20 )
+			
+			pos.z = pos.z + 2
+			
+			//render_SetMaterial( mat_circle_bg )
+			//render_DrawQuadEasy( pos, vector_up, size, size, col_white )
+			
+			render_SetMaterial( mat )
+			
+			render_DrawQuadEasy( pos, vector_up, size, size, col, rot )
+			render_DrawQuadEasy( pos, vector_up, size / 1.3, size / 1.3, col, 90 - rot )
+			
+			render_DrawQuadEasy( pos, vector_up, size, size, col, rot + 180 )
+			render_DrawQuadEasy( pos, vector_up, size / 1.3, size / 1.3, col, 90 - rot + 180 )
+			
+			render_DrawQuadEasy( pos, vector_up * -1, size, size, col, rot * -1 )
+			render_DrawQuadEasy( pos, vector_up * -1, size / 1.3, size / 1.3, col, 90 - rot * -1 )
+			
+			render_DrawQuadEasy( pos, vector_up * -1, size, size, col, rot * -1 + 180 )
+			render_DrawQuadEasy( pos, vector_up * -1, size / 1.3, size / 1.3, col, 90 - rot * -1 + 180 )
+			
+		end
+		
+		/*local col = team_GetColor( P_Team( pl ) )
+		
+		pos.z = pos.z + 2
+		render_SetMaterial( matTeammate )
+		
+		render_DrawQuadEasy( pos, vector_up, 32, 32, col )
+		render_DrawQuadEasy( pos, vector_up * -1, 32, 32, col )*/
+		
+	end
+	
+end
+
 
 table.Shuffle(Radio)
 
@@ -686,7 +750,7 @@ function GM:_GetMotionBlurValues( x, y, fwd, spin )
 	dash_lerp = math_Approach(dash_lerp, (MySelf:IsDashing() and 1) or 0, RealFrameTime() * ((dash_lerp + 1) ^ 1.1))
 	
 	if dash_lerp > 0 then
-		return 0, 0, dash_lerp * 0.4, spin
+		return 0, 0, dash_lerp * 0.1, spin
 	else
 		return 0, 0, 0, 0
 	end
@@ -789,7 +853,7 @@ function GM:_CalcView( pl, origin, angles, fov, znear, zfar )
 	end
 	
 	//same as rolling, but we have control over camera
-	if pl:IsSliding() and not GAMEMODE.ThirdPerson then
+	if pl:IsSliding() and not GAMEMODE.ThirdPerson and DD_IMMERSIVESLIDE then
 		local att = pl:GetAttachment(pl:LookupAttachment("eyes"))
 		if att then
 			return {origin = att.Pos+att.Ang:Forward()*4, angles = angles, drawviewer = true}

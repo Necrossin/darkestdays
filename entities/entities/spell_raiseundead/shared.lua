@@ -55,6 +55,7 @@ function ENT:Cast()
 					ant:SetPos(orb:GetPos() + Vector(0,0,3))
 					ant:SetHealth(99999999)
 					ant:SetColor( team.GetColor( self.EntOwner:Team() ) )
+					ant.Owner = self.EntOwner
 					//ant:SetColor(Color(40,40,40,255))
 					ant:SetMaterial("models/flesh")
 					ant:SetKeyValue("Start burrowed", "true") 

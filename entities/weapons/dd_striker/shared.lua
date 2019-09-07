@@ -94,7 +94,7 @@ SWEP.HoldType = "shotgun"
 //SWEP.IsHeavy = true
 
 SWEP.Primary.Sound			= Sound("Weapon_M3.Single")
-SWEP.Primary.Recoil			= 3.5
+SWEP.Primary.Recoil			= 0.5
 SWEP.Primary.Damage			= 5
 SWEP.Primary.NumShots		= 3
 SWEP.Primary.ClipSize		= 200
@@ -209,13 +209,18 @@ function SWEP:PrimaryAttack()
 		
 		local Owner = self.Owner
 		
-		if Owner.ViewPunch then Owner:ViewPunch( Angle(self.Primary.Recoil * -0.12, math.Rand(-0.1,0.1) * self.Primary.Recoil, 0) ) end
+		if self.Primary.Recoil > 0 then
+			local r = math.Rand(0.8, 1)
+			Owner:ViewPunch(Angle(r * -self.Primary.Recoil, 0, (1 - r) * (math.random(2) == 1 and -1 or 1) * self.Primary.Recoil))
+		end
+		
+		/*if Owner.ViewPunch then Owner:ViewPunch( Angle(self.Primary.Recoil * -0.12, math.Rand(-0.1,0.1) * self.Primary.Recoil, 0) ) end
 		if ( ( SinglePlayer() && SERVER ) || ( !SinglePlayer() && CLIENT && IsFirstTimePredicted() ) ) then
 			local eyeang = self.Owner:EyeAngles()
 			local recoil = self.Primary.Recoil//math.Rand( 0.1, 0.2 )
 			eyeang.pitch = eyeang.pitch - recoil*0.12
 			self.Owner:SetEyeAngles( eyeang )
-		end
+		end*/
 		
 		self:FireBullet()
 		

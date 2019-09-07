@@ -6,7 +6,7 @@ ENT.Base = "spell__base"
 ENT.Mana = 30
 ENT.Damage = 30
 
-ENT.FullChargeTime = 2
+ENT.FullChargeTime = 1
 
 ENT.CastGesture = ACT_GMOD_GESTURE_BOW
 
@@ -137,9 +137,11 @@ function ENT:DoDash()
 		--self:UseDefaultMana()
 		self:UseMana( self:GetManaCost() )
 		self.EntOwner:EmitSound("ambient/machines/thumper_dust.wav",130,math.random(110,140))
-		self.EntOwner:SetGroundEntity(NULL)
-		self.EntOwner:SetLocalVelocity(vec)
 	end
+
+	self.EntOwner:SetGroundEntity(NULL)
+	self.EntOwner:SetLocalVelocity(vec)
+
 	
 	
 end

@@ -59,7 +59,7 @@ SWEP.HoldType = "duel"
 SWEP.Caliber = CAL_9
 
 SWEP.Primary.Sound			= Sound("Weapon_ELITE.Single")
-SWEP.Primary.Recoil			= 2.5
+SWEP.Primary.Recoil			= 0.3
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 30
@@ -68,7 +68,7 @@ SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//SWEP.Primary.ClipSize*4
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "pistol"
 
-SWEP.Tracer = ""
+SWEP.Tracer = "Tracer"
 SWEP.MuzzleEffect			= "rg_muzzle_pistol"
 SWEP.ShellEffect			= "rg_shelleject"
 
@@ -81,7 +81,9 @@ SWEP.Primary.ConeCrouching = 0.04
 SWEP.ReloadDuration = 3.7999998641014
 
 function SWEP:SendWeaponAnimation()
-	self:SendWeaponAnim(self:Clip1() % 2 == 0 and ACT_VM_PRIMARYATTACK or ACT_VM_SECONDARYATTACK)
+	//self:SendWeaponAnim(self:Clip1() % 2 == 0 and ACT_VM_PRIMARYATTACK or ACT_VM_SECONDARYATTACK)
+	local vm = self:GetOwner():GetViewModel()
+	vm:SendViewModelMatchingSequence( self:Clip1() % 2 == 0 and 5 or 2 )
 end
 
 function SWEP:FireBullet()
@@ -93,6 +95,19 @@ function SWEP:FireBullet()
 			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeCrouching)
 		else
 			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.Cone)
+		end
+	end
+end
+
+function SWEP:GetTracerOrigin()
+	local owner = self:GetOwner()
+	if owner:IsValid() then
+		local vm = owner:GetViewModel()
+		if vm and vm:IsValid() then
+			local attachment = vm:GetAttachment(self:Clip1() % 2 + 3)
+			if attachment then
+				return attachment.Pos
+			end
 		end
 	end
 end

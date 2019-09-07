@@ -155,8 +155,17 @@ function EFFECT:Think( )
 			self.Dummy:StopParticleEmission() 
 		end
 	end
+	
+	if IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity()) then
+		return true
+	else
+		if self.Dummy and self.Dummy:IsValid() then
+			SafeRemoveEntity( self.Dummy )
+		end
+		return false
+	end
 
-	return IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity())
+	//return IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity())
 end
 
 local mat = Material( "editor/wireframe" )
@@ -451,7 +460,7 @@ end
 
 function EFFECT:Render()
 	
-	local ragdoll = self.ent.GetRagdollEntity and self.ent:GetRagdollEntity()
+	local ragdoll = self.ent and self.ent.GetRagdollEntity and self.ent:GetRagdollEntity()
 	
 	if IsValid( ragdoll ) and self.BoneName then
 	
