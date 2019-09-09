@@ -131,7 +131,7 @@ SWEP.HoldType = "ar2"
 
 SWEP.Caliber = CAL_9
 
-SWEP.Primary.Sound			= Sound("Weapon_MP5Navy.Single")
+SWEP.Primary.Sound			= Sound("Weapon_MP5Navy.SingleDD")
 SWEP.Primary.Recoil			= 0.8//2.2
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
@@ -151,8 +151,24 @@ SWEP.NoSmoke = false
 SWEP.ShellEffect			= "rg_shelleject" 
 SWEP.MuzzleEffect			= "rg_muzzle_smg"
 
+SWEP.MuzzleAttachment		= 1//"1"
 
 SWEP.SprintPos = Vector(0.444, -3.988, -1.045)
 SWEP.SprintAng = Angle(-11.327, 35.444, -28.116)
 
-SWEP.ReloadDuration = 3.0789472694171
+sound.Add( {
+	name = "Weapon_MP5Navy.SingleDD",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	pitch = 110,
+	sound = "weapons/mp5navy/mp5-1.wav"
+} )
+
+
+util.PrecacheSound( "weapons/m4a1/m4a1-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+end

@@ -88,7 +88,7 @@ sound.Add( {
 	channel = CHAN_WEAPON,
 	volume = 1.0,
 	level = 100,
-	pitch = 130,
+	pitch = 120,
 	sound = "weapons/xm1014/xm1014-1.wav"
 } )
 
@@ -110,6 +110,13 @@ SWEP.reloadtimer = 0
 SWEP.nextreloadfinish = 0
 
 SWEP.AerodashPenalty = true
+
+util.PrecacheSound( "weapons/m249/m249-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(175, 185), 0.55, CHAN_WEAPON + 20)
+end
 
 -- more snippets from zs weapon base
 

@@ -73,8 +73,8 @@ SWEP.HoldType = "smg"
 
 SWEP.Caliber = CAL_5_56
 
-SWEP.Primary.Sound			= Sound("Weapon_AUG.Single")
-SWEP.Primary.Recoil			= 0.35
+SWEP.Primary.Sound			= Sound("Weapon_AUG.SingleDD")
+SWEP.Primary.Recoil			= 0.9
 SWEP.Primary.Unrecoil		= 8
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
@@ -94,5 +94,20 @@ SWEP.ShellEffect			= "rg_shelleject_rifle"
 SWEP.SprintPos = Vector(-1.198, -3.103, -1.343)
 SWEP.SprintAng = Angle(-10.046, 38.328, -28.035)
 
-SWEP.ReloadDuration = 3.7999998641014
+sound.Add( {
+	name = "Weapon_AUG.SingleDD",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	pitch = 90,
+	sound = "weapons/aug/aug-1.wav"
+} )
+
+
+util.PrecacheSound( "weapons/sg550/sg550-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/sg550/sg550-1.wav", 70, math.random(165, 175), 0.65, CHAN_WEAPON + 20)
+end
 

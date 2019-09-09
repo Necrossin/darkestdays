@@ -33,7 +33,8 @@ function EFFECT:Init(data)
 		
 	end
 	
-	if self.Position:DistToSqr(EyePos()) > 250000 then return end
+	if !IsValid( MySelf ) then return end
+	if self.Position:DistToSqr(MySelf:EyePos()) > 250000 then return end
 
 	local AddVel = self.WeaponEnt:GetOwner():GetVelocity()
 

@@ -10,7 +10,8 @@ function EFFECT:Init(data)
 	self.Angle = self.Forward:Angle()
 	self.Right = self.Angle:Right()
 	
-	if self.Position:DistToSqr(EyePos()) > 250000 then return end
+	if !IsValid( MySelf ) then return end
+	if self.Position:DistToSqr(MySelf:EyePos()) > 250000 then return end
 	
 	if !IsValid(self.WeaponEnt) then return end
 	if !IsValid(self.WeaponEnt:GetOwner()) then return end

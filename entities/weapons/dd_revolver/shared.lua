@@ -100,7 +100,7 @@ SWEP.HoldType = "revolver"
 SWEP.Caliber = CAL_11_20
 
 SWEP.Primary.Sound			= Sound("Weapon_357.Single")--Sound( "weapons/diamond_back_01.wav" )
-SWEP.Primary.Recoil			= 4
+SWEP.Primary.Recoil			= 5
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 6
@@ -137,11 +137,11 @@ function SWEP:OnReload()
 	end*/
 end
 
-util.PrecacheSound( "weapons/357_fire2.wav" )
+util.PrecacheSound( "weapons/m249/m249-1.wav" )
 
 function SWEP:EmitFireSound()
 	self:EmitSound(self.Primary.Sound)
-	self:EmitSound("weapons/357_fire2.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(175, 185), 0.55, CHAN_WEAPON + 20)
 end
 
 SWEP.SprintPos = Vector(0, -17.555, -10.82)

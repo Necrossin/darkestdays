@@ -170,6 +170,12 @@ SWEP.Primary.ConeCrouching = 0.03
 SWEP.ConeIron = 0.035
 SWEP.ConeIronCrouching = 0.025
 
+util.PrecacheSound( "weapons/m249/m249-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(215, 225), 0.55, CHAN_WEAPON + 20)
+end
 
 function SWEP:TakeAmmo()
 	if CLIENT then return end

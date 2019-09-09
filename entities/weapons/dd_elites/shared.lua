@@ -58,8 +58,8 @@ SWEP.HoldType = "duel"
 
 SWEP.Caliber = CAL_9
 
-SWEP.Primary.Sound			= Sound("Weapon_ELITE.Single")
-SWEP.Primary.Recoil			= 0.3
+SWEP.Primary.Sound			= Sound("Weapon_ELITE.SingleDD")
+SWEP.Primary.Recoil			= 0.5
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 30
@@ -78,7 +78,22 @@ SWEP.Primary.Cone = 0.053
 SWEP.Primary.ConeMoving = 0.063
 SWEP.Primary.ConeCrouching = 0.04
 
-SWEP.ReloadDuration = 3.7999998641014
+sound.Add( {
+	name = "Weapon_ELITE.SingleDD",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	pitch = 110,
+	sound = "weapons/elite/elite-1.wav"
+} )
+
+
+util.PrecacheSound( "weapons/m4a1/m4a1-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+end
 
 function SWEP:SendWeaponAnimation()
 	//self:SendWeaponAnim(self:Clip1() % 2 == 0 and ACT_VM_PRIMARYATTACK or ACT_VM_SECONDARYATTACK)

@@ -75,8 +75,8 @@ SWEP.HoldType = "smg"
 
 SWEP.Caliber = CAL_11_43
 
-SWEP.Primary.Sound			= Sound("Weapon_UMP45.Single")
-SWEP.Primary.Recoil			= 0.7
+SWEP.Primary.Sound			= Sound("Weapon_UMP45.SingleDD")
+SWEP.Primary.Recoil			= 0.8
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 26
@@ -85,15 +85,29 @@ SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//SWEP.Primary.ClipSize*4
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
-
 SWEP.Primary.Cone = 0.055
 SWEP.Primary.ConeMoving = 0.064
 SWEP.Primary.ConeCrouching = 0.035
-
-SWEP.ReloadDuration = 3.4848485194673
 
 SWEP.MuzzleEffect			= "rg_muzzle_smg"
 SWEP.ShellEffect			= "rg_shelleject" 
 
 SWEP.SprintPos = Vector(0, -7.411, -4.865)
 SWEP.SprintAng = Angle(-8.558, 45.424, -36.417)
+
+sound.Add( {
+	name = "Weapon_UMP45.SingleDD",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	pitch = 105,
+	sound = "weapons/ump45/ump45-1.wav"
+} )
+
+
+util.PrecacheSound( "weapons/m249/m249-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(215, 225), 0.55, CHAN_WEAPON + 20)
+end

@@ -102,8 +102,8 @@ SWEP.HoldType = "revolver"
 
 SWEP.Caliber = CAL_11_43
 
-SWEP.Primary.Sound			= Sound( "Weapon_USP.Single" )
-SWEP.Primary.Recoil			= 0.2
+SWEP.Primary.Sound			= Sound( "Weapon_USP.SingleDD" )
+SWEP.Primary.Recoil			= 0.6
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 8
@@ -130,4 +130,19 @@ SWEP.ShellEffect			= "rg_shelleject"
 SWEP.SprintPos = Vector(0, -21, -11.733)
 SWEP.SprintAng = Angle(68.277, 0, 0)
 
-SWEP.ReloadDuration = 2.7027026678716
+sound.Add( {
+	name = "Weapon_USP.SingleDD",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	pitch = 110,
+	sound = "weapons/usp/usp_unsil-1.wav"
+} )
+
+
+util.PrecacheSound( "weapons/m4a1/m4a1-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+end

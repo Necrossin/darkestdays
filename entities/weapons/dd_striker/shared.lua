@@ -94,7 +94,7 @@ SWEP.HoldType = "shotgun"
 //SWEP.IsHeavy = true
 
 SWEP.Primary.Sound			= Sound("Weapon_M3.Single")
-SWEP.Primary.Recoil			= 0.5
+SWEP.Primary.Recoil			= 1.5
 SWEP.Primary.Damage			= 5
 SWEP.Primary.NumShots		= 3
 SWEP.Primary.ClipSize		= 200

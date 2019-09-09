@@ -98,12 +98,12 @@ SWEP.HoldType = "ar2"
 SWEP.Caliber = CAL_7_62
 
 SWEP.Primary.Sound			= Sound("Weapon_AK47.SingleDD")
-SWEP.Primary.Recoil			= 0.7
+SWEP.Primary.Recoil			= 1.4//0.7
 SWEP.Primary.Unrecoil		= 8
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 26
-SWEP.Primary.Delay			= 0.123
+SWEP.Primary.Delay			= 0.1
 SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//SWEP.Primary.ClipSize*3.5
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "ar2"
@@ -120,13 +120,18 @@ SWEP.ViewmodelOffset = Vector(-1.856, -0.627, 0.407)
 SWEP.SprintPos = Vector(0, -7.316, -1.175)
 SWEP.SprintAng = Angle(-6.704, 35.305, -29.071)
 
-SWEP.ReloadDuration = 2.4594594257822
-
 sound.Add( {
 	name = "Weapon_AK47.SingleDD",
 	channel = CHAN_WEAPON,
 	volume = 1.0,
 	level = 80,
-	pitch = 130,
+	pitch = 95,
 	sound = "weapons/ak47/ak47-1.wav"
 } )
+
+util.PrecacheSound( "weapons/m249/m249-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(185, 200), 0.75, CHAN_WEAPON + 20)
+end

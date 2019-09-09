@@ -94,7 +94,7 @@ SWEP.HoldType = "smg"
 
 SWEP.Caliber = CAL_5_7
 
-SWEP.Primary.Sound			= Sound("Weapon_P90.Single")
+SWEP.Primary.Sound			= Sound("Weapon_P90.SingleDD")
 SWEP.Primary.Recoil			= 1--2.6
 SWEP.Primary.Unrecoil		= 7
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
@@ -115,4 +115,19 @@ SWEP.ShellEffect			= "rg_shelleject"
 SWEP.SprintPos = Vector(0.439, -3.449, -1.053)
 SWEP.SprintAng = Angle(-11.327, 35.444, -28.303)
 
-SWEP.ReloadDuration = 3.399999858141
+sound.Add( {
+	name = "Weapon_P90.SingleDD",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 80,
+	pitch = 105,
+	sound = "weapons/p90/p90-1.wav"
+} )
+
+
+util.PrecacheSound( "weapons/m4a1/m4a1-1.wav" )
+
+function SWEP:EmitFireSound()
+	self:EmitSound(self.Primary.Sound)
+	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(195, 205), 0.75, CHAN_WEAPON + 20)
+end
