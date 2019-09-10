@@ -311,8 +311,17 @@ local string = string
 function meta:SetTeamColor()
 	
 	if GAMEMODE:GetGametype() == "ffa" then
-		local col = self:GetInfo( "cl_playercolor" )
-		self:SetPlayerColor( Vector( col ) )
+		local pcol = Vector(self:GetInfo("cl_playercolor"))
+		pcol.x = math.Clamp(pcol.x, 0, 1)
+		pcol.y = math.Clamp(pcol.y, 0, 1)
+		pcol.z = math.Clamp(pcol.z, 0, 1)
+		self:SetPlayerColor(pcol)
+		
+		local wcol = Vector(self:GetInfo("cl_weaponcolor"))
+		wcol.x = math.Clamp(wcol.x, 0.01, 1)
+		wcol.y = math.Clamp(wcol.y, 0.01, 1)
+		wcol.z = math.Clamp(wcol.z, 0.01, 1)
+		self:SetWeaponColor(wcol)
 	else
 		local col = team.GetColor( self:Team() )
 		local mdl = self:GetModel()
@@ -324,6 +333,7 @@ function meta:SetTeamColor()
 		else
 			self:SetColor( color_white )
 			self:SetPlayerColor( Vector( col.r/255,col.g/255,col.b/255 ) )
+			self:SetWeaponColor( Vector( col.r/255,col.g/255,col.b/255 ) )
 		end
 	end
 	
@@ -562,10 +572,11 @@ function meta:DoDash()
 	local maxmana = self:GetMaxMana()
 	local uses = 4
 	local consume = math.floor( maxmana / uses )
+	local softcap = 20
 	
 	self._NextDash = CurTime() + 0.5
 	
-	if mana >= consume then
+	if mana >= consume and mana >= softcap then
 		self:SetMana( math.Clamp( self:GetMana() - consume, 0, self:GetMana() ) )	
 	else
 		return
@@ -691,9 +702,10 @@ end
 
 util.AddNetworkString( "Hitmarker" )
 
-function meta:ShowHitmarker()
-	
+function meta:ShowHitmarker( hs )
+
 	net.Start( "Hitmarker" )
+		net.WriteBit( hs and true or false )
 	net.Send( self )
 	
 end

@@ -5,7 +5,7 @@ if SERVER then
 	AddCSLuaFile()
 end
 
-ENT.Damage = 145
+ENT.Damage = 115
 ENT.Radius = 280
 ENT.RechargeTime = 12
 
@@ -128,13 +128,13 @@ function ENT:ThrowGrenade()
 		ent:SetSaveValue("m_hThrower", self.EntOwner )
 		local col = team.GetColor(self.EntOwner:Team())
 		col.a = 255
-		local trail = util.SpriteTrail(ent, ent:LookupAttachment( "fuse" ), col, true, 8, 1, 0.5, 1/(8+1)*0.5, "sprites/bluelaser1.vmt")
+		//local trail = util.SpriteTrail(ent, ent:LookupAttachment( "fuse" ), col, true, 8, 1, 0.5, 1/(8+1)*0.5, "sprites/bluelaser1.vmt")
 				
 		ent:SetMaterial("models/shiny")
 		ent:SetColor(col)
 				
-		ent:SetSaveValue("m_pGlowTrail", trail )
-		ent:SetSaveValue("m_pMainGlow", trail )
+		//ent:SetSaveValue("m_pGlowTrail", trail )
+		//ent:SetSaveValue("m_pMainGlow", trail )
 				
 		ent:SetSaveValue("m_flDamage", self.Damage )
 		ent:SetSaveValue("m_DmgRadius", self.Radius )
@@ -142,7 +142,7 @@ function ENT:ThrowGrenade()
 		//ent:Fire("SetTimer",2.5,0)
 		ent:Fire("SetTimer",1.8,0)
 		
-		ent:SetModelScale( 1.1, 0 )
+		ent:SetModelScale( 1.5, 0 )
 				
 				
 		local phys = ent:GetPhysicsObject()
@@ -174,23 +174,6 @@ function ENT:Draw()
 	end
 end
 
-/*hook.Add("PlayerButtonDown", "CheckGrenadeInput", function( pl, btn )
-	if pl:Alive() and IsValid(pl._efGrenade) and btn == KEY_G and not pl:IsTyping() then
-		if ( pl._efGrenade.NextTap or 0 ) >= CurTime() then return end
-		pl._efGrenade.NextTap = CurTime() + 2
-		RunConsoleCommand("dd_thrownade")
-	end
 
-end)*/
-
-/*hook.Add("Think", "CheckGrenadeInput", function()
-	
-	if MySelf:Alive() and IsValid(MySelf._efGrenade) and input.IsKeyDown( KEY_G ) and not MySelf:IsTyping() then
-		if MySelf._efGrenade.NextTap >= CurTime() then return end
-		MySelf._efGrenade.NextTap = CurTime() + 10
-		RunConsoleCommand("dd_thrownade")
-	end
-
-end)*/
 
 end

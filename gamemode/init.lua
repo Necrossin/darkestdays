@@ -860,8 +860,15 @@ function GM:PlayerSpawn( pl )
 		end
 		
 		local health = pl._DefaultHealth//100
-
-		pl.SpawnProtection = CurTime() + SPAWN_PROTECTION
+		
+		
+		if self:GetGametype() ~= "ffa" then
+			pl.SpawnProtection = CurTime() + SPAWN_PROTECTION
+			local e = EffectData()
+				e:SetEntity( pl )
+				e:SetRadius( SPAWN_PROTECTION )
+			util.Effect( "spawn_protection", e )
+		end
 		
 		pl:SetHealth( health )
 		pl:SetMaxHealth( health )
@@ -2015,6 +2022,11 @@ function GM:EntityTakeDamage( ent,dmginfo )
 	local attacker = dmginfo:GetAttacker()
 	local amount = dmginfo:GetDamage()
 	
+	if ent:GetClass() == "npc_grenade_frag" then
+		dmginfo:SetDamage(0)
+		return
+	end
+	
 	if attacker:IsPlayer() and dmginfo:IsBulletDamage() then
 		if attacker.GetActiveWeapon and IsValid(attacker:GetActiveWeapon()) then
 			inflictor = attacker:GetActiveWeapon()
@@ -2325,9 +2337,9 @@ function GM:EntityTakeDamage( ent,dmginfo )
 			ent:OnPainAnimation()
 		end
 		
-		if attacker:IsPlayer() and attacker ~= ent and dmginfo:GetDamage() > 0 and ent:IsPlayer() and !ent:IsTeammate( attacker ) then
+		/*if attacker:IsPlayer() and attacker ~= ent and dmginfo:GetDamage() > 0 and ent:IsPlayer() and !ent:IsTeammate( attacker ) then
 			attacker:ShowHitmarker()
-		end
+		end*/
 		
 		local hitgroup = ent:LastHitGroup() or HITGROUP_GENERIC
 
@@ -2341,6 +2353,10 @@ function GM:EntityTakeDamage( ent,dmginfo )
 			for i=1,math.random(1,3) do
 				ent:EmitSound("player/headshot"..math.random(1,2)..".wav")
 			end
+		end
+		
+		if attacker:IsPlayer() and attacker ~= ent and dmginfo:GetDamage() > 0 and ent:IsPlayer() and !ent:IsTeammate( attacker ) then
+			attacker:ShowHitmarker( hitgroup == HITGROUP_HEAD and dmginfo:IsBulletDamage() )
 		end
 
 	end

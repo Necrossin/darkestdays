@@ -68,7 +68,12 @@ function ENT:Think()
 			self:Remove()
 		end
 		
-		self.EntOwner:SetLocalVelocity(vector_origin)
+		self.NextZap = self.NextZap or 0
+		
+		if self.NextZap < CurTime() then
+			self.EntOwner:SetLocalVelocity(vector_origin)
+			self.NextZap = CurTime() + 0.2
+		end
 		
 	end
 	self:NextThink(CurTime())
@@ -76,7 +81,13 @@ end
 
 if CLIENT then
 function ENT:Draw()
-
+	
+	if MySelf and MySelf == self.EntOwner and not GAMEMODE.ThirdPerson then
+		self.Entity:StopParticles()
+		self.Particle = nil
+		return
+	end
+	
 	if not self.Particle then
 		local CPoint0 = {
 			["entity"] = self.EntOwner,

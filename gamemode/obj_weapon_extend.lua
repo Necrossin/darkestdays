@@ -21,13 +21,17 @@ net.Receive("Hitmarker",function( len )
 	
 	hittime = CurTime() + 0.4
 	
-	
+	local hs_bit = net.ReadBit()
+	local hs = hs_bit == 1
+
 	if DD_HITSOUNDS and next_hitsound < CurTime() then
 		next_hitsound = CurTime() + 0.1
 		if custom_hitsound then
-			surface.PlaySound( "dd_hitsound.wav" )
+			//surface.PlaySound( "dd_hitsound.wav" )
+			MySelf:EmitSound( "dd_hitsound.wav", 100, hs and 80 or 100 )
 		else
-			surface.PlaySound( "physics/gore/flesh_impact_bullet"..math.random( 5 )..".wav" )
+			MySelf:EmitSound( "physics/gore/flesh_impact_bullet"..math.random( 5 )..".wav", 100, hs and 80 or 100 )
+			//surface.PlaySound( "physics/gore/flesh_impact_bullet"..math.random( 5 )..".wav" )
 		end
 	end
 

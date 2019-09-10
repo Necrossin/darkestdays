@@ -62,7 +62,10 @@ function ENT:PhysicsCollide( Data, Phys )
 	local dmg, rad = math.random(70,90),math.random(110,150)
 	
 	
-	ExplosiveDamage(self:GetOwner(), self, 140, 165, 1, 0.4, 8)
+	//ExplosiveDamage(self:GetOwner(), self, 140, 165, 1, 0.4, 8)
+	ExplosiveDamage(self:GetOwner(), self, 100, 50, 1, 2, 8)
+	
+	
 	
 	if Data and Data.HitNormal then
 		util.Decal("Scorch", Data.HitPos + Data.HitNormal, Data.HitPos - Data.HitNormal)

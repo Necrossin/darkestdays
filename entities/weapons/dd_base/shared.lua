@@ -413,9 +413,8 @@ function SWEP:PrimaryAttack()
 	if self.Owner:IsCrow() then return end
 	if self.Owner:IsSprinting() and not self.IgnoreSprint then return end
 	if self.Owner:IsWallrunning() and not self.IgnoreSprint then return end
-	
-	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	if not self:CanPrimaryAttack() then return end	
+	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	self:EmitFireSound()
 
 	self:TakeAmmo()

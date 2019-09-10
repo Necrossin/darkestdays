@@ -59,7 +59,7 @@ function ENT:Initialize()
 	end	
 	
 	if CLIENT then
-		self.Emitter = ParticleEmitter(self:GetPos())
+		//self.Emitter = ParticleEmitter(self:GetPos())
 	end
 	
 	self.Bounced = 0
@@ -78,7 +78,7 @@ end
 
 function ENT:Think()	
 	if SERVER then
-		if self.DieTime and self.DieTime < CurTime() then
+		if self.DoRemove or self.DieTime and self.DieTime < CurTime() then
 			self.Entity:Remove()
 		end
 	end
@@ -112,9 +112,9 @@ function ENT:OnRemove()
 			particle:SetGravity( Vector( 0, 0, -300 ) ) 
 			particle:SetAirResistance(12)
 		end*/
-		if self.Emitter then
+		/*if self.Emitter then
 			self.Emitter:Finish()
-		end
+		end*/
 	end
 end
 
@@ -126,9 +126,12 @@ local mat3 = Material( "Effects/stunstick" )
 if SERVER then
 	function ENT:StartTouch( ent )
 		
+		if self.DoRemove then return end
+		
 		if IsValid(ent) then
 			
 			if ent == game.GetWorld() then return end
+			
 			
 			if (ent:IsPlayer() and not ent:IsTeammate(self.EntOwner)) or ent:IsNPC() then//ent:Team() ~= self.EntOwner:Team()
 				local Dmg = DamageInfo()
@@ -143,7 +146,8 @@ if SERVER then
 				self.Touched = self.Touched + 1
 				
 				if self.Touched >= 2 then
-					self:Remove()
+					self.DoRemove = true
+					//self:Remove()
 				end
 			end
 			
@@ -152,6 +156,8 @@ if SERVER then
 	end
 	
 	function ENT:PhysicsCollide( data, physobj )	
+		
+		if self.DoRemove then return end
 		
 		if data.HitEntity == game.GetWorld() or not data.HitEntity:IsPlayer() then
 			self.Bounced = self.Bounced + 1
@@ -168,7 +174,8 @@ if SERVER then
 								
 		end
 			if self.Bounced >= self.MaxBounces then
-				self:Remove()
+				//self:Remove()
+				self.DoRemove = true
 				return
 			end
 			

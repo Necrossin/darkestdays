@@ -147,7 +147,7 @@ end
 
 function SWEP:DoReload()
 
-	if not self:CanReload() or self:GetOwner():KeyDown(IN_ATTACK) then
+	if not self:CanReload() or self:GetOwner():KeyDown(IN_ATTACK) and self:Clip1() > 0 or self:GetOwner():KeyDown(IN_ATTACK2) then
 		self:StopReloading()
 		return
 	end

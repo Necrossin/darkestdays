@@ -11,6 +11,9 @@ end
 
 function EFFECT:Init(data)
 	self.Ent = data:GetEntity()
+	
+	if !IsValid( self.Ent ) then return end
+	
 	self.Rag = self.Ent:GetRagdollEntity()
 	
 	self.IsThug = math.Round(data:GetMagnitude()) == 1//self.ent:IsThug()

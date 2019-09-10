@@ -73,6 +73,12 @@ local bones = {
 
 local LocalToWorld = LocalToWorld
 local WorldToLocal = WorldToLocal
+local string_Replace = string.Replace
+
+
+function EFFECT:GetNiceModel( str )
+	return string_Replace( str, "models/models/", "models/" ) 
+end
 
 function EFFECT:Init( data )
 
@@ -81,7 +87,6 @@ function EFFECT:Init( data )
 	self.MakeSecondPart = math.Round(data:GetRadius()) == 1
 	
 	if !IsValid(self.ent) then return end
-	
 	
 	
 	if GAMEMODE:GetGametype() == "ffa" then
@@ -168,7 +173,7 @@ function EFFECT:CreateDummy()
 
 	local rag = self.ent:GetRagdollEntity()
 	
-	self:SetModel( rag:GetModel() )
+	self:SetModel( self:GetNiceModel( rag:GetModel() ) )
 	self:SetPos( rag:GetPos() + vector_up * 3 )
 	self:SetAngles( rag:GetAngles() )
 	
@@ -639,7 +644,7 @@ function EFFECT:Render()
 				
 				--rag:SetupBones()
 				if not rag.OriginalModel then
-					rag.OriginalModel = rag:GetModel()
+					rag.OriginalModel = self:GetNiceModel( rag:GetModel() )
 				end
 				rag:SetModel( rag.OriginalModel )
 								

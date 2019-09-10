@@ -375,6 +375,7 @@ function DrawHealthMana(MySelf)
 		local mana = MySelf:GetMana()
 		local maxmana = MySelf:GetMaxMana()
 		local uses = MySelf._ShiftUses
+		local softcap = MySelf._ShiftCap
 		local consume = math.floor( maxmana / uses )
 		
 		local txt = ""
@@ -389,7 +390,11 @@ function DrawHealthMana(MySelf)
 			end
 		end
 		
-		draw_SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		if softcap and mana < softcap then
+			draw_SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_BACKGROUND_INNER_DARK, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		else
+			draw_SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
 				
 	end
 	
