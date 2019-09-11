@@ -146,7 +146,7 @@ function ENT:DoDash()
 	
 end
 
-local trace = { mask = MASK_PLAYERSOLID, mins = Vector(-8,-8,-14), maxs = Vector(8,8,8) }
+local trace = { mask = MASK_PLAYERSOLID }
 
 function ENT:OnThink()
 	
@@ -176,13 +176,14 @@ function ENT:OnThink()
 
 			trace.start = self.EntOwner:GetShootPos()
 			trace.endpos = self.EntOwner:GetShootPos() + aimvec * 16
-			//trace.mins = Vector(-8,-8,-14)
-			//trace.maxs = Vector(8,8,8)
+			trace.mins = Vector(-8,-8,-14)
+			trace.maxs = Vector(8,8,8)
 			trace.filter = self.EntOwner
 				
 			trace = util.TraceHull(trace)
 	
 			if IsValid(trace.Entity) and trace.Entity:IsPlayer() and not self.EntOwner:IsTeammate(trace.Entity) then//trace.Entity:Team() ~= self.EntOwner:Team() then
+				
 				self:SetDTFloat(1,0)
 				
 				local damage = math.random(60,65)
