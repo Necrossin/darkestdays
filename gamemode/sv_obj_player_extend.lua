@@ -326,6 +326,13 @@ function meta:SetTeamColor()
 		local col = team.GetColor( self:Team() )
 		local mdl = self:GetModel()
 		
+		local wcol = Vector( col.r/255, col.g/255, col.b/255 )
+		wcol.x = math.Clamp(wcol.x, 0.01, 1)
+		wcol.y = math.Clamp(wcol.y, 0.01, 1)
+		wcol.z = math.Clamp(wcol.z, 0.01, 1)
+		
+		self:SetWeaponColor( wcol )
+		
 		--if table.HasValue( NormalColor, string.lower(mdl) ) then
 			--self:SetColor(Color(math.Round(col.r*1.0),math.Round(col.g*1.0),math.Round(col.b*1.0),col.a))
 		if table.HasValue( GAMEMODE.NormalColorModels, string.lower( mdl ) ) then
@@ -333,7 +340,7 @@ function meta:SetTeamColor()
 		else
 			self:SetColor( color_white )
 			self:SetPlayerColor( Vector( col.r/255,col.g/255,col.b/255 ) )
-			self:SetWeaponColor( Vector( col.r/255,col.g/255,col.b/255 ) )
+
 		end
 	end
 	
@@ -547,11 +554,17 @@ function meta:BecomeCrow()
 	local maxmana = self:GetMaxMana()
 	local uses = 2
 	local consume = math.floor( maxmana / uses )
+	local softcap = 40
+	
+	if softcap then
+		consume = math.max( consume, softcap )
+	end
 	
 	self._NextCrow = CurTime() + 1
 	
 	if mana >= consume then
-		self:SetMana( math.Clamp( self:GetMana() - consume, 0, self:GetMana() ) )	
+		self:SetMana( math.Clamp( self:GetMana() - consume, 0, self:GetMana() ) )
+		self._NextManaRegen = CurTime() + 1
 	else
 		return
 	end
@@ -572,12 +585,17 @@ function meta:DoDash()
 	local maxmana = self:GetMaxMana()
 	local uses = 4
 	local consume = math.floor( maxmana / uses )
-	local softcap = 20
+	local softcap = 25
+	
+	if softcap then
+		consume = math.max( consume, softcap )
+	end
 	
 	self._NextDash = CurTime() + 0.5
 	
-	if mana >= consume and mana >= softcap then
-		self:SetMana( math.Clamp( self:GetMana() - consume, 0, self:GetMana() ) )	
+	if mana >= consume then
+		self:SetMana( math.Clamp( self:GetMana() - consume, 0, self:GetMana() ) )
+		self._NextManaRegen = CurTime() + 1
 	else
 		return
 	end
@@ -588,7 +606,7 @@ function meta:DoDash()
 	
 end
 
-local kick_trace = { mask = MASK_SOLID, mins = Vector( -16, -16, -40 ), maxs = Vector( 16, 16, 10 ) }
+//local kick_trace = { mask = MASK_SOLID, mins = Vector( -16, -16, -40 ), maxs = Vector( 16, 16, 10 ) }
 function meta:DropKick()
 	
 	self._NextKick = self._NextKick or 0
@@ -597,9 +615,9 @@ function meta:DropKick()
 	
 	self._NextKick = CurTime() + 2
 	self._NextSlide = 0
-	self:Slide()
+	self:Slide( 0.22 )
 	
-	kick_trace.start = self:GetShootPos()
+	/*kick_trace.start = self:GetShootPos()
 	kick_trace.endpos = kick_trace.start + self:GetForward() * 72
 	kick_trace.filter = self:GetMeleeFilter()
 	
@@ -637,7 +655,7 @@ function meta:DropKick()
 			end
 		
 		end
-	end
+	end*/
 	
 
 	
@@ -653,7 +671,7 @@ function meta:DoGhosting()
 	
 end
 
-function meta:Slide()
+function meta:Slide( dropkick )
 	
 	if self:IsThug() or self:IsCrow() then return end
 	//if not self._SkillSlide then return end
@@ -665,7 +683,10 @@ function meta:Slide()
 	
 	//self:StopAllLuaAnimations()
 	
-	self:SetEffect("slide")
+	local slide = self:SetEffect("slide")
+	if slide and dropkick then
+		slide.DropKickFrames = CurTime() + dropkick
+	end
 	self:SetLuaAnimation("slide")
 	
 	self._NextSlide = CurTime() + 3

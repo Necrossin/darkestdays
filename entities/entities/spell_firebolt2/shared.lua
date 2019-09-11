@@ -73,8 +73,11 @@ function ENT:CastFlames()
 	local aimvec = self.EntOwner:GetAimVector()
 	--local trace = util.TraceLine({start = self.EntOwner:GetShootPos(), endpos = self.EntOwner:GetShootPos() + aimvec * 300, filter = self.EntOwner})
 	
+	local range = 220
+	local range_sqr = 48400
+	
 	tr.start = self.EntOwner:GetShootPos()
-	tr.endpos = self.EntOwner:GetShootPos() + aimvec * 220
+	tr.endpos = self.EntOwner:GetShootPos() + aimvec * range
 	tr.mins = Vector(-10,-10,-10)
 	tr.maxs = Vector(10,10,10)
 	tr.filter = self.EntOwner
@@ -93,10 +96,16 @@ function ENT:CastFlames()
 	end
 	
 	if IsValid(trace.Entity) then
+	
+		local damage = 5
+		
+		local dist_sqr = self.EntOwner:GetPos():DistToSqr( trace.Entity:GetPos() )
+		local mul = math.Clamp( 1 - dist_sqr / range_sqr, 0.3, 1 )
+		
 		local Dmg = DamageInfo()
 		Dmg:SetAttacker(self.EntOwner)
 		Dmg:SetInflictor(self.Entity)
-		Dmg:SetDamage(5)
+		Dmg:SetDamage( damage * mul )
 		Dmg:SetDamageType(DMG_BURN)
 		Dmg:SetDamagePosition(trace.HitPos)	
 		

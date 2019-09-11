@@ -480,7 +480,7 @@ function SWEP:Think()
 		end
 	end
 
-	if self:IsBlocking() and (self.NextBlock >= CurTime() or not self.Owner:KeyDown(IN_RELOAD)) then
+	if self:IsBlocking() and (self.NextBlock >= CurTime() or not self.Owner:KeyDown(IN_RELOAD) or self.Owner:IsSprinting()) then
 		self:SetBlocking(false)
 	end
 	
@@ -568,6 +568,11 @@ function SWEP:SecondaryAttack()
 	if self.Owner:IsSprinting() then return end
 	if self:IsBlocking() then return end
 	if self:IsSwinging() then return end
+	
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	self.Weapon:SetNextSecondaryFire(CurTime() + self.SpellTime)
 	if !self.Owner:IsDurationSpell() then
 		self.Owner:CastSpell()
@@ -715,6 +720,11 @@ function SWEP:PrimaryAttack()
 	if self.Owner:IsSprinting() and not self.IgnoreSprint then return end
 	if self:IsBlocking() then return end
 	if not self:CanPrimaryAttack() then return end
+	
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay - self.Primary.Delay * ((self.Owner._DefaultMeleeSpeedBonus  or 0)/2))
 	
 	if self.Owner.DashFrames and self.Owner.DashFrames > CurTime() and self:IsTwoHanded() then

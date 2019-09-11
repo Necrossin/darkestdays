@@ -4,7 +4,7 @@ ENT.Type = "anim"
 ENT.Base = "spell__base"
 
 ENT.Mana = 30
-ENT.Damage = 30
+ENT.Damage = 65
 
 ENT.FullChargeTime = 1
 
@@ -146,7 +146,7 @@ function ENT:DoDash()
 	
 end
 
-local trace = { mask = MASK_PLAYERSOLID }
+local trace = { mask = MASK_PLAYERSOLID, mins = Vector(-8,-8,-14), maxs = Vector(8,8,8) }
 
 function ENT:OnThink()
 	
@@ -176,8 +176,8 @@ function ENT:OnThink()
 
 			trace.start = self.EntOwner:GetShootPos()
 			trace.endpos = self.EntOwner:GetShootPos() + aimvec * 16
-			trace.mins = Vector(-8,-8,-14)
-			trace.maxs = Vector(8,8,8)
+			//trace.mins = Vector(-8,-8,-14)
+			//trace.maxs = Vector(8,8,8)
 			trace.filter = self.EntOwner
 				
 			trace = util.TraceHull(trace)
@@ -185,7 +185,7 @@ function ENT:OnThink()
 			if IsValid(trace.Entity) and trace.Entity:IsPlayer() and not self.EntOwner:IsTeammate(trace.Entity) then//trace.Entity:Team() ~= self.EntOwner:Team() then
 				self:SetDTFloat(1,0)
 				
-				local damage = math.random(30,35)
+				local damage = math.random(60,65)
 				
 				if ValidEntity(trace.Entity._efFrozen) then
 					damage = math.random(90,100)

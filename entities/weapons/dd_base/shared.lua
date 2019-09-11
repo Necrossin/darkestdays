@@ -414,6 +414,11 @@ function SWEP:PrimaryAttack()
 	if self.Owner:IsSprinting() and not self.IgnoreSprint then return end
 	if self.Owner:IsWallrunning() and not self.IgnoreSprint then return end
 	if not self:CanPrimaryAttack() then return end	
+	
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	self:EmitFireSound()
 
@@ -462,7 +467,7 @@ function SWEP:Think()
 		self:SetReloadEnd( 0 )
 	end
 	
-	if self.Owner:IsDurationSpell() and self.Owner:KeyDown(IN_ATTACK2) and ( not self.Owner._efCantCast or self.Owner._efCantCast and self.Owner._efCantCast <= CurTime() ) then
+	if self.Owner:IsDurationSpell() and self.Owner:KeyDown(IN_ATTACK2) and ( not self.Owner._efCantCast or self.Owner._efCantCast and self.Owner._efCantCast <= CurTime() ) and not self:IsReloading() then
 		self.Owner:CastSpell()
 		--if not self.Owner._efCantCast or self.Owner._efCantCast and self.Owner._efCantCast <= CurTime() then
 			self:SetSpellEnd(CurTime() + self.SpellTime)
@@ -471,7 +476,7 @@ function SWEP:Think()
 	end
 	
 	if self.Owner:IsDurationSpell() then
-		if self:IsCasting() and (self:GetSpellEnd()-self.SpellTime*0.4) <= CurTime() and not self.Owner:KeyDown(IN_ATTACK2) then
+		if self:IsCasting() and ( (self:GetSpellEnd()-self.SpellTime*0.4) <= CurTime() and not self.Owner:KeyDown(IN_ATTACK2) or self:IsReloading() ) then
 			self:StopCasting()
 		end
 	else
@@ -751,6 +756,11 @@ function SWEP:SecondaryAttack()
 	
 	if self.Owner:IsSprinting() then return end
 	if self:IsReloading() then return end
+	
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	self.Weapon:SetNextSecondaryFire(CurTime() + self.SpellTime)
 	if !self.Owner:IsDurationSpell() then
 		self.Owner:CastSpell()

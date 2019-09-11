@@ -70,6 +70,61 @@ function ENT:OnRemove()
 	end
 end
 
+local kick_trace = { mask = MASK_SOLID, mins = Vector( -16, -16, -40 ), maxs = Vector( 16, 16, 10 ) }
+function ENT:CheckDropKick()
+	
+	if not self.DidDropKick and self.DropKickFrames and self.DropKickFrames > CurTime() then
+		
+		kick_trace.start = self.EntOwner:GetShootPos()
+		kick_trace.endpos = kick_trace.start + self.EntOwner:GetForward() * 64
+		kick_trace.filter = self.EntOwner:GetMeleeFilter()
+		
+		local tr = util.TraceHull( kick_trace )
+	
+		if tr.Hit and !tr.HitWorld then
+			local hitent = tr.Entity
+			
+			if hitent and hitent:IsValid() then
+			
+				self.DidDropKick = true
+			
+				if hitent:GetClass() == "func_breakable_surf" then
+					hitent:Fire("break", "", 0)
+					
+					self.EntOwner:EmitSound("NPC_Vortigaunt.Kick")
+					
+				else	
+					
+					local dmg = 45
+					dmg = dmg + (dmg*(self.EntOwner._DefaultMeleeBonus or 0))/100
+				
+					local dmginfo = DamageInfo()
+					dmginfo:SetDamagePosition(tr.HitPos)
+					dmginfo:SetDamage(dmg)
+					dmginfo:SetAttacker( self.EntOwner )
+					dmginfo:SetInflictor( self.EntOwner )
+					dmginfo:SetDamageType( DMG_CRUSH )
+					dmginfo:SetDamageForce( ( self.EntOwner:GetForward() ) * 350 * dmg )
+					
+					self.EntOwner:EmitSound("NPC_Vortigaunt.Kick")
+					
+					hitent:SetGroundEntity( NULL )
+					
+					if hitent:IsPlayer() then
+						hitent:SetLocalVelocity( ( self.EntOwner:GetForward() ) * 22 * dmg )
+					end
+					
+					hitent:TakeDamageInfo(dmginfo)
+			
+				end
+			
+			end
+		end
+
+	end
+	
+end
+
 function ENT:Think()
 	if SERVER then
 		
@@ -93,19 +148,15 @@ function ENT:Think()
 			end
 		end
 		
-		//if self.BoneTime and self.BoneTime > CurTime() then
-		//	self:DoBones()
-		//end
-			
-		//if self.DieTime <= CurTime() then
-			//self:Remove()
-		//end	
+		self:CheckDropKick()
+		
 	end
 	if CLIENT then
 		if self.Sound and IsValid(self.EntOwner) and self.EntOwner:OnGround() then
 			self.Sound:PlayEx(0.8,120)
 		end
 	end
+	self:NextThink( CurTime() )
 end
 
 

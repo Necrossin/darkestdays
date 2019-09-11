@@ -867,7 +867,7 @@ function GM:PlayerSpawn( pl )
 			local e = EffectData()
 				e:SetEntity( pl )
 				e:SetRadius( SPAWN_PROTECTION )
-			util.Effect( "spawn_protection", e )
+			util.Effect( "spawn_protection", e, nil, true )
 		end
 		
 		pl:SetHealth( health )

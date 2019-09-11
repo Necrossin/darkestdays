@@ -19,10 +19,17 @@ function EFFECT:Init( data )
 	
 	self.DieTime = CurTime() + self.time
 	
+	self.IgnorePress = CurTime() + 0.1
 	
 end
 
 function EFFECT:Think()
+	
+	if IsValid( self.ent ) then
+		if ( self.ent:KeyPressed( IN_ATTACK ) or self.ent:KeyPressed( IN_ATTACK2 ) ) and self.IgnorePress and self.IgnorePress < CurTime() then
+			return false
+		end
+	end
 	
 	return self.ent and self.ent:IsValid() and self.ent.Alive and self.ent:Alive() and self.DieTime and ( self.DieTime > CurTime() )
 	
@@ -30,18 +37,22 @@ end
 
 function EFFECT:Render()
 	
-	if self.ent and self.ent:IsValid() and self.ent.Alive and self.ent:Alive() then
+	if self.ent and self.ent:IsValid() and self.ent.Alive and self.ent:Alive() and not self.ent:IsCrow() then
 	
-	render.SuppressEngineLighting( true )
-		render.MaterialOverride( mat_overlay )
-		render.SetColorModulation( 1, 1, 1 )
+		if not self.RenderCol then
+			self.RenderCol = team.GetColor( self.ent:Team() )
+		end
+	
+		render.SuppressEngineLighting( true )
+			render.MaterialOverride( mat_overlay )
+			render.SetColorModulation( self.RenderCol.r / 255, self.RenderCol.g / 255, self.RenderCol.b / 255 )
 
-		self:SetupBones()
-		self:DrawModel()
-							
-		render.SetColorModulation( 1, 1, 1 )
-		render.MaterialOverride( nil )
-	render.SuppressEngineLighting( false )
+			//self:SetupBones()
+			self:DrawModel()
+								
+			render.SetColorModulation( 1, 1, 1 )
+			render.MaterialOverride( nil )
+		render.SuppressEngineLighting( false )
 	
 	end
 	

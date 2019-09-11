@@ -378,6 +378,10 @@ function DrawHealthMana(MySelf)
 		local softcap = MySelf._ShiftCap
 		local consume = math.floor( maxmana / uses )
 		
+		if softcap then
+			consume = math.max( consume, softcap )
+		end
+		
 		local txt = ""
 		
 		for i = 1, uses do
@@ -390,11 +394,11 @@ function DrawHealthMana(MySelf)
 			end
 		end
 		
-		if softcap and mana < softcap then
-			draw_SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_BACKGROUND_INNER_DARK, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		else
+		//if softcap and mana < softcap then
+		//	draw_SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_BACKGROUND_INNER_DARK, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		//else
 			draw_SimpleText( txt, "HL2_50", bgX, bgY - 10, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		end
+		//end
 				
 	end
 	

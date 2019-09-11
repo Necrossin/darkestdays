@@ -167,7 +167,7 @@ function GM:UpdateAnimation( pl, velocity, maxseqgroundspeed )
 	len = V_LengthSqr( velocity )
 	
 	if pl._efSlide and IsValid(pl._efSlide) then
-		E_SetPlaybackRate(pl, rate)
+		E_SetPlaybackRate(pl, 0)
 		E_SetCycle(pl, 0.2)
 		E_SetPoseParameter( pl, "move_x", -1 )
 		return true

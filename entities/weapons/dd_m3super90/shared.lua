@@ -123,6 +123,12 @@ function SWEP:EmitFireSound()
 	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(175, 185), 0.55, CHAN_WEAPON + 20)
 end
 
+function SWEP:SendWeaponAnimation()
+	local vm = self:GetOwner():GetViewModel()
+	vm:SendViewModelMatchingSequence( vm:LookupSequence( "shoot2" ) )
+	vm:SetPlaybackRate( 1 )
+end
+
 -- more snippets from zs weapon base
 
 function SWEP:Reload()

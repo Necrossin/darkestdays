@@ -143,6 +143,8 @@ function ENT:Think()
 			return
 		end
 		
+		self.EntOwner._NextManaRegen = CurTime() + 1
+		
 		--local vel = Vector(0,0,0)
 		--local push = false
 		--local flying = false
