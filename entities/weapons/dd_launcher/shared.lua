@@ -102,6 +102,10 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	if not self:CanPrimaryAttack() then return end
 	
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	if SERVER then	
 		local ent = ents.Create("projectile_launchergrenade")
 		if ent:IsValid() then

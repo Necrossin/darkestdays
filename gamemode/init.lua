@@ -2037,9 +2037,9 @@ function GM:EntityTakeDamage( ent,dmginfo )
 		inflictor = dmginfo:GetInflictor()
 	end
 	
-	if inflictor and inflictor.Damage then
-		dmginfo:SetDamage(inflictor.Damage)
-	end
+	//if inflictor and inflictor.Damage then
+		//dmginfo:SetDamage(inflictor.Damage)
+	//end
 		
 	//crossbow damage over distance
 	if inflictor and inflictor:GetClass() == "crossbow_bolt" then
@@ -2372,11 +2372,11 @@ function GM:OnPlayerHitGround ( ent )
 end
 
 //this seems to be a bug or there is something wrong with my server
-function GM:PlayerConnect( name, ip )
+/*function GM:PlayerConnect( name, ip )
 	if game.IsDedicated() then
 		PrintMessage( HUD_PRINTTALK, name.. " has joined the game." )
 	end
-end
+end*/
 
 function GM:PlayerDeathSound()
 	return true

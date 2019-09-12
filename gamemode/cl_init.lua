@@ -231,8 +231,8 @@ GM.PlayerBloodMaterial = GM.PlayerBloodMaterial or CreateMaterial( "dd_player_bl
 )
 
 -- just so we can use this thing
-CreateConVar( "cl_playercolor", "0.24 0.34 0.41", { FCVAR_ARCHIVE, FCVAR_USERINFO }, "The value is a Vector - so between 0-1 - not between 0-255" )
-CreateConVar( "cl_weaponcolor", "0.30 1.80 2.10", { FCVAR_ARCHIVE, FCVAR_USERINFO }, "The value is a Vector - so between 0-1 - not between 0-255" )
+CreateConVar( "cl_playercolor", "0.24 0.34 0.41", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The value is a Vector - so between 0-1 - not between 0-255" )
+CreateConVar( "cl_weaponcolor", "0.30 1.80 2.10", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The value is a Vector - so between 0-1 - not between 0-255" )
 
 include( 'shared.lua' )
 include( 'cl_scoreboard.lua' )
@@ -838,7 +838,7 @@ function GM:_CalcView( pl, origin, angles, fov, znear, zfar )
 	end
 	
 	
-	if !pl:Alive() and IsValid(rag) and !pl:GetRagdollEntity().Sliced and not DD_SPECTATEMODE and not (GAMEMODE.ThirdPerson and !DD_FULLBODY) then//and pl:GetObserverMode() ~= OBS_MODE_ROAMING
+	if !pl:Alive() and IsValid(rag) and !pl:GetRagdollEntity().Sliced and not ( DD_SPECTATEMODE or DD_THIRDPERSONDEATH ) and not (GAMEMODE.ThirdPerson and !DD_FULLBODY) then//and pl:GetObserverMode() ~= OBS_MODE_ROAMING
 		local att = rag:GetAttachment(rag:LookupAttachment("eyes"))
 		if att then
 			return {origin = att.Pos+att.Ang:Forward()*1, angles = att.Ang, znear = 1}
@@ -966,7 +966,7 @@ function GM:_HUDDrawTargetID()
 	local text = "ERROR"
 	local font = "Bison_45"//"Arial_Bold_25"//"TargetID"
 	
-	if trace.Entity:IsPlayer() then
+	if trace.Entity:IsPlayer() and not trace.Entity:IsGhosting() then
 		text = trace.Entity:Nick()
 		if not MySelf:IsTeammate(trace.Entity) then//trace.Entity:Team() ~= LocalPlayer():Team() then
 			text = text.." (ENEMY)"

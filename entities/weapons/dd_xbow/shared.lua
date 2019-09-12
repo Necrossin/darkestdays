@@ -105,6 +105,10 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire(CurTime() + 0.1)
 	if not self:CanPrimaryAttack() then return end
 	
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	self:EmitSound( self.Primary.Sound )
 	
 	if SERVER then	

@@ -4,7 +4,7 @@ ENT.Type = "anim"
 ENT.Base = "spell__base"
 
 ENT.Mana = 45
-ENT.Damage = 30
+ENT.Damage = 35
 
 game.AddParticles("particles/fire_01.pcf" )
 

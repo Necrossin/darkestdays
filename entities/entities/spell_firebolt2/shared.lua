@@ -55,6 +55,7 @@ function ENT:StartFlames()
 end
 
 local tr = {}
+local temp_vel = {}
 function ENT:CastFlames()
 	
 	if CLIENT then
@@ -97,7 +98,7 @@ function ENT:CastFlames()
 	
 	if IsValid(trace.Entity) then
 	
-		local damage = 5
+		local damage = self.Damage
 		
 		local dist_sqr = self.EntOwner:GetPos():DistToSqr( trace.Entity:GetPos() )
 		local mul = math.Clamp( 1 - dist_sqr / range_sqr, 0.3, 1 )
@@ -107,12 +108,15 @@ function ENT:CastFlames()
 		Dmg:SetInflictor(self.Entity)
 		Dmg:SetDamage( damage * mul )
 		Dmg:SetDamageType(DMG_BURN)
-		Dmg:SetDamagePosition(trace.HitPos)	
+		Dmg:SetDamagePosition(trace.HitPos)
 		
-
-		
-		if trace.Entity:IsPlayer() and not self.EntOwner:IsTeammate(trace.Entity) then//trace.Entity:Team() ~= self.EntOwner:Team() then
-			trace.Entity:TakeDamageInfo(Dmg)		
+		if trace.Entity:IsPlayer() and not self.EntOwner:IsTeammate(trace.Entity) then
+			temp_vel[ trace.Entity ] = trace.Entity:GetVelocity()
+			trace.Entity:TakeDamageInfo(Dmg)
+			if temp_vel[ trace.Entity ] then
+				trace.Entity:SetLocalVelocity( temp_vel[ trace.Entity ] )
+				temp_vel[ trace.Entity ] = nil
+			end
 		end
 		
 		if !trace.Entity:IsPlayer() then

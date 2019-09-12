@@ -161,7 +161,7 @@ local function GetPlayerText()
 		player_tbl.Pr = player_tbl.Pr or ""
 		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_DAMAGE_PER_LEVEL).."% more melee damage\n"
 		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_MAGIC_RESISTANCE_PER_LEVEL).."% magic resistance\n"
-		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL*100).."% melee speed\n"
+		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL*100).."% melee swing speed\n"
 		if p >= 5 then
 			//player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_DODGE_PER_LEVEL*100).."% chance to dodge bullets\n"
 		end

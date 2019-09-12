@@ -1,6 +1,6 @@
 local mat_overlay = Material( "models/spawn_effect2" )
 local string_Replace = string.Replace
-
+local bounds = Vector(128, 128, 128)
 
 function EFFECT:GetNiceModel( str )
 	return string_Replace( str, "models/models/", "models/" ) 
@@ -19,6 +19,8 @@ function EFFECT:Init( data )
 	
 	self.DieTime = CurTime() + self.time
 	
+	self.Entity:SetRenderBounds( bounds * -1, bounds )
+	
 	self.IgnorePress = CurTime() + 0.1
 	
 end
@@ -26,7 +28,7 @@ end
 function EFFECT:Think()
 	
 	if IsValid( self.ent ) then
-		if ( self.ent:KeyPressed( IN_ATTACK ) or self.ent:KeyPressed( IN_ATTACK2 ) ) and self.IgnorePress and self.IgnorePress < CurTime() then
+		if ( self.ent:KeyDown( IN_ATTACK ) or self.ent:KeyDown( IN_ATTACK2 ) ) and self.IgnorePress and self.IgnorePress < CurTime() then
 			return false
 		end
 	end
@@ -39,6 +41,9 @@ function EFFECT:Render()
 	
 	if self.ent and self.ent:IsValid() and self.ent.Alive and self.ent:Alive() and not self.ent:IsCrow() then
 	
+		self:SetParent( self.ent )
+		self:AddEffects( EF_BONEMERGE )
+		
 		if not self.RenderCol then
 			self.RenderCol = team.GetColor( self.ent:Team() )
 		end

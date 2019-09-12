@@ -112,13 +112,13 @@ function ENT:CreateProjectile()
 	--WorldSound("npc/waste_scanner/grenade_fire.wav",self.EntOwner:GetShootPos()+self.EntOwner:GetForward() * 8,70,math.random(170,180))
 	self:EmitSound("npc/waste_scanner/grenade_fire.wav",70,math.random(185,200))
 	
-	for i=1, math.random(2,4) do
+	for i=1, 3 do
 		local trap = ents.Create("projectile_winterblast")
 		if IsValid(trap) then
 			local v = self.EntOwner:GetShootPos()
 			v = v + self.EntOwner:GetForward() * 8
-			v = v + self.EntOwner:GetRight() * math.Rand(-3,-1)
-			v = v + self.EntOwner:GetUp() * math.Rand(-3,-1)
+			v = v + self.EntOwner:GetRight() * math.Rand(-1,-1)
+			v = v + self.EntOwner:GetUp() * math.Rand(-1,-1)
 			trap:SetPos(v)
 			trap.EntOwner = self.EntOwner
 			trap:SetOwner(self.EntOwner)
@@ -128,7 +128,7 @@ function ENT:CreateProjectile()
 			if phys:IsValid() then
 				phys:Wake()
 				//phys:EnableGravity(false)
-				phys:ApplyForceCenter(self.EntOwner:GetAimVector() * 600 + VectorRand() * 32 * i + vector_up*math.random(200))//SetVelocity((self.EntOwner:GetAimVector()) * 2200)
+				phys:ApplyForceCenter(self.EntOwner:GetAimVector() * 600 + VectorRand() * 10 * i + vector_up*math.random(100,200))//SetVelocity((self.EntOwner:GetAimVector()) * 2200)
 			end
 		end
 	end

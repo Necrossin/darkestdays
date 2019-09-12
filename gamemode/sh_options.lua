@@ -89,7 +89,7 @@ SKILL_DEFENSE_DAMAGE_PER_LEVEL = 0.75
 SKILL_MAGIC_MANA_PER_LEVEL = 5
 SKILL_STRENGTH_DAMAGE_PER_LEVEL = 1//1.75//0.65
 SKILL_STRENGTH_MAGIC_RESISTANCE_PER_LEVEL = 2.35
-SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL = 0.01
+SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL = 0.02 //0.01
 SKILL_STRENGTH_DODGE_PER_LEVEL = 0.027
 SKILL_AGILITY_SPEED_PER_LEVEL = 3.2
 SKILL_AGILITY_DAMAGE_PER_LEVEL = 0.5
@@ -627,7 +627,7 @@ Weapons = {
 		Melee = true,
 		Mat = Material( "darkestdays/icons/sledge_256x128.png", "smooth" ), 
 		Pr = "Can deal some damage through blocks", 
-		Co = "-25 max speed on wearer\n50% slower speed when swinging\n30% slower speed when blocking",
+		Co = "-25 max speed on wearer\n25% slower speed when swinging\n30% slower speed when blocking",
 		Description = "",
 		Special = "\"Size does not matter\"",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 25 end

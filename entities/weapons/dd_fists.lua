@@ -155,7 +155,7 @@ function SWEP:StartSwinging()
 	self:PlayStartSwingSound()
 	
 	if SERVER then
-		local swingtime = self.SwingTime - self.SwingTime * ((self.Owner._DefaultMeleeSpeedBonus or 0)/2)	
+		local swingtime = self.SwingTime - self.SwingTime * ((self.Owner._DefaultMeleeSpeedBonus or 0))	
 		self:SetSwingEnd(CurTime() + swingtime)
 		
 		if seq and tonumber( self.Owner:GetInfo("_dd_thirdperson") ) == 0 then

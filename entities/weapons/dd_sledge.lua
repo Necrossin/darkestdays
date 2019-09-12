@@ -73,7 +73,7 @@ end
 
 function SWEP:Move(mv)
 	if self:IsSwinging() then
-		mv:SetMaxSpeed( self.Owner:GetMaxSpeed() * 0.5 )
+		mv:SetMaxSpeed( self.Owner:GetMaxSpeed() * 0.75 )
 	end
 end
 

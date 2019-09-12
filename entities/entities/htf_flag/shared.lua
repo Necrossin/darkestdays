@@ -471,8 +471,8 @@ function ENT:ResetFlag()
 end
 
 if SERVER then
-	--function ENT:UpdateTransmitState()
-	--	return TRANSMIT_ALWAYS
-	--end
+	function ENT:UpdateTransmitState()
+		return TRANSMIT_ALWAYS
+	end
 end
 

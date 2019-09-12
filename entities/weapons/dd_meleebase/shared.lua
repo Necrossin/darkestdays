@@ -725,7 +725,7 @@ function SWEP:PrimaryAttack()
 		self.Owner.SpawnProtection = 0
 	end
 	
-	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay - self.Primary.Delay * ((self.Owner._DefaultMeleeSpeedBonus  or 0)/2))
+	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay - self.Primary.Delay * ((self.Owner._DefaultMeleeSpeedBonus  or 0) / 2 ))
 	
 	if self.Owner.DashFrames and self.Owner.DashFrames > CurTime() and self:IsTwoHanded() then
 	
@@ -801,7 +801,7 @@ end
 
 function SWEP:StartSwinging()
 	
-	local swingtime = self.SwingTime - self.SwingTime * ((self.Owner._DefaultMeleeSpeedBonus or 0)/2)	
+	local swingtime = self.SwingTime - self.SwingTime * ((self.Owner._DefaultMeleeSpeedBonus or 0))	
 	
 	if self:IsTwoHanded() then
 		

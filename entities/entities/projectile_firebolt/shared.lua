@@ -83,7 +83,7 @@ function ENT:OnRemove()
 		//WorldSound("ambient/fire/gascan_ignite1.wav",self:GetPos(),75,math.random(90,110))
 		sound.Play("ambient/explosions/explode_8.wav",self:GetPos(),75,math.random(110,135))
 		
-		local dlight = DynamicLight( self:EntIndex() )
+		/*local dlight = DynamicLight( self:EntIndex() )
 		if ( dlight ) then
 			dlight.Pos = self:GetPos()
 			dlight.r = 255
@@ -94,7 +94,8 @@ function ENT:OnRemove()
 			dlight.Decay = 300 * 1.5
 			dlight.DieTime = CurTime() + 1
 			dlight.Style = 0
-		end
+		end*/
+
 	end
 end
 
@@ -118,7 +119,8 @@ if SERVER then
 		
 		self:SetMoveType(MOVETYPE_NONE)
 
-		ExplosiveDamage(owner, hitpos, 84, 84, 1, 0.35, 10, self)
+		//ExplosiveDamage(owner, hitpos, 84, 84, 1, 0.35, 10, self)
+		ExplosiveDamage(owner, hitpos, 60, 84, 1, 0.41, 3, self )
 		
 		//if ent == game.GetWorld() then 
 			util.Decal("Scorch", hitpos + hitnormal, hitpos - hitnormal)				

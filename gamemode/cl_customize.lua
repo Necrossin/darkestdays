@@ -32,6 +32,11 @@ cvars.AddChangeCallback("_dd_fullbody", function(cvar, oldvalue, newvalue)
 	DD_FULLBODY = util.tobool( newvalue )
 end)
 
+DD_THIRDPERSONDEATH = util.tobool( CreateClientConVar("_dd_thirdpersondeath", 0, true, false):GetInt() )
+cvars.AddChangeCallback("_dd_thirdpersondeath", function(cvar, oldvalue, newvalue)
+	DD_THIRDPERSONDEATH  = util.tobool( newvalue )
+end)
+
 
 
 DD_CROSSHAIR_R = CreateClientConVar("_dd_crosshairR", 255, true, true):GetInt()
@@ -1052,6 +1057,15 @@ function OptionsMenu()
 	sp:SetConVar( "_dd_spectatemode" )
 	sp:SetValue( GetConVarNumber("_dd_spectatemode") )
 	sp:SizeToContents()
+	
+	local sp = vgui.Create( "DCheckBoxLabel",OpList )
+	sp:Dock( TOP )
+	sp:DockMargin( 5,2,5,0 )
+	sp:SetText( "Disable first person death view" )
+	sp:SetConVar( "_dd_thirdpersondeath" )
+	sp:SetValue( GetConVarNumber("_dd_thirdpersondeath") )
+	sp:SizeToContents()
+	
 	
 	local c = vgui.Create( "DCheckBoxLabel",OpList )
 	c:Dock( TOP )
