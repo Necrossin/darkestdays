@@ -615,7 +615,7 @@ function meta:DropKick()
 	
 	self._NextKick = CurTime() + 2
 	self._NextSlide = 0
-	self:Slide( 0.22 )
+	self:Slide( 0.32 )
 	
 	/*kick_trace.start = self:GetShootPos()
 	kick_trace.endpos = kick_trace.start + self:GetForward() * 72
