@@ -1297,6 +1297,25 @@ net.Receive( "SetPerk", function( len )
 
 end)
 
+net.Receive( "PlayerSetupSkillStats", function( len )	
+	if !IsValid( MySelf ) then return end
+	
+	local strength = net.ReadInt( 32 )
+	local magic = net.ReadInt( 32 )
+	local gunmastery = net.ReadInt( 32 )
+	
+	MySelf._DefaultMeleeBonus = PLAYER_DEFAULT_MELEE_BONUS * 1 + SKILL_STRENGTH_DAMAGE_PER_LEVEL * strength
+	MySelf._DefaultMeleeSpeedBonus = PLAYER_DEFAULT_MELEE_SPEED_BONUS * 1 + SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL * strength
+	MySelf._DefaultMResBonus = PLAYER_DEFAULT_MAGIC_RESISTANCE_BONUS * 1 + PLAYER_DEFAULT_MAGIC_RESISTANCE_BONUS * strength
+	MySelf._DefaultDodgeBonus = PLAYER_DEFAULT_DODGE_BONUS * 1 + SKILL_STRENGTH_DODGE_PER_LEVEL * strength
+	MySelf._DefaultMagicBonus = PLAYER_DEFAULT_MAGIC_DMG_BONUS * 1 + SKILL_MAGIC_DAMAGE_PER_LEVEL * magic
+	MySelf._DefaultMChannelingBonus = PLAYER_DEFAULT_MAGIC_CHANNELING_BONUS * 1 + SKILL_MAGIC_CHANNELING_PER_LEVEL * magic
+	MySelf._DefaultBulletFalloffBonus = PLAYER_DEFAULT_BULLET_FALLOFF_BONUS * 1 + SKILL_BULLET_FALLOFF_PER_LEVEL * gunmastery
+	MySelf._DefaultBulletConsumeBonus = PLAYER_DEFAULT_BULLET_CONSUME_BONUS * 1 + SKILL_BULLET_CONSUME_PER_LEVEL * gunmastery
+	MySelf._DefaultBulletScavegerBonus = PLAYER_DEFAULT_BULLET_SCAVENGER_BONUS * 1 + SKILL_BULLET_SCAVENGER_PER_LEVEL * gunmastery
+
+end)
+
 net.Receive( "ShowFirstHelp", function( len )	
 	if !IsValid(MySelf) then return end
 	

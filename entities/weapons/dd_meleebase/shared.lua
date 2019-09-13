@@ -882,6 +882,7 @@ end
 
 
 function SWEP:MeleeSwing()
+	
 	local owner = self.Owner
 
 	if self.OverrideAttackTime then
@@ -894,7 +895,7 @@ function SWEP:MeleeSwing()
 	if pbr then
 		owner:GetViewModel():SetPlaybackRate(self.AnimSpeed or 1)
 	end
-	
+
 	//owner:DoAttackEvent()
 	owner:SetAnimation(PLAYER_ATTACK1)
 	owner:LagCompensation(true)

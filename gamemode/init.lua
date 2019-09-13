@@ -1355,6 +1355,8 @@ function GM:EndRound(winner)
 			
 			pl:AddScore( "rndwon", 1 )
 			
+			gamemode.Call( "OnPlayerWonRound", pl, self.Gametype ) 
+			
 			if self.Gametype == "koth" then
 				pl:AddScore( "kothwon", 1 )
 			end
@@ -1375,6 +1377,8 @@ function GM:EndRound(winner)
 			pl:UnlockAchievement("fdefeat")
 			
 			pl:AddScore( "rndlost", 1 )
+			
+			gamemode.Call( "OnPlayerLostRound", pl, self.Gametype )
 			
 			if self.Gametype == "koth" then
 				pl:AddScore( "kothlost", 1 )
@@ -1998,6 +2002,8 @@ function GM:PlayerDeath( Victim, Inflictor, Attacker )
 		net.Broadcast()
 		
 		MsgAll( Attacker:Nick() .. " killed " .. Victim:Nick() .. " using " .. inf .. "\n" )
+		
+		gamemode.Call( "OnPlayerKill", Attacker, Victim ) 
 		
 	return end
 	
@@ -2853,3 +2859,12 @@ function DoPhysicsMultiplayer()
 end
 //hook.Add ( "InitPostEntity","MultiplayerReplace",DoPhysicsMultiplayer )
 
+// extra functions for currency or something else
+function GM:OnPlayerWonRound( pl, gametype )
+end
+
+function GM:OnPlayerLostRound( pl, gametype )
+end
+
+function GM:OnPlayerKill( Attacker, Victim )
+end

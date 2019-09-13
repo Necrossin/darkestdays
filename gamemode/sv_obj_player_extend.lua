@@ -29,6 +29,8 @@ function meta:SetupDefaultStats()
 
 end
 
+util.AddNetworkString( "PlayerSetupSkillStats" )
+
 function meta:SetupSkillStats()
 	
 	self._DefaultHealth = self._DefaultHealth + SKILL_DEFENSE_HEALTH_PER_LEVEL * self:GetDefense()
@@ -45,6 +47,14 @@ function meta:SetupSkillStats()
 	self._DefaultBulletFalloffBonus = self._DefaultBulletFalloffBonus + SKILL_BULLET_FALLOFF_PER_LEVEL * self:GetGunMastery()
 	self._DefaultBulletConsumeBonus = self._DefaultBulletConsumeBonus + SKILL_BULLET_CONSUME_PER_LEVEL * self:GetGunMastery()
 	self._DefaultBulletScavegerBonus = self._DefaultBulletScavegerBonus + SKILL_BULLET_SCAVENGER_PER_LEVEL * self:GetGunMastery()
+	
+	// so far melee swing speed is the only one that is used both on server and client
+	// so we will just send strength/magic/gunmastery stuff to client
+	net.Start( "PlayerSetupSkillStats" )
+		net.WriteInt( self:GetStrength(), 32 )
+		net.WriteInt( self:GetMagic(), 32 )
+		net.WriteInt( self:GetGunMastery(), 32 )
+	net.Send( self )
 	
 end
 

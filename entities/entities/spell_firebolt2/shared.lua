@@ -19,7 +19,8 @@ end
 PrecacheParticleSystem( "firebolt2_stream" )
 PrecacheParticleSystem( "v_firebolt2_stream" )
 
-util.PrecacheSound( "weapons/flame_thrower_loop.wav" )
+util.PrecacheSound( "ambient/fire/fire_big_loop1.wav" )
+util.PrecacheSound( "ambient/gas/steam2.wav" )
 
 local util = util
 
@@ -27,7 +28,8 @@ function ENT:OnInitialize()
 	if CLIENT then
 		self:SetRenderBounds(Vector(-40, -40, -18), Vector(40, 40, 90))
 		
-		self.FireSound = CreateSound( self, "weapons/flame_thrower_loop.wav" ) //ambient/fire/fire_big_loop1.wav
+		self.FireSound = CreateSound( self, "ambient/fire/fire_big_loop1.wav" )
+		self.FireSound2 = CreateSound( self, "ambient/gas/steam2.wav" )
 	end
 	//requires to hold down mouse button!
 	self:SetDTBool(2,true)
@@ -60,7 +62,10 @@ function ENT:CastFlames()
 	
 	if CLIENT then
 		if self.FireSound then
-			self.FireSound:PlayEx(1, 85 + math.sin(RealTime())*5)
+			self.FireSound:PlayEx(1, 105 + math.sin(RealTime())*5)
+		end
+		if self.FireSound2 then
+			self.FireSound2:PlayEx(1, 75 + math.sin(RealTime())*2)
 		end
 	end
 	
@@ -137,6 +142,9 @@ function ENT:StopFlames()
 	if CLIENT then
 		if self.FireSound then
 			self.FireSound:Stop()
+		end
+		if self.FireSound2 then
+			self.FireSound2:Stop()
 		end
 	end
 	

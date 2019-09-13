@@ -40,12 +40,15 @@ local function gib_callback( self, data )
 	
 end
 
+local bounds = Vector(128, 128, 128)
 function EFFECT:Init( data )
 	local ent = data:GetEntity()
 	local Pos = data:GetOrigin()
 	local Normal = data:GetNormal()
 	local frozen = math.Round(data:GetScale())
 	self.Frozen = frozen == 1 
+	
+	self.Entity:SetRenderBounds( bounds * -1, bounds )
 	
 	if ent.GetRagdollEntity and IsValid(ent:GetRagdollEntity()) then
 		ent:GetRagdollEntity().Gibbed = true
