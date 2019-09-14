@@ -98,7 +98,7 @@ SWEP.HoldType = "ar2"
 SWEP.Caliber = CAL_7_62
 
 SWEP.Primary.Sound			= Sound("Weapon_AK47.SingleDD")
-SWEP.Primary.Recoil			= 1.55//1.3//0.7
+SWEP.Primary.Recoil			= 1.3//0.7
 SWEP.Primary.RecoilKick 	= 0.3
 SWEP.Primary.Unrecoil		= 8
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]

@@ -431,12 +431,12 @@ function SWEP:PrimaryAttack()
 		local r = math.Rand(0.8, 1)
 		Owner:ViewPunch(Angle(r * -self.Primary.Recoil, 0, (1 - r) * (math.random(2) == 1 and -1 or 1) * self.Primary.Recoil))
 		
-		/*if SERVER or CLIENT and not IsFirstTimePredicted() then //or CLIENT and IsFirstTimePredicted() then
-			local eyeang = self.Owner:EyeAngles()
+		if ( ( game.SinglePlayer() and SERVER ) or ( ( not game.SinglePlayer() ) and CLIENT and IsFirstTimePredicted() ) ) then
+			local eyeang = self:GetOwner():EyeAngles()
 			local recoil = self.Primary.Recoil
 			eyeang.pitch = eyeang.pitch - recoil * ( self.Primary.RecoilKick or 0.1 )
-			self.Owner:SetEyeAngles( eyeang )
-		end*/
+			self:GetOwner():SetEyeAngles( eyeang )
+		end
 	end
 	//Owner:ViewPunch( Angle(self.Primary.Recoil * -0.1, 0, math.Rand(-0.05,0.05) * self.Primary.Recoil) )
 
