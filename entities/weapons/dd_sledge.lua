@@ -21,7 +21,7 @@ SWEP.SlotPos = 6
 
 SWEP.HoldType = "melee2"//melee2
 
-SWEP.MeleeDamage = 55
+SWEP.MeleeDamage = 65
 SWEP.MeleeRange = 20+25//60
 
 SWEP.SwingTime = 0.6 

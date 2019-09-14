@@ -185,8 +185,8 @@ hook.Add("Initialize","SetupSomeStuff",function()
 				MaxRangedStats[4] = math.ceil(CaliberFalloffDistance[swep.Caliber]*0.0254)
 			end
 			
-			if swep.Primary.Recoil and swep.Primary.Recoil >= MaxRangedStats[5] then
-				MaxRangedStats[5] = swep.Primary.Recoil
+			if not swep.IsShotgun and swep.Primary.Recoil and swep.Primary.Recoil * ( swep.Primary.RecoilKick or 0.1 ) >= MaxRangedStats[5] then
+				MaxRangedStats[5] = swep.Primary.Recoil + swep.Primary.Recoil * ( swep.Primary.RecoilKick or 0.1 )
 			end
 			
 			tbl.Ranged = true
@@ -196,7 +196,7 @@ hook.Add("Initialize","SetupSomeStuff",function()
 				[2] = {"Rate of fire: %i RPM", math.ceil(60/(swep.Primary.Delay or 1)), Color(0,255,0,255)}, 
 				[3] = {"Accuracy", swep.Primary.Cone or 0, Color(254,254,0,255), true},
 				[4] = {"Range: %i meters", swep.Caliber and CaliberFalloffDistance[swep.Caliber] and math.ceil(CaliberFalloffDistance[swep.Caliber]*0.0254) or 0, Color(254,254,0,255)},
-				[5] = {"Recoil", swep.Primary.Recoil or 0, Color(254,254,0,255)},
+				[5] = {"Recoil", swep.IsShotgun and 0 or ( swep.Primary.Recoil + swep.Primary.Recoil * ( swep.Primary.RecoilKick or 0.1 ) ) or 0, Color(254,254,0,255)},
 			}
 			
 			if swep.Caliber then
@@ -334,7 +334,7 @@ Abilities = {
 	["mbasic"] = {Name = "Unlock Advanced Magic", Pr = "- Increased magic damage\n- Increased mana pool", Co = "",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
 	["qmanaregen"] = {Name = "Rapid Mana Regen", Pr = "- Ability to rapidly regenerate mana\nafter casting a spell",OnSet = function(pl) pl._SkillQuickRegen = true end, OnReset = function(pl) pl._SkillQuickRegen = false end},
 	["manachannel"] = {Name = "Mana Channeling", Pr = "- Returns some of magic damage done\nas mana", OnSet = function(pl) pl._SkillManaCh = true end, OnReset = function(pl) pl._SkillManaCh = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of magic damage returned as mana", p*SKILL_MAGIC_CHANNELING_PER_LEVEL*100) end},
-	["magicshield"] = {Name = "Magic Shield", Pr = "- Uses 35% of mana as energy\n- Absorbs 30% of incoming non-melee\ndamage",Co = "- Does NOT absorbs self-damage\n- Has 25 seconds cooldown, once depleted",OnSet = function(pl) pl:SetEffect("magic_shield") end},
+	["magicshield"] = {Name = "Magic Shield", Pr = "- Uses 35% of mana as energy\n- Absorbs 30% of incoming non-melee\ndamage",Co = "- Does NOT absorbs self-damage\n- Has 25 seconds cooldown, once\ndepleted",OnSet = function(pl) pl:SetEffect("magic_shield") end},
 	
 	//Defense
 	["healthregen"] = {Name = "Health Regeneration", Pr = "Ability to slowly regenerate\nyour health", Description = "Regeneration rate is increased while\nstanding still.",OnSet = function(pl) pl._SkillHPRegen = true end, OnReset = function(pl) pl._SkillHPRegen = false end},
@@ -382,7 +382,7 @@ CaliberDamage = {
 	[CAL_9] = 13,
 	[CAL_11_43] = 18,
 	[CAL_11_20] = 60,
-	[CAL_12_GAUGE] = 8,
+	[CAL_12_GAUGE] = 10,
 }
 
 // Faloff distance
@@ -699,12 +699,13 @@ Perks = {
 	//["fireandfury"] = {Name = "Fire and Fury", PrColor = Color(235,93,0,255), Pr = "+5%(+15%) fire damage done\n(+20%) damage resistance\n20% chance to light yourself on fire\nwhen dealing fire damage", Co = "+10% bullet damage taken\n+120% cold damage taken", Description = "Values in (brackets) when owner is\non fire"},
 	//["berserker"] = {Name = "Berserker", Pr = "+10% magic damage resistance\n+3% more melee damage", Co = "-20 max mana\n-25% bullet damage done", Description = "",OnSet = function(pl) pl._DefaultMResBonus = pl._DefaultMResBonus + 10; pl._DefaultMeleeBonus = pl._DefaultMeleeBonus + 3; pl._DefaultMana = pl._DefaultMana - 20 end},
 	//["houdini"] = {Name = "Houdini", Pr = "+66% Ghosting duration\nNo speed reduction while Ghosting\n+15 max speed", Co = "-20 max health", Description = "",OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 20; pl._DefaultSpeed = pl._DefaultSpeed + 15; end},
-	["ghosting"] = {Name = "Ghosting", Mat = Material( "darkestdays/hud/ghosting.png" ), Pr = "Hold sprint button to become invisible\n+50% more speed when invisible", Co = "Drains mana when active\n-20 max health", Description = "",OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 25 end},
+	["ghosting"] = {Name = "Ghosting", Mat = Material( "darkestdays/hud/ghosting.png" ), Pr = "Hold sprint button to become invisible\n+50% more speed when invisible", Co = "Drains mana when active\n-20 max health", Description = "",OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 20 end},
 	["adrenaline"] = {Name = "Adrenaline", Pr = "Get adrenaline orbs on kills\nOrbs restore some hp/mana and\n provide temporary damage boost", Co = "Can't pick up health/mana orbs",OnSet = function(pl) end},
 	["blank"] = {Name = "No perk", Description = "If you dont need any perk"},
 	["martialarts"] = {Name = "Martial Arts", Special = "Weapon mod: Augments your fists and\nbreaks your fingers", Pr = "Cut people with bare hands\nDropkicks to the face", Co = "Vulnerability after dropkick", Description = "Attack when sprint-jumping to perform\na drop kick.", OnSet = function(pl) if SERVER then pl:SendLua("LocalPlayer()._MartialArts = true") end end, OnReset = function(pl) if SERVER then pl:SendLua("LocalPlayer()._MartialArts = nil") end end},
 	["dash"] = {Name = "Dash", Special = "Press sprint to dash in any direction\nMANA SICKNESS: Requires at least 25\nactive mana per dash\n", Pr = "Two-Handed weapons: press attack\nwhile dashing forward, to perform\na dash attack", Co = "Costs 25% of your mana per dash\nCosts even more mana per dash attack\n-15 max health",OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 15; if SERVER then pl:SendLua("LocalPlayer()._ShiftUses = 4 LocalPlayer()._ShiftCap = 25") end end, OnReset = function(pl) if SERVER then pl:SendLua("LocalPlayer()._ShiftUses = nil LocalPlayer()._ShiftCap = nil") end end},
 	["crow"] = {Name = "Crow Master",Mat = Material( "darkestdays/hud/cotn.png" ), Special = "Press sprint to become a crow\nfor a few seconds\nMANA SICKNESS: Requires at least 40\nactive mana per use\n", Pr = "Doubles damage of Murder of Crows", Co = "Costs 50% of your mana\nYou can die in cramped areas\nCan not regenerate mana\nwhilst in crow form",OnSet = function(pl) if SERVER then pl:SendLua("LocalPlayer()._ShiftUses = 2 LocalPlayer()._ShiftCap = 40") end end, OnReset = function(pl) if SERVER then pl:SendLua("LocalPlayer()._ShiftUses = nil LocalPlayer()._ShiftCap = nil") end end},
+	["transcendence"] = {Name = "Transcendence", Pr = "Doubles Magic Shield absorbtion\nReduces Magic Shield recharge time\ndown to 10 seconds\n50% of max mana as energy", Co = "-20 max health",OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 20 end},
 }
 
 //Small class-like presets

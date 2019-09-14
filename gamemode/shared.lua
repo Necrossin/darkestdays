@@ -107,7 +107,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 13/09/2019"
+GM.Version		= "v 14/09/2019"
 GM.Email 		= ""
 GM.Website 		= ""
 
@@ -176,11 +176,8 @@ function GM:Move( pl, mv )
 		mv:SetMaxClientSpeed( speed )
 	end
 	
-	if pl._efSlide and IsValid(pl._efSlide) then
-		pl:SetGroundEntity(NULL)
-		mv:SetSideSpeed(0)
-		mv:SetForwardSpeed(0)
-		mv:SetVelocity(mv:GetVelocity() * (1 - FrameTime() * 0.2))
+	if pl._efSlide and IsValid(pl._efSlide) and pl._efSlide.Move then
+		pl._efSlide:Move( mv )
 	end
 	
 	if pl._efSpeedBoost and IsValid(pl._efSpeedBoost) then

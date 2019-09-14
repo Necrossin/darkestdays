@@ -101,6 +101,7 @@ SWEP.Caliber = CAL_11_20
 
 SWEP.Primary.Sound			= Sound("Weapon_357.Single")--Sound( "weapons/diamond_back_01.wav" )
 SWEP.Primary.Recoil			= 5
+SWEP.Primary.RecoilKick		= 0.4
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 6

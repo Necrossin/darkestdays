@@ -91,11 +91,11 @@ function ENT:GrabProp()
 			ent._Telekinesis = true
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
-				if phys:GetMass() < 140 and ent:OBBMins():Length() + ent:OBBMaxs():Length() < 100 then
+				if phys:GetMass() < 140 and ( ent:OBBMins():Length() + ent:OBBMaxs():Length() ) < 100 then
 					ent._Mass = phys:GetMass()
 
 					phys:EnableGravity(false)
-					phys:SetMass(2)
+					phys:SetMass(10)
 				end
 			end
 		end

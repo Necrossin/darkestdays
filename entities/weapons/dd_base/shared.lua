@@ -29,6 +29,7 @@ SWEP.Primary.Sound = Sound("Weapon_Pistol.Single")
 SWEP.Primary.Damage = 30
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.15
+SWEP.Primary.RecoilKick = 0.1
 SWEP.Cone = 0.02
 SWEP.ConeMoving = 0.03
 SWEP.ConeCrouching = 0.013
@@ -429,6 +430,13 @@ function SWEP:PrimaryAttack()
 	if self.Primary.Recoil > 0 then
 		local r = math.Rand(0.8, 1)
 		Owner:ViewPunch(Angle(r * -self.Primary.Recoil, 0, (1 - r) * (math.random(2) == 1 and -1 or 1) * self.Primary.Recoil))
+		
+		if SERVER or CLIENT and IsFirstTimePredicted() then
+			local eyeang = self.Owner:EyeAngles()
+			local recoil = self.Primary.Recoil
+			eyeang.pitch = eyeang.pitch - recoil * ( self.Primary.RecoilKick or 0.1 )
+			self.Owner:SetEyeAngles( eyeang )
+		end
 	end
 	//Owner:ViewPunch( Angle(self.Primary.Recoil * -0.1, 0, math.Rand(-0.05,0.05) * self.Primary.Recoil) )
 
@@ -581,6 +589,8 @@ function SWEP:Holster()
 	self:StopCasting()
 	
 	self:OnHolster()
+	
+	self:SetReloadEnd( 0 )
 	
 	if self.RestrictHolster then
 		return false

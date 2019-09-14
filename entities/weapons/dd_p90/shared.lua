@@ -95,7 +95,8 @@ SWEP.HoldType = "smg"
 SWEP.Caliber = CAL_5_7
 
 SWEP.Primary.Sound			= Sound("Weapon_P90.SingleDD")
-SWEP.Primary.Recoil			= 1--2.6
+SWEP.Primary.Recoil			= 0.6--2.6
+SWEP.Primary.RecoilKick 	= 0.3
 SWEP.Primary.Unrecoil		= 7
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1

@@ -859,7 +859,7 @@ function GM:PlayerSpawn( pl )
 			phys:SetMass(pl:IsThug() and 280 or 80)
 		end
 		
-		local health = pl._DefaultHealth//100
+		local health = math.max( pl._DefaultHealth, 1 )
 		
 		
 		if self:GetGametype() ~= "ffa" then
@@ -2233,8 +2233,8 @@ function GM:EntityTakeDamage( ent,dmginfo )
 			
 			local norm = dmginfo:GetDamageForce( ):GetNormal()
 			
-			sh:DrainShield(dmginfo:GetDamage()*0.3,norm)
-			dmginfo:ScaleDamage(0.7)
+			sh:DrainShield( dmginfo:GetDamage() * sh.DamageAbsorbsion, norm )
+			dmginfo:ScaleDamage( 1 - sh.DamageAbsorbsion )
 			
 			local e = EffectData()
 			e:SetOrigin(dmginfo:GetDamagePosition()+norm*-16)

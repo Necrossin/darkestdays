@@ -142,7 +142,7 @@ function ENT:Think()
 		if self.EntOwner._NextKick and self.EntOwner._NextKick > CurTime() and self.EntOwner:GetVelocity():LengthSqr() > 10000 then// and !self.EntOwner:OnGround() then
 			//basically player is forced to slide for the duration of kick effect, otherwise obey the normal sliding rules
 		else
-			if self.EntOwner:KeyDown(IN_JUMP) or not self.EntOwner:KeyDown(IN_DUCK) or self.EntOwner:GetVelocity():LengthSqr() < 40000 then
+			if not self.EntOwner:KeyDown(IN_DUCK) or self.EntOwner:GetVelocity():LengthSqr() < 40000 then //self.EntOwner:KeyDown(IN_JUMP) or 
 				self:Remove()
 				return
 			end
@@ -157,6 +157,30 @@ function ENT:Think()
 		end
 	end
 	self:NextThink( CurTime() )
+end
+
+function ENT:SetNextJump( time )
+	self:SetDTFloat( 0 , time )
+end
+
+function ENT:GetNextJump()
+	return self:GetDTFloat( 0 )
+end
+
+local vec_up = vector_up
+function ENT:Move( mv )
+	
+	if mv:KeyPressed( IN_JUMP ) and self.EntOwner:OnGround() and self:GetNextJump() < CurTime() then
+		mv:SetVelocity( mv:GetVelocity() + vec_up * 200 )
+		self:SetNextJump( CurTime() + 0.1 )
+	end
+	
+	self.EntOwner:SetGroundEntity(NULL)
+	mv:SetSideSpeed(0)
+	mv:SetForwardSpeed(0)
+
+	mv:SetVelocity(mv:GetVelocity() * (1 - FrameTime() * 0.2))
+	
 end
 
 

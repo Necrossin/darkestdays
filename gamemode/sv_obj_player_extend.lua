@@ -391,8 +391,9 @@ local walltrace = {mask = MASK_SOLID_BRUSHONLY, mins = Vector(-5, -5, -5), maxs 
 function meta:CheckWalljump()
 	
 	if self:OnGround() then return end
-	
+	if self:IsSliding() then return end
 	if self:IsThug() or self:IsCrow() then return end
+	
 	//if not self._SkillWJ then return end
 	
 	self._NextWallJump = self._NextWallJump or 0

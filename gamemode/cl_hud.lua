@@ -63,6 +63,8 @@ local TEXT_ALIGN_BOTTOM = TEXT_ALIGN_BOTTOM
 local M_Player = FindMetaTable("Player")
 local P_Team = M_Player.Team
 
+local vector_up = vector_up
+
 local col_231_231_231_170 = Color (231, 231, 231, 170)
 
 DD_HUD = util.tobool( CreateClientConVar("_dd_hud", 1, true, false):GetInt() )
@@ -572,7 +574,7 @@ function DrawKOTHNotify(MySelf)
 		
 		local pos = hill:GetPos()
 		
-		local spos = (pos+vector_up*60):ToScreen()
+		local spos = ( pos + vector_up * 90 ):ToScreen()
 		
 		local text = "The Hill"
 		local col = Color(220,220,220,255)
