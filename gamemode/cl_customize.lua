@@ -37,7 +37,10 @@ cvars.AddChangeCallback("_dd_thirdpersondeath", function(cvar, oldvalue, newvalu
 	DD_THIRDPERSONDEATH  = util.tobool( newvalue )
 end)
 
-
+DD_DRAWHANDSPELLS = util.tobool( CreateClientConVar("_dd_drawhandspells", 1, true, false):GetInt() )
+cvars.AddChangeCallback("_dd_drawhandspells", function(cvar, oldvalue, newvalue)
+	DD_DRAWHANDSPELLS = util.tobool( newvalue )
+end)
 
 DD_CROSSHAIR_R = CreateClientConVar("_dd_crosshairR", 255, true, true):GetInt()
 cvars.AddChangeCallback("_dd_crosshairR", function(cvar, oldvalue, newvalue)
@@ -54,9 +57,24 @@ cvars.AddChangeCallback("_dd_crosshairB", function(cvar, oldvalue, newvalue)
 	DD_CROSSHAIR_B = tonumber( newvalue )
 end)
 
-DD_CROSSHAIR_A = CreateClientConVar("_dd_crosshairA", 100, true, true):GetInt()
+DD_CROSSHAIR_A = CreateClientConVar("_dd_crosshairA", 220, true, true):GetInt()
 cvars.AddChangeCallback("_dd_crosshairA", function(cvar, oldvalue, newvalue)
 	DD_CROSSHAIR_A = tonumber( newvalue )
+end)
+
+DD_CROSSHAIR_LENGTH = CreateClientConVar("_dd_crosshairL", 12, true, true):GetInt()
+cvars.AddChangeCallback("_dd_crosshairL", function(cvar, oldvalue, newvalue)
+	DD_CROSSHAIR_LENGTH = math.Clamp( tonumber( newvalue ), 1, 30 )
+end)
+
+DD_CROSSHAIR_GAP = CreateClientConVar("_dd_crosshairGap", 6, true, true):GetInt()
+cvars.AddChangeCallback("_dd_crosshairGap", function(cvar, oldvalue, newvalue)
+	DD_CROSSHAIR_GAP = math.Clamp( tonumber( newvalue ), 0, 30 )
+end)
+
+DD_CROSSHAIR_THICKNESS = CreateClientConVar("_dd_crosshairT", 2, true, true):GetInt()
+cvars.AddChangeCallback("_dd_crosshairT", function(cvar, oldvalue, newvalue)
+	DD_CROSSHAIR_THICKNESS = math.Clamp( tonumber( newvalue ), 2, 10 )
 end)
 
 DD_THIRDPERSON_X = CreateClientConVar("_dd_thirdpersonX", 50, true, true):GetInt()
@@ -848,7 +866,7 @@ function CheckEquipment()
 end
 
 //Options!------------------------------------------------------------------
-
+local matLine = Material("VGUI/gradient-r")
 function OptionsMenu()
 
 	local w,h = ScrW(),ScrH()
@@ -991,14 +1009,63 @@ function OptionsMenu()
 	CrosshairPr:Dock ( RIGHT )
 	CrosshairPr:SetSize(100,200)
 	CrosshairPr.Paint = function()
-		draw.SimpleTextOutlined("Crosshair color","Arial_Bold_13",CrosshairPr:GetWide()/2,13,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-		draw.SimpleText(" {  } ","HL2_80",CrosshairPr:GetWide()/2,CrosshairPr:GetTall()/4,CrosshairMix:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		draw.SimpleText(" [  ] ","HL2_80",CrosshairPr:GetWide()/2,3*CrosshairPr:GetTall()/4,CrosshairMix:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw.SimpleTextOutlined("Crosshair preview","Arial_Bold_13",CrosshairPr:GetWide()/2,13,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
+		//draw.SimpleText(" {  } ","HL2_80",CrosshairPr:GetWide()/2,CrosshairPr:GetTall()/4,CrosshairMix:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		//draw.SimpleText(" [  ] ","HL2_80",CrosshairPr:GetWide()/2,3*CrosshairPr:GetTall()/4,CrosshairMix:GetColor(),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		
+		local r,g,b = DD_CROSSHAIR_R or 255,DD_CROSSHAIR_G or 255,DD_CROSSHAIR_B or 255
+		local a = DD_CROSSHAIR_A or 100
+		
+		local crs_length = DD_CROSSHAIR_LENGTH or 12
+		local crs_thickness = DD_CROSSHAIR_THICKNESS or 2
+		local crs_gap = DD_CROSSHAIR_GAP or 6
+		
+		local x = CrosshairPr:GetWide()/2
+		local y = CrosshairPr:GetTall()/2
+	
+		surface.SetMaterial( matLine )
+		surface.SetDrawColor( CrosshairMix:GetColor() )
+
+		surface.DrawTexturedRectRotated( x + crs_gap / 2 + crs_length/2, y, crs_length, crs_thickness, 0 )
+		
+		surface.DrawTexturedRectRotated( x, y + crs_gap / 2 + crs_length/2, crs_length, crs_thickness, 270 )
+		
+		surface.DrawTexturedRectRotated( x - crs_gap / 2 - crs_length/2, y, crs_length, crs_thickness, 180 )
+		
+		surface.DrawTexturedRectRotated( x, y - crs_gap / 2 - crs_length/2, crs_length, crs_thickness, 90 )
+		
 	end
 	
 	
 	CrosshairMix:Dock ( FILL )
 	CrosshairPanel:DockMargin( 5,0,0,0 )
+	
+	local sliderLength = vgui.Create("DNumSlider",OpList)
+	sliderLength:Dock( TOP )
+	sliderLength:DockMargin( 5,2,5,0 )
+	sliderLength:SetDecimals(0)
+	sliderLength:SetMinMax(1, 30)
+	sliderLength:SetConVar("_dd_crosshairL")
+	sliderLength:SetText("Crosshair line length")
+	sliderLength:SizeToContents()
+	
+	local sliderThickness = vgui.Create("DNumSlider",OpList)
+	sliderThickness:Dock( TOP )
+	sliderThickness:DockMargin( 5,2,5,0 )
+	sliderThickness:SetDecimals(0)
+	sliderThickness:SetMinMax(2, 10)
+	sliderThickness:SetConVar("_dd_crosshairT")
+	sliderThickness:SetText("Crosshair line thickness")
+	sliderThickness:SizeToContents()
+	
+	local sliderGap = vgui.Create("DNumSlider",OpList)
+	sliderGap:Dock( TOP )
+	sliderGap:DockMargin( 5,2,5,0 )
+	sliderGap:SetDecimals(0)
+	sliderGap:SetMinMax(0, 30)
+	sliderGap:SetConVar("_dd_crosshairGap")
+	sliderGap:SetText("Crosshair gap size")
+	sliderGap:SizeToContents()
 	
 	/*local c = vgui.Create( "DCheckBoxLabel",OpList )
 	c:Dock( TOP )
@@ -1066,6 +1133,13 @@ function OptionsMenu()
 	sp:SetValue( GetConVarNumber("_dd_thirdpersondeath") )
 	sp:SizeToContents()
 	
+	local sp = vgui.Create( "DCheckBoxLabel",OpList )
+	sp:Dock( TOP )
+	sp:DockMargin( 5,2,5,0 )
+	sp:SetText( "Draw spell effects on hand in first person" )
+	sp:SetConVar( "_dd_drawhandspells" )
+	sp:SetValue( GetConVarNumber("_dd_drawhandspells") )
+	sp:SizeToContents()
 	
 	local c = vgui.Create( "DCheckBoxLabel",OpList )
 	c:Dock( TOP )

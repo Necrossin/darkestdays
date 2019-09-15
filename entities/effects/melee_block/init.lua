@@ -6,6 +6,9 @@ function EFFECT:Init( data )
 	local norm = data:GetNormal():Angle()
 	norm.r = math.random(-90,90)
 
+	if MySelf:EyePos():DistToSqr( pos ) > 250000 then
+		return		
+	end
 	
 	ParticleEffect("impact_melee_block",pos,norm,self.Entity)
 	

@@ -322,7 +322,7 @@ function EFFECT:Render()
 				
 				self.NextDrip = self.NextDrip or 0
 						
-				if self.NextDrip <= CurTime() then
+				if self.NextDrip <= CurTime() and MySelf:EyePos():DistToSqr( pos ) < 250000 then
 					self.NextDrip = CurTime() + 0.045
 					
 					local emitter = ParticleEmitter(rag:GetPos())	

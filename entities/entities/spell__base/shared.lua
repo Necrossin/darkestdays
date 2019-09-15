@@ -92,6 +92,14 @@ function ENT:Draw()
 		return
 	end
 	
+	if MySelf:EyePos():DistToSqr( self:GetOwner():GetPos() ) > 360000 then
+		if self.Particle then
+			self.Particle = nil
+			self:GetOwner():StopParticles()
+		end
+		return
+	end
+	
 	self:OnDraw()
 end
 end

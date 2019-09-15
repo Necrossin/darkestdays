@@ -4,6 +4,10 @@ function EFFECT:Init( data )
 	self.ent = data:GetEntity()
 	local glow = math.Round( data:GetRadius() ) == 1
 	
+	if MySelf:EyePos():DistToSqr( pos ) > 250000 then
+		return		
+	end
+	
 	if !IsValid(self.ent) then return end
 	
 	if self.ent == MySelf and !GAMEMODE.ThirdPerson then return end

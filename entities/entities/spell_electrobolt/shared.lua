@@ -317,8 +317,8 @@ function ENT:OnDraw()
 	end
 	
 end
-
-function ENT:HandDraw(owner,reverse,point)
+ENT.CanIgnorePassive = true
+function ENT:HandDraw( owner, reverse, point, ignore_passive)
 	
 	
 	if self:GetDTFloat(1) and self:GetDTFloat(1) >= CurTime() and point then
@@ -369,7 +369,7 @@ function ENT:HandDraw(owner,reverse,point)
 	
 	end
 	
-	if point and not point.Particle then
+	if point and not point.Particle and not ignore_passive then
 		ParticleEffectAttach("v_electrobolt",PATTACH_ABSORIGIN_FOLLOW,point,0)
 		point.Particle = true
 	end

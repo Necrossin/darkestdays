@@ -5,6 +5,9 @@ function EFFECT:Init( data )
 	local pos = data:GetOrigin()
 	local norm = data:GetNormal():Angle()
 	//norm.r = math.random(-90,90)
+	if MySelf:EyePos():DistToSqr( pos ) > 250000 then
+		return		
+	end
 
 	WorldSound("weapons/fx/rics/ric"..math.random(1, 5)..".wav", pos, math.random(70,80), math.random(100, 115))
 	

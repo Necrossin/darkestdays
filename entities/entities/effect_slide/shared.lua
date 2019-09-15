@@ -189,6 +189,7 @@ function ENT:Draw()
 	
 	self.NextEffect = self.NextEffect or 0
 	
+	if self:GetPos():DistToSqr(MySelf:EyePos()) > 250000 then return end
 	if self.NextEffect > CurTime() then return end
 	
 	self.NextEffect = CurTime() + 0.01

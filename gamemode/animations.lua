@@ -129,7 +129,7 @@ function GM:CalcMainActivity( pl, velocity )
 	elseif not onground and waterlevel <= 0 then
 		if not pt.m_fGroundTime then
 			pt.m_fGroundTime = CurTime()
-		elseif CurTime() > pt.m_fGroundTime and V_Length2D(velocity) < 0.5 then
+		elseif CurTime() > pt.m_fGroundTime and len2d < 0.25 then
 			pt.m_bJumping = true
 			pt.m_bFirstJumpFrame = false
 			pt.m_flJumpStartTime = 0
@@ -137,7 +137,7 @@ function GM:CalcMainActivity( pl, velocity )
 	end
 
 	if P_Crouching(pl) then
-		if V_Length2DSqr(velocity) >= 1 then
+		if len2d >= 1 then
 			return ACT_MP_CROUCHWALK, -1
 		end
 
@@ -190,9 +190,9 @@ function GM:UpdateAnimation( pl, velocity, maxseqgroundspeed )
 
 	E_SetPlaybackRate(pl, rate)
 
-	if CLIENT then
+	/*if CLIENT then
 		GAMEMODE:GrabEarAnimation(pl)
 		GAMEMODE:MouthMoveAnimation(pl)
-	end
+	end*/
 
 end

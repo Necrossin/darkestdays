@@ -112,7 +112,7 @@ function SWEP:CalculateHandMovement()
 			
 		local check = false//self:IsReloading() or (self:IsShooting() and !self.OneHandAnim) or self.Owner:IsSprinting() //self:IsDeploying() or 
 			
-		for k,bone in ipairs(self.ViewModelBoneModsSorted) do
+		for k,bone in pairs(self.ViewModelBoneModsSorted) do
 			if not self.ViewModelBoneMods[bone] then continue end
 			
 			
@@ -273,12 +273,22 @@ function SWEP:ViewModelDrawn()
 		local sp = self.Owner:GetCurrentSpell()
 		if sp and sp:IsValid() and point then
 			if sp.HandDraw then
-				if point.LastSpell ~= sp then
-					point:StopParticles()
-					point.LastSpell = sp
-					point.Particle = nil
+				if DD_DRAWHANDSPELLS then
+					if point.LastSpell ~= sp then
+						point:StopParticles()
+						point.LastSpell = sp
+						point.Particle = nil
+					end
+					sp:HandDraw(self.Owner,self.ReverseCastHand and true or false,point)
+				else
+					if point.Particle then
+						point:StopParticles()
+						point.Particle = nil
+					end
+					if sp.CanIgnorePassive then
+						sp:HandDraw( self.Owner, self.ReverseCastHand and true or false, point, true)
+					end
 				end
-				sp:HandDraw(self.Owner,self.ReverseCastHand and true or false,point)
 			end
 		end
 		

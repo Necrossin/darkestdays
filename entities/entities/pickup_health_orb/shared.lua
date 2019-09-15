@@ -109,24 +109,19 @@ end
 
 if CLIENT then
 function ENT:Draw()
-	//self:DrawModel()
+	
+	if MySelf:EyePos():DistToSqr( self:GetPos() ) > 360000 then
+		if self.Particle then
+			self.Particle = nil
+			self:StopParticles()
+		end
+		return
+	end
+	
 	if not self.Particle then
 		ParticleEffectAttach("dd_health_orb",PATTACH_ABSORIGIN_FOLLOW,self,0)
 		self.Particle = true
-	end	
-	
-	/*local dlight = DynamicLight( self:EntIndex() )
-	if ( dlight ) then
-		dlight.Pos = self:GetPos()
-		dlight.r = 90
-		dlight.g = 255
-		dlight.b = 0
-		dlight.Brightness = 1
-		dlight.Size = 30
-		dlight.Decay = 30 * 5
-		dlight.DieTime = CurTime() + 1
-		dlight.Style = 0
-	end*/
+	end
 	
 end
 end

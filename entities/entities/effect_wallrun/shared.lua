@@ -1,5 +1,5 @@
 ENT.Type = "anim"
-ENT.RenderGroup         = RENDERGROUP_TRANSLUCENT
+ENT.RenderGroup = RENDERGROUP_NONE
 
 ENT.Spawnable = false
 ENT.AdminSpawnable = false

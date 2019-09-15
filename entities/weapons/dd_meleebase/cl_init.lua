@@ -122,6 +122,11 @@ function SWEP:GetViewModelPosition(pos, ang)
 	end
 	
 	local plang = MySelf:EyeAngles()
+	
+	if self.ViewmodelOffset then
+		pos = pos + self.ViewmodelOffset.x * plang:Right() + self.ViewmodelOffset.y * plang:Forward() + self.ViewmodelOffset.z * plang:Up()
+	end
+	
 	pos = pos + ( DD_VIEWMODEL_Z or 0 ) * plang:Up()
 		
 	return pos, ang

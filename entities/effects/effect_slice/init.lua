@@ -722,7 +722,7 @@ function EFFECT:Render()
 				render.SetStencilEnable( false )
 				
 				
-				if self:GetPos():DistToSqr(EyePos()) < 160000 then -- 400^2
+				if MySelf:EyePos():DistToSqr( pos ) < 160000 then -- 400^2
 				
 					//stay calm, skeleton
 					local distance = normal:Dot( pos - normal * ( self.MakeSecondPart and 1.3 or 1 ) )
@@ -846,7 +846,7 @@ function EFFECT:Render()
 				
 				self.NextDrip = self.NextDrip or 0
 						
-				if self.NextDrip <= ct then
+				if self.NextDrip <= ct and MySelf:EyePos():DistToSqr( pos ) < 250000 then
 					self.NextDrip = ct + 0.055
 					local emitter = ParticleEmitter( self:GetPos() )	
 					if emitter then

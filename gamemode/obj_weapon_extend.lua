@@ -37,6 +37,7 @@ net.Receive("Hitmarker",function( len )
 
 end)
 
+local matLine = Material("VGUI/gradient-r")
 function meta:DrawCrosshair()
 	//self:DrawCrosshairCross()
 	//self:DrawCrosshairDot()
@@ -67,12 +68,12 @@ function meta:DrawCrosshair()
 	local r,g,b = DD_CROSSHAIR_R or 255,DD_CROSSHAIR_G or 255,DD_CROSSHAIR_B or 255
 	local a = DD_CROSSHAIR_A or 100
 	
+	surface.SetDrawColor( Color( r, g, b, a) )
+	
 	//hitmarker
 	if hittime and hittime >= CurTime() then
-		surface.SetDrawColor(Color(r,g,b,a))
-		
-		local length = 36
-		length = math.sqrt(length)
+		local length = 6
+		//length = 6//math.sqrt(length)
 		local gap = 5
 		
 		surface.DrawLine(x-gap-length,y-gap-length,x-gap,y-gap)
@@ -81,19 +82,29 @@ function meta:DrawCrosshair()
 		surface.DrawLine(x+gap+length,y+gap+length,x+gap,y+gap)
 	end
 	
-	draw.SimpleText(text,"HL2_90",x,y-10,Color(r,g,b,a),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+	local crs_length = DD_CROSSHAIR_LENGTH or 12
+	local crs_thickness = DD_CROSSHAIR_THICKNESS or 2
+	local crs_gap = DD_CROSSHAIR_GAP or 6
 	
-	/*//stuff for some perks
-	if owner._ShiftUses then
-		
-		local text = " [   ] "
-		
-		draw.SimpleText(text,"HL2_100",x,y-12,Color(r,g,b,a),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		
-	end*/
+	surface.SetMaterial( matLine )
+
+	surface.DrawTexturedRectRotated( x + crs_gap / 2 + crs_length/2, y, crs_length, crs_thickness, 0 )
+	//surface.DrawTexturedRectRotated( x + crs_gap / 2 + crs_length/2, y, crs_length, crs_thickness, 0 )
+	
+	surface.DrawTexturedRectRotated( x, y + crs_gap / 2 + crs_length/2, crs_length, crs_thickness, 270 )
+	//surface.DrawTexturedRectRotated( x, y + crs_gap / 2 + crs_length/2, crs_length, crs_thickness, 270 )
+	
+	surface.DrawTexturedRectRotated( x - crs_gap / 2 - crs_length/2, y, crs_length, crs_thickness, 180 )
+	//surface.DrawTexturedRectRotated( x - crs_gap / 2 - crs_length/2, y, crs_length, crs_thickness, 180 )
+	
+	surface.DrawTexturedRectRotated( x, y - crs_gap / 2 - crs_length/2, crs_length, crs_thickness, 90 )
+	//surface.DrawTexturedRectRotated( x, y - crs_gap / 2 - crs_length/2, crs_length, crs_thickness, 90 )
+	
+	
+	/*draw.SimpleText(text,"HL2_90",x,y-10,Color(r,g,b,a),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	
 	if self.IsMelee then return end
-	draw.SimpleText("Q","HL2_50",x-.5,y-.5,Color(r,g,b,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+	draw.SimpleText("Q","HL2_50",x-.5,y-.5,Color(r,g,b,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)*/
 	
 end
 end

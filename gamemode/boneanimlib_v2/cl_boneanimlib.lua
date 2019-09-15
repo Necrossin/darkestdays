@@ -5,56 +5,15 @@ include("cl_animeditor.lua")
 
 local ANIMATIONFADEOUTTIME = 0.125
 
---[[usermessage.Hook("resetluaanim", function(um)
-	local ent = um:ReadEntity()
-	local anim = um:ReadString()
-	local time = um:ReadFloat()
-	local power = um:ReadFloat()
-	local timescale = um:ReadFloat()
-	if ent:IsValid() then
-		ent:ResetLuaAnimation(anim, time ~= -1 and time, power ~= -1 and power, timescale ~= -1 and timescale)
-	end
-end)
+local math_cos = math.cos
+local math_min = math.min
+local math_pi = math.pi
 
-usermessage.Hook("setluaanim", function(um)
-	local ent = um:ReadEntity()
-	local anim = um:ReadString()
-	local time = um:ReadFloat()
-	local power = um:ReadFloat()
-	local timescale = um:ReadFloat()
-	if ent:IsValid() then
-		ent:SetLuaAnimation(anim, time ~= -1 and time, power ~= -1 and power, timescale ~= -1 and timescale)
-	end
-end)
+local Angle = Angle
+local Matrix = Matrix
 
-usermessage.Hook("stopluaanim", function(um)
-	local ent = um:ReadEntity()
-	local anim = um:ReadString()
-	local tim = um:ReadFloat()
-	if tim == 0 then tim = nil end
-	if ent:IsValid() then
-		ent:StopLuaAnimation(anim, tim)
-	end
-end)
 
-usermessage.Hook("stopluaanimgp", function(um)
-	local ent = um:ReadEntity()
-	local animgroup = um:ReadString()
-	local tim = um:ReadFloat()
-	if tim == 0 then tim = nil end
-	if ent:IsValid() then
-		ent:StopLuaAnimationGroup(animgroup, tim)
-	end
-end)
-
-usermessage.Hook("stopallluaanim", function(um)
-	local ent = um:ReadEntity()
-	local tim = um:ReadFloat()
-	if tim == 0 then tim = nil end
-	if ent:IsValid() then
-		ent:StopAllLuaAnimations(tim)
-	end
-end)]]
+local player_GetAll = player.GetAll
 
 net.Receive("bal_reset", function(length)
 	local ent = net.ReadEntity()
@@ -123,9 +82,9 @@ local function AdvanceFrame(tGestureTable, tFrameData)
 	tGestureTable.FrameDelta = tGestureTable.FrameDelta + FrameTime() * tFrameData.FrameRate * tGestureTable.TimeScale
 	if tGestureTable.FrameDelta > 1 then
 		tGestureTable.Frame = tGestureTable.Frame + 1
-		tGestureTable.FrameDelta = math.min(1, tGestureTable.FrameDelta - 1)
+		tGestureTable.FrameDelta = math_min(1, tGestureTable.FrameDelta - 1)
 		if tGestureTable.Frame > #tGestureTable.FrameData then
-			tGestureTable.Frame = math.min(tGestureTable.RestartFrame or 1, #tGestureTable.FrameData)
+			tGestureTable.Frame = math_min(tGestureTable.RestartFrame or 1, #tGestureTable.FrameData)
 
 			return true
 		end
@@ -135,7 +94,7 @@ local function AdvanceFrame(tGestureTable, tFrameData)
 end
 
 local function CosineInterpolation(y1, y2, mu)
-	local mu2 = (1 - math.cos(mu * math.pi)) / 2
+	local mu2 = (1 - math_cos(mu * math_pi)) / 2
 	return y1 * (1 - mu2) + y2 * mu2
 end
 
@@ -248,11 +207,11 @@ local function ProcessAnimations(pl)
 				end
 			elseif tGestureTable.Type == TYPE_POSTURE then
 				if tGestureTable.OverrideTimeToArrive then
-					fFrameDelta = math.min(1, fFrameDelta + FrameTime() * (1 / tGestureTable.OverrideTimeToArrive( pl )))
+					fFrameDelta = math_min(1, fFrameDelta + FrameTime() * (1 / tGestureTable.OverrideTimeToArrive( pl )))
 					tGestureTable.FrameDelta = fFrameDelta
 				else
 					if fFrameDelta < 1 and tGestureTable.TimeToArrive then
-						fFrameDelta = math.min(1, fFrameDelta + FrameTime() * (1 / tGestureTable.TimeToArrive))
+						fFrameDelta = math_min(1, fFrameDelta + FrameTime() * (1 / tGestureTable.TimeToArrive))
 						tGestureTable.FrameDelta = fFrameDelta
 					end
 				end
@@ -268,7 +227,7 @@ local function ProcessAnimations(pl)
 end
 
 hook.Add("Think", "BoneAnimThink", function()
-	for _, pl in pairs(player.GetAll()) do
+	for _, pl in pairs( player_GetAll() ) do
 		if pl.LuaAnimations and pl:IsValid() then
 			ProcessAnimations(pl)
 		end
@@ -333,7 +292,7 @@ end
 function meta:SetLuaAnimationDieTime(sAnimation, fTime)
 	if self.LuaAnimations and self.LuaAnimations[sAnimation] then
 		if self.LuaAnimations[sAnimation].DieTime then
-			self.LuaAnimations[sAnimation].DieTime = math.min(self.LuaAnimations[sAnimation].DieTime, fTime)
+			self.LuaAnimations[sAnimation].DieTime = math_min(self.LuaAnimations[sAnimation].DieTime, fTime)
 		else
 			self.LuaAnimations[sAnimation].DieTime = fTime
 		end

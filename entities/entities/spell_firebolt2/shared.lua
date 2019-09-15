@@ -274,27 +274,28 @@ function ENT:OnDraw()
 	end
 
 end
-
-function ENT:HandDraw(owner,reverse,point)
+ENT.CanIgnorePassive = true
+function ENT:HandDraw( owner, reverse, point, ignore_passive )
 	//self.Emitter2:Draw()
-	
-	if point and not point.Particle then
-		ParticleEffectAttach("v_firebolt2",PATTACH_ABSORIGIN_FOLLOW,point,0)
-		point.Particle = true
-		self.Flame = nil
-		--point:EmitSound("ambient/fire/gascan_ignite1.wav",math.random(100,120),math.random(100,130))
+	if not ignore_passive then
+		if point and not point.Particle then
+			ParticleEffectAttach("v_firebolt2",PATTACH_ABSORIGIN_FOLLOW,point,0)
+			point.Particle = true
+			self.Flame = nil
+		end
 	end
 	
 	if self:GetDTFloat(1) and self:GetDTFloat(1) >= CurTime() /*and (self:GetDTFloat(1) - CurTime() <= 0.15)*/ and self:GetDTBool(0) then
 		if not self.Flame and point then
-			//point:StopParticles()
 			ParticleEffectAttach("v_firebolt2_stream",PATTACH_ABSORIGIN_FOLLOW,point,0)
 			self.Flame = true
 		end
 	else
 		if self.Flame and point then
 			point:StopParticles()
-			ParticleEffectAttach("v_firebolt2",PATTACH_ABSORIGIN_FOLLOW,point,0)
+			if not ignore_passive then
+				ParticleEffectAttach("v_firebolt2",PATTACH_ABSORIGIN_FOLLOW,point,0)
+			end
 			self.Flame = nil
 		end
 	end

@@ -5,6 +5,10 @@ function EFFECT:Init( data )
 	local pos = data:GetOrigin()
 	local norm = data:GetNormal():Angle()
 	local col = math.Round(data:GetScale())
+	
+	if MySelf:EyePos():DistToSqr( pos ) > 250000 then
+		return		
+	end
 
 	WorldSound("physics/surfaces/underwater_impact_bullet"..math.random(1, 3)..".wav", pos, math.random(70,80), math.random(100, 115))
 	
@@ -12,7 +16,7 @@ function EFFECT:Init( data )
 end
 
 function EFFECT:Think( )
-return false
+	return false
 end
 
 function EFFECT:Render()

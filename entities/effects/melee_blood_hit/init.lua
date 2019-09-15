@@ -23,6 +23,11 @@ function EFFECT:Init( data )
 	local pos = data:GetOrigin()*1
 	local norm = data:GetNormal()*10
 	
+	if MySelf:EyePos():DistToSqr( pos ) > 360000 then
+		self.DieTime = 0
+		return		
+	end
+	
 	ParticleEffect("dd_blood_impact2",pos,norm:Angle(),self.Entity)
 	
 	util.Decal("Blood", pos + norm, pos - norm)

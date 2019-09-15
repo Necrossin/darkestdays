@@ -1380,14 +1380,24 @@ local blood_mat = Material( "models/flesh" )
 		end
 		
 		local sp = self.Owner:GetCurrentSpell()
-		if sp and sp:IsValid() then
-			if sp.HandDraw and not self.Owner:IsJuggernaut() then
-				if point and point.LastSpell ~= sp then
-					point:StopParticles()
-					point.LastSpell = sp
-					point.Particle = nil
+		if sp and sp:IsValid() and point then
+			if sp.HandDraw then
+				if DD_DRAWHANDSPELLS then
+					if point.LastSpell ~= sp then
+						point:StopParticles()
+						point.LastSpell = sp
+						point.Particle = nil
+					end
+					sp:HandDraw(self.Owner,self.ReverseCastHand and true or false,point)
+				else
+					if point.Particle then
+						point:StopParticles()
+						point.Particle = nil
+					end
+					if sp.CanIgnorePassive then
+						sp:HandDraw( self.Owner, self.ReverseCastHand and true or false, point, true)
+					end
 				end
-				sp:HandDraw(self.Owner,self.ReverseCastHand and true or false,point)
 			end
 		end
 

@@ -11,6 +11,12 @@ local table = table
 local util = util
 local math = math
 
+local math_sqrt = math.sqrt
+local math_Clamp = math.Clamp
+local math_Round = math.Round
+local math_max = math.max
+local math_ceil = math.ceil
+
 if SERVER then
 	AddCSLuaFile("shared.lua")
 end
@@ -43,7 +49,8 @@ end
 function ENT:Cast()
 	
 	if self.ClearSpot and self.TPPos and self:GetDTFloat(1) <= CurTime() then
-		local amount = math.Clamp(math.Round(self.Dist/8),0,math.max(100,self.EntOwner:GetMaxMana()))
+		//local amount = math.Clamp(math.Round(self.Dist/8),0,math.max(100,self.EntOwner:GetMaxMana()))
+		local amount = math_Clamp( math_Round( math_sqrt( self.DistSqr ) / 8 ), 0, math_max( 100, self.EntOwner:GetMaxMana() ) )
 		if !self.EntOwner:CanCast(self,amount) then 
 			self.EntOwner._efCantCast = CurTime() + 1
 			return 
@@ -65,8 +72,9 @@ function ENT:CanCast()
 	local result = false
 	
 	if self.ClearSpot and self.TPPos and self:GetDTFloat(1) <= CurTime() then
-		local amount = math.Clamp(math.Round(self.Dist/8),0,math.max(100,self.EntOwner:GetMaxMana()))//100
-
+		//local amount = math.Clamp(math.Round(self.Dist/8),0,math.max(100,self.EntOwner:GetMaxMana()))//100
+		local amount = math_Clamp( math_Round( math_sqrt( self.DistSqr ) / 8 ), 0, math_max( 100, self.EntOwner:GetMaxMana() ) )
+		
 		result = self.EntOwner:CanCast(self,amount)
 	end
 
@@ -87,6 +95,8 @@ local hull_forward = {}
 local trace_forward_check = {}
 local extrace = {}
 local extrace_down = {}
+local bit_band = bit.band
+local vector_up = vector_up
 function ENT:OnThink()
 	
 	if !IsValid(self.EntOwner) then return end
@@ -99,18 +109,22 @@ function ENT:OnThink()
 	self.TPPos = nil
 	self.Normal = nil
 	self.Dist = 0
+	self.DistSqr = 0
 	
 	
 	trace.start = self.EntOwner:GetShootPos()
-	trace.endpos = self.EntOwner:GetShootPos()+self.EntOwner:GetAimVector()*math.max(100,self.EntOwner:GetMaxMana())*8//800
+	trace.endpos = self.EntOwner:GetShootPos()+self.EntOwner:GetAimVector()*math_max(100,self.EntOwner:GetMaxMana())*8//800
 	trace.filter = self.Filter
-	trace.mask = MASK_PLAYERSOLID_BRUSHONLY//MASK_VISIBLE + 
+	trace.mask = MASK_PLAYERSOLID_BRUSHONLY// - CONTENTS_PLAYERCLIP //MASK_VISIBLE + 
 	//trace.mins = mins
 	//trace.maxs = maxs
 	
 	local tr = util.TraceLine( trace )//util.TraceHull( trace )
 	
 	if tr.MatType == 88 then return end //dunno why it doesnt knows that mat_default is 88
+	if tr.HitTexture and tr.HitTexture == "TOOLS/TOOLSNODRAW" then return end
+	if bit_band( tr.Contents, CONTENTS_PLAYERCLIP ) ~= 0 then return end
+	
 	
 		if tr.Hit then
 		
@@ -136,7 +150,8 @@ function ENT:OnThink()
 
 						self.TPPos = hull.start//pos+Vector(0,0,2+i)
 						self.ClearSpot = true
-						self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+						//self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+						self.DistSqr = math_ceil( self.EntOwner:GetShootPos():DistToSqr( self.TPPos ) )
 						
 						if SERVER and (IsBlockedPosition(self.TPPos) or IsBlockedPosition(self.TPPos+vector_up*72)) then
 							self:SetDTFloat(1,CurTime()+1)
@@ -151,11 +166,11 @@ function ENT:OnThink()
 				for i=0,60 do
 				
 					
-					hull2.start = pos+Vector(0,0,2)+Vector(0,0,5*i)
-					hull2.endpos = pos+Vector(0,0,2)+Vector(0,0,5*i)
+					hull2.start = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
+					hull2.endpos = hull2.start //pos+Vector(0,0,2)+Vector(0,0,5*i)
 					hull2.mins = self.EntOwner:OBBMins()
 					hull2.maxs = self.EntOwner:OBBMaxs()
-					hull2.mask = MASK_PLAYERSOLID_BRUSHONLY
+					hull2.mask = MASK_PLAYERSOLID_BRUSHONLY - CONTENTS_PLAYERCLIP
 					
 					local trhull2 = util.TraceHull( hull2 )
 					
@@ -163,15 +178,15 @@ function ENT:OnThink()
 					
 						//check for out of map shit
 						
-						extrace.start = pos+Vector(0,0,2)+Vector(0,0,5*i)
-						extrace.endpos = pos+Vector(0,0,2)+Vector(0,0,5*i)+vector_up*500
+						extrace.start = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
+						extrace.endpos = pos + vector_up * 2 + vector_up * 5 * i + vector_up * 500 //pos+Vector(0,0,2)+Vector(0,0,5*i)+vector_up*500
 						extrace.filter = self.Filter
 						
 						
-						extrace_down.start = pos+Vector(0,0,2)+Vector(0,0,5*i)
-						extrace_down.endpos = pos+vector_up*-20
+						extrace_down.start = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
+						extrace_down.endpos = pos + vector_up * -20
 						extrace_down.filter = self.Filter
-						extrace_down.mask = MASK_PLAYERSOLID_BRUSHONLY
+						extrace_down.mask = MASK_PLAYERSOLID_BRUSHONLY - CONTENTS_PLAYERCLIP
 						//extrace_down.mask = MASK_SHOT_PORTAL
 						
 						--extrace.mask = MASK_VISIBLE + MASK_PLAYERSOLID_BRUSHONLY
@@ -181,10 +196,11 @@ function ENT:OnThink()
 						
 						
 						if !extr.HitSky and extr2.MatType ~= 88 and extr2.HitTexture ~= "TOOLS/TOOLSNODRAW" and extr2.HitTexture ~= "PLASTER/PLASTERWALL012A" then
-							self.CurPos = pos+Vector(0,0,2)+Vector(0,0,5*i)
-							self.TPPos = pos+Vector(0,0,2)+Vector(0,0,5*i)
+							self.CurPos = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
+							self.TPPos = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
 							self.ClearSpot = true
-							self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+							//self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+							self.DistSqr = math_ceil( self.EntOwner:GetShootPos():DistToSqr( self.TPPos ) )
 							
 							if SERVER and (IsBlockedPosition(self.TPPos) or IsBlockedPosition(self.TPPos+vector_up*72) or self.EntOwner:IsCarryingFlag() or GAMEMODE:GetGametype() == "ts") then
 								self:SetDTFloat(1,CurTime()+1)
@@ -199,7 +215,7 @@ function ENT:OnThink()
 				
 				local possible = tr.Normal * self:ManaToDistance()
 				
-				if tr.StartPos:Distance( tr.HitPos ) > tr.StartPos:Distance( possible ) and tr.StartPos:Distance( possible ) > 300 then
+				if tr.StartPos:DistToSqr( tr.HitPos ) > tr.StartPos:DistToSqr( possible ) and tr.StartPos:DistToSqr( possible ) > 90000 then
 					pos = possible
 					norm = tr.Normal * -1
 				end
@@ -218,7 +234,8 @@ function ENT:OnThink()
 
 						self.TPPos = hull_forward.start//+Vector(0,0,-60)
 						self.ClearSpot = true
-						self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+						//self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+						self.DistSqr = math_ceil( self.EntOwner:GetShootPos():DistToSqr( self.TPPos ) )
 												
 						if SERVER and (IsBlockedPosition(self.TPPos) or IsBlockedPosition(self.TPPos+vector_up*72)) then
 							self:SetDTFloat(1,CurTime()+1)
@@ -235,7 +252,7 @@ function ENT:OnThink()
 			
 			local possible = tr.StartPos + tr.Normal * self:ManaToDistance()
 						
-			if tr.StartPos:Distance( tr.HitPos ) > tr.StartPos:Distance( possible ) and tr.StartPos:Distance( possible ) > 300 then
+			if tr.StartPos:DistToSqr( tr.HitPos ) > tr.StartPos:DistToSqr( possible ) and tr.StartPos:DistToSqr( possible ) > 90000 then
 				pos = possible
 				norm = tr.Normal * -1
 			end
@@ -251,14 +268,13 @@ function ENT:OnThink()
 				--hull.mask = MASK_VISIBLE + MASK_PLAYERSOLID_BRUSHONLY
 						
 				local trhull = util.TraceHull( hull_forward )
-				
-				
-				
+	
 				if !trhull.Hit then
 
 					self.TPPos = hull_forward.start//+Vector(0,0,-60)
 					self.ClearSpot = true
-					self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+					//self.Dist = math.ceil(self.EntOwner:GetShootPos():Distance(self.TPPos))
+					self.DistSqr = math_ceil( self.EntOwner:GetShootPos():DistToSqr( self.TPPos ) )
 												
 					if SERVER and (IsBlockedPosition(self.TPPos) or IsBlockedPosition(self.TPPos+vector_up*72)) then
 						self:SetDTFloat(1,CurTime()+1)
