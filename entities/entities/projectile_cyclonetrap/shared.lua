@@ -173,11 +173,10 @@ function ENT:Think()
 end
 
 if CLIENT then
-local mat = Material( "sprites/rollermine_shock" )
+local mat = Material( "darkestdays/hud/cyclonetrap.png" )
+local col = Color( 255, 255, 255, 100 )
+local vector_up = vector_up
 function ENT:Draw()
-	//self:DrawModel()
-	
-	//if self:GetPos():Distance(EyePos()) > 990 then return end
 	
 	if not self.Particle then
 		self.Particle = "error"
@@ -209,124 +208,19 @@ function ENT:Draw()
 		end
 	end
 	
-	/*local pos = self:GetPos()+vector_up*4
-	local ang = self:GetAngles()
-	self.WParticles = self.WParticles or {}
-	
-	self.NextEmit = self.NextEmit or 0
-	
-	
-	
-	if self.NextEmit < CurTime() then 
+	if MySelf == self:GetOwner() then
 		
-		for num=0,3 do
-			self.WParticles[num] = {}
-					
-			for i=1, 4 do
-				self.WParticles[num][i] = self.Emitter:Add("sprites/heatwave", pos )
-			end
+		local pos = self:GetPos() + vector_up * 15
+		local norm = ( MySelf:EyePos() - pos ):GetNormal()
+		local size = 16
 		
-		end
+		render.SetMaterial( mat )
+		cam.IgnoreZ( true )
+		render.DrawQuadEasy( pos , norm, size, size, col, 180 )
+		cam.IgnoreZ( false )
 		
-		self.NextEmit = CurTime() + 0.1
-					
 	end
 	
-	for num=0,3 do
-
-		self.WParticles[num] = self.WParticles[num] or {}			
-				
-		local radius = 30-9*num
-
-		for i=1, #self.WParticles[num] do
-
-			local rad = math.random(0,10)+10*num		
-			local particle = self.WParticles[num][i] --self.Emitter:Add("sprites/heatwave", pos+ang:Forward()*3 +VectorRand()*1.4 )
-			particle:SetPos(pos+ang:Right()*math.sin( CurTime()*5+math.rad( rad*i ) ) * radius+ang:Up()*math.cos( CurTime()*5+math.rad( rad*i ) ) * radius)
-			particle:SetDieTime(math.Rand(0.8, 2))
-			particle:SetStartAlpha(125)
-			particle:SetStartSize(math.Rand(4, 10.5-num*1.5))
-			particle:SetEndSize(0)
-			particle:SetRoll(math.Rand(0, 360))
-			particle:SetRollDelta(math.Rand(-1, 1))
-			particle:SetGravity(vector_up*math.Rand(3,6))
-			particle:SetCollide(true)
-			particle:SetAirResistance(12)
-		end
-	end
-	
-	//charged (ebolt)
-	if self:GetDTBool(0) then
-		for num=1,10 do
-			render.SetMaterial( mat ) 
-				render.StartBeam( 4 )
-				render.AddBeam( pos , 2, 0, Color( 255, 255, 255, 255 ) )
-				for i=1, 2 do
-					local rand = VectorRand() * num*3
-					rand.z = math.random(-1,4)
-					local curpos = pos + rand
-					render.AddBeam( curpos , 2, CurTime() + i/2, Color( 255, 255, 255, 255 ) )
-				end
-					
-				render.AddBeam( pos+ VectorRand() * math.Rand(3,8) , 2, 1, Color( 255, 255, 255, 255 ) )
-			render.EndBeam()
-		end
-	end
-	
-	//charged (fire)
-	if self:GetDTBool(1) then
-		self.NextTick = self.NextTick or 0
-		
-		if self.NextTick < CurTime() then
-			self.NextTick = CurTime() + 0.07
-			
-			for i=1,math.random(2,4) do 
-				local rand = VectorRand()*math.random(0,30)
-				rand.z = math.Rand(-1,1)
-				local particle = self.Emitter:Add("effects/fire_cloud"..math.random(1,2), pos+rand )
-				--particle:SetVelocity(owner:GetVelocity())
-				particle:SetDieTime(math.Rand(1, 1.5))
-				particle:SetStartAlpha(255)
-				particle:SetStartSize(math.Rand(4, 11))
-				particle:SetEndSize(0)
-				particle:SetRoll(math.Rand(0, 360))
-				particle:SetRollDelta(math.Rand(-1, 1))
-				particle:SetGravity(Vector(0,0,30))
-				particle:SetCollide(true)
-				particle:SetLighting(math.random(1,3) == 3 and true or false)
-				particle:SetAirResistance(12)
-			end
-		end
-	end
-	
-	//charged (snow)
-	if self:GetDTBool(2) then
-		self.NextTick = self.NextTick or 0
-		
-		if self.NextTick < CurTime() then
-			self.NextTick = CurTime() + 0.07
-			
-				for i=1,math.random(2,4) do 
-					local rand = VectorRand()*math.random(0,30)
-					rand.z = math.Rand(-1,1)
-					local particle = self.Emitter:Add(math.random(1,2) == 1 and "particle/smokesprites_000"..math.random(1,9).."" or "particle/smokesprites_00"..math.random(10,16).."", pos+rand )
-					--particle:SetVelocity(owner:GetVelocity())
-					particle:SetDieTime(math.Rand(1, 1.5))
-					particle:SetStartAlpha(255)
-					local rand = math.random(130,245)
-					particle:SetColor(rand,rand,255)
-					particle:SetStartSize(math.Rand(7, 11))
-					particle:SetEndSize(math.Rand(7, 11))
-					particle:SetRoll(math.Rand(0, 360))
-					particle:SetRollDelta(math.Rand(-1, 1))
-					particle:SetGravity(VectorRand()*math.random(-40,40))
-					particle:SetCollide(true)
-					--particle:SetLighting(true)
-					particle:SetAirResistance(12)
-				end
-		end
-	end
-	*/
 end
 end
 

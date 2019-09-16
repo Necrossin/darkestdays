@@ -632,7 +632,7 @@ end
 function SWEP:TakeAmmo()
 	if SERVER then
 		local totake = 1
-		if self.Owner and self.Owner._DefaultBulletConsumeBonus > 0 and !self.IsShotgun then
+		if self.Owner and self.Owner._DefaultBulletConsumeBonus > 0 then// and !self.IsShotgun then
 			if math.Rand(0,1) <= self.Owner._DefaultBulletConsumeBonus then
 				totake = 0
 			end

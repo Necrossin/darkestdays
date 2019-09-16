@@ -382,7 +382,7 @@ CaliberDamage = {
 	[CAL_9] = 13,
 	[CAL_11_43] = 18,
 	[CAL_11_20] = 60,
-	[CAL_12_GAUGE] = 10,
+	[CAL_12_GAUGE] = 9,
 }
 
 // Faloff distance
@@ -564,10 +564,10 @@ Weapons = {
 	["dd_fists"] = {
 		Name = "Fists",
 		Melee = true,
-		Pr = "Chance to deal critical damage\n+25 max sprint speed\n+40% faster block movement", 
-		Co = "Limits primary weapon to 1 clip\nCan only block fists", 
+		Pr = "Chance to deal critical damage\n+25 max sprint speed", 
+		Co = "Can only block fists", 
 		Description = "", 
-		OnSet = function(pl) pl._DefaultRunSpeedBonus = pl._DefaultRunSpeedBonus + 25; pl:RemoveAllAmmo() end
+		OnSet = function(pl) pl._DefaultRunSpeedBonus = pl._DefaultRunSpeedBonus + 25 end
 	},
 	["dd_cleaver"] = {
 		Name = "Cleaver",
@@ -620,7 +620,7 @@ Weapons = {
 		Mat = Material( "darkestdays/icons/striker_256x128.png", "smooth" ),
 		Pr = "It is a pretty big gun", 
 		Co = "Cannot use spells\n-65 max speed on wearer\nUnable to sprint\n-70% magic shield capacity",
-		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 65; pl._DefaultRunSpeedBonus = 0; if pl:GetMagicShield() then pl:GetMagicShield().ManaPercentage = pl:GetMagicShield().ManaPercentage * 0.3; pl:GetMagicShield():ResetShield() end end
+		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 65; pl._DefaultRunSpeedBonus = 0 end
 	},
 	["dd_sledge"] = {
 		Name = "Mr Sledge 3.0", 
@@ -683,7 +683,7 @@ Spells = {
 	["firebolt2"] = {Name = "Flame Stream",Mat = Material( "darkestdays/hud/firebolt2.png" ), Pr = "- Portable flamethrower\n- Can ignite cyclone traps", Co = "- High usage of mana", Description = ""},
 	["scorn"] = {Name = "Scorn",Mat = Material( "darkestdays/hud/scorn.png" ), Pr = "- Creates a ball of dark energy\n- Ball will bounce off walls\n - Accumulates damage via bouncing\n- Can penetrate 1 target", Co = "",Description = ""},
 	//["cotn"] = {Name = "Curse of the Night",Mat = Material( "darkestdays/hud/cotn.png" ), Pr = "- Become a crow for few seconds", Co = "- You will die in cramped areas",Description = ""},
-	["murderofcrows"] = {Name = "Murder of Crows",Mat = Material( "darkestdays/hud/murderofcrows.png" ), Pr = "- Unleash a flock of deadly crows\n- Crows home on nearby target(s)", Co = "", Description = ""},
+	["murderofcrows"] = {Name = "Murder of Crows",Mat = Material( "darkestdays/hud/murderofcrows.png" ), Pr = "- Summon a flock of 6 crow companions\n- Crows will attack all nearby enemies", Co = "- Only one active flock at a time\n- Crows dissapear after 20 seconds\n- Crows will die from ANY damage", Description = ""},
 	["cursedflames"] = {Name = "Cursed Flames",Mat = Material( "darkestdays/hud/cursedflames.png" ), Pr = "- Create few small homing fireballs", Co = "- No damage done on first second\n- Owner is not immune to damage", Description = ""},
 	["barrier"] = {Name = "Barrier",Mat = Material( "darkestdays/hud/barrier.png" ), Pr = "- Deploy 3 magic barriers for 6 seconds\n- Caster is able to shoot through\n- Barrier absorbs all incoming damage", Co = "- Doesn't blocks player movement",Description = ""},
 	["raiseundead"] = {Name = "Raise Undead",Mat = Material( "darkestdays/hud/raiseundead.png" ), Pr = "- Raise an undead AntGuard for\nfew seconds", Co = "- Necromancy: Requires an orb to cast",Description = ""},

@@ -624,9 +624,11 @@ function meta:DropKick()
 	
 	if self._NextKick >= CurTime() then return end
 	
+	self:SetVelocity( vector_up * 200 )
+	
 	self._NextKick = CurTime() + 2
 	self._NextSlide = 0
-	self:Slide( 0.32 )
+	self:Slide( 0.4 )
 	
 	/*kick_trace.start = self:GetShootPos()
 	kick_trace.endpos = kick_trace.start + self:GetForward() * 72
@@ -697,6 +699,7 @@ function meta:Slide( dropkick )
 	local slide = self:SetEffect("slide")
 	if slide and dropkick then
 		slide.DropKickFrames = CurTime() + dropkick
+		slide.SaveVel = self:GetVelocity()
 	end
 	self:SetLuaAnimation("slide")
 	

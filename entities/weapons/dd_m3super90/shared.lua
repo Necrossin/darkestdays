@@ -77,10 +77,11 @@ SWEP.Caliber = CAL_12_GAUGE
 
 SWEP.Primary.Sound			= Sound( "Weapon_M3.SingleDD" )//Sound("Weapon_M3.Single")
 SWEP.Primary.Recoil			= 3//20 -- 3.5
+SWEP.Primary.RecoilKick 	= 1 
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 12//10
 SWEP.Primary.ClipSize		= 5
-SWEP.Primary.Delay			= 1
+SWEP.Primary.Delay			= 1.25
 SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//18
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "buckshot"
@@ -100,16 +101,16 @@ SWEP.ViewmodelOffset = Vector(-4, 0, 0)
 SWEP.SprintPos = Vector(1.588, -7.644, 0.592)
 SWEP.SprintAng = Angle(-13.195, 46.192, -17.199)
 
-SWEP.Primary.Cone = 0.11
-SWEP.Primary.ConeMoving = 0.14
-SWEP.Primary.ConeCrouching = 0.08
+SWEP.Primary.Cone = 0.13
+SWEP.Primary.ConeMoving = 0.13
+SWEP.Primary.ConeCrouching = 0.09
 
 //SWEP.Tracer = ""
 
 SWEP.MuzzleEffect			= "rg_muzzle_hmg"
 SWEP.ShellEffect			= "rg_shelleject_shotgun" 
 
-SWEP.ReloadDelay = 0.4
+SWEP.ReloadDelay = 0.6
 
 SWEP.reloadtimer = 0
 SWEP.nextreloadfinish = 0
@@ -126,7 +127,7 @@ end
 function SWEP:SendWeaponAnimation()
 	local vm = self:GetOwner():GetViewModel()
 	vm:SendViewModelMatchingSequence( vm:LookupSequence( "shoot2" ) )
-	vm:SetPlaybackRate( 1 )
+	vm:SetPlaybackRate( 0.8 )	
 end
 
 -- more snippets from zs weapon base

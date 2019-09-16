@@ -69,6 +69,7 @@ function ENT:CreateTrap(pos)
 	trap:SetPos(pos+vector_up*5)
 	trap:SetAngles(Angle(90,0,0))
 	trap.EntOwner = self.EntOwner
+	trap:SetOwner( self.EntOwner )
 	trap:SetDTEntity(0,self.Entity)
 	trap:Spawn()
 	trap:EmitSound("ambient/water/water_splash"..math.random(1,3)..".wav",150,math.random(100,120))

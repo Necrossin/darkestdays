@@ -1562,6 +1562,8 @@ local blood_mat = Material( "models/flesh" )
 	SWEP.wRenderOrder = nil
 	function SWEP:DrawWorldModel()
 
+		if self.Owner:IsCrow() then return end
+	
 		if (self.ShowWorldModel == nil or self.ShowWorldModel) then
 			if wtf and not self.tex then
 				local ind = math.random( 1, 10 )

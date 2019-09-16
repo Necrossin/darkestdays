@@ -1912,7 +1912,7 @@ function GM:KeyPress( pl, key )
 	
 	local wep = pl:GetActiveWeapon()
 	
-	if key == IN_ATTACK and pl:IsRunning() and !pl:OnGround() and !pl:IsWallrunning() and wep and wep:IsValid() and wep:GetClass() == "dd_fists" and pl:GetPerk( "martialarts" ) and pl:KeyDown( IN_SPEED ) then//and pl:KeyDown( IN_JUMP ) then
+	if key == IN_ATTACK and pl:IsRunning() and !pl:OnGround() and !pl:IsWallrunning() and wep and wep:IsValid() and wep:GetClass() == "dd_fists" and pl:GetPerk( "martialarts" ) then// and pl:KeyDown( IN_SPEED ) then
 		wep:SetNextPrimaryFire(CurTime() + 0.5)
 		pl:DropKick()
 	end
@@ -2233,8 +2233,8 @@ function GM:EntityTakeDamage( ent,dmginfo )
 			
 			local norm = dmginfo:GetDamageForce( ):GetNormal()
 			
-			sh:DrainShield( dmginfo:GetDamage() * sh.DamageAbsorbsion, norm )
-			dmginfo:ScaleDamage( 1 - sh.DamageAbsorbsion )
+			sh:DrainShield( dmginfo:GetDamage() * sh.DamageAbsorbtion, norm )
+			dmginfo:ScaleDamage( 1 - sh.DamageAbsorbtion )
 			
 			local e = EffectData()
 			e:SetOrigin(dmginfo:GetDamagePosition()+norm*-16)

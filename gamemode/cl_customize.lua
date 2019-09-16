@@ -1023,16 +1023,23 @@ function OptionsMenu()
 		local x = CrosshairPr:GetWide()/2
 		local y = CrosshairPr:GetTall()/2
 	
+		local col = CrosshairMix:GetColor()
+		col.a = col.a / 2
+	
 		surface.SetMaterial( matLine )
-		surface.SetDrawColor( CrosshairMix:GetColor() )
+		surface.SetDrawColor( col )
 
 		surface.DrawTexturedRectRotated( x + crs_gap / 2 + crs_length/2, y, crs_length, crs_thickness, 0 )
+		surface.DrawTexturedRectRotated( x + crs_gap / 2 + crs_length/2, y, crs_length, crs_thickness, 180 )
 		
 		surface.DrawTexturedRectRotated( x, y + crs_gap / 2 + crs_length/2, crs_length, crs_thickness, 270 )
+		surface.DrawTexturedRectRotated( x, y + crs_gap / 2 + crs_length/2, crs_length, crs_thickness, 90 )
 		
 		surface.DrawTexturedRectRotated( x - crs_gap / 2 - crs_length/2, y, crs_length, crs_thickness, 180 )
+		surface.DrawTexturedRectRotated( x - crs_gap / 2 - crs_length/2, y, crs_length, crs_thickness, 0 )
 		
 		surface.DrawTexturedRectRotated( x, y - crs_gap / 2 - crs_length/2, crs_length, crs_thickness, 90 )
+		surface.DrawTexturedRectRotated( x, y - crs_gap / 2 - crs_length/2, crs_length, crs_thickness, 270 )
 		
 	end
 	

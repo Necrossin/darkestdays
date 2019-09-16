@@ -74,10 +74,11 @@ SWEP.Caliber = CAL_12_GAUGE
 
 SWEP.Primary.Sound			= Sound("Weapon_Riot.SingleDD")
 SWEP.Primary.Recoil			= 3.5
+SWEP.Primary.RecoilKick 	= 1 
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 10//8
 SWEP.Primary.ClipSize		= 8
-SWEP.Primary.Delay			= 0.9
+SWEP.Primary.Delay			= 0.7
 SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//16
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "buckshot"
@@ -92,9 +93,9 @@ sound.Add( {
 	sound = "weapons/xm1014/xm1014-1.wav"
 } )
 
-SWEP.Primary.Cone = 0.13
-SWEP.Primary.ConeMoving = 0.13
-SWEP.Primary.ConeCrouching = 0.09
+SWEP.Primary.Cone = 0.11
+SWEP.Primary.ConeMoving = 0.14
+SWEP.Primary.ConeCrouching = 0.08
 
 //SWEP.Tracer = ""
 
@@ -104,7 +105,7 @@ SWEP.ShellEffect			= "rg_shelleject_shotgun"
 SWEP.SprintPos = Vector(1.588, -7.644, 0.592)
 SWEP.SprintAng = Angle(-13.195, 46.192, -17.199)
 
-SWEP.ReloadDelay = 0.5
+SWEP.ReloadDelay = 0.6
 
 SWEP.reloadtimer = 0
 SWEP.nextreloadfinish = 0

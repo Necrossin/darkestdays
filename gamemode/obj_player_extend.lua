@@ -171,22 +171,13 @@ function meta:GetVoiceSet()
 end
 
 function meta:GetThirdPersonCameraPosAng(origin, angles)
-	//origin = origin + angles:Right()*30
-	local allplayers = {player.GetAll(),ents.FindByClass("htf_flag")}
-	//if GetHillEntity() then
-		//allplayers = {player.GetAll(),GetHillEntity()}
-	//end
-	local tr = util.TraceHull({start = origin + angles:Right()*DD_THIRDPERSON_Y/2, endpos = origin + angles:Right()*DD_THIRDPERSON_Y+ angles:Up()*DD_THIRDPERSON_Z + self:GetAimVector() * -math.max(DD_THIRDPERSON_X, self:BoundingRadius()), mask = MASK_SHOT, filter = allplayers, mins = ViewHullMins, maxs = ViewHullMaxs})
+	
+	//local allplayers = {player.GetAll(),ents.FindByClass("htf_flag")}
+	local tr = util.TraceHull({start = origin + angles:Right()*DD_THIRDPERSON_Y/2, endpos = origin + angles:Right()*DD_THIRDPERSON_Y+ angles:Up()*DD_THIRDPERSON_Z + self:GetAimVector() * -math.max(DD_THIRDPERSON_X, self:BoundingRadius()), mask = MASK_PLAYERSOLID_BRUSHONLY, filter = self, mins = ViewHullMins, maxs = ViewHullMaxs})
 	local hit = self:GetEyeTrace().HitPos
 	local aimang = (hit - (tr.HitPos + tr.HitNormal* 5)):GetNormalized():Angle()
 	
-	//self:SetEyeAngles( aimang )
-	
-	//angles = Angle(aimang.p,aimang.y,aimang.r)
-	//ang:RotateAroundAxis(vector_up,40)
-	//angles.y = self:SyncAngles().y
-	
-	return tr.HitPos + tr.HitNormal* 5, angles//Angle(aimang.p,angles.y,aimang.r)
+	return tr.HitPos + tr.HitNormal* 5, angles
 end
 
 function meta:CanJoinTeam(t)

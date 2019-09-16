@@ -16,7 +16,7 @@ util.PrecacheSound("ambient/levels/citadel/weapon_disintegrate3.wav")
 util.PrecacheSound("ambient/levels/citadel/weapon_disintegrate4.wav")
 
 ENT.ManaPercentage = 0.35
-ENT.DamageAbsorbsion = 0.3
+ENT.DamageAbsorbtion = 0.3
 ENT.RechargeTime = 25
 
 function ENT:Initialize()
@@ -43,12 +43,17 @@ end
 function ENT:ResetShield()
 
 	if self.EntOwner:GetPerk("transcendence") then
-		self.DamageAbsorbsion = 0.6
+		self.DamageAbsorbtion = 0.6
 		self.RechargeTime = 10
 		self.ManaPercentage = 0.5
 	end
 
 	self.Energy = math.Round(self.EntOwner._DefaultMana*self.ManaPercentage)
+	
+	if self.EntOwner:HasWeapon( "dd_striker" ) then
+		self.Energy = math.Round( self.Energy * 0.3 )
+	end
+	
 	self:SetDTBool(0,true)
 end
 

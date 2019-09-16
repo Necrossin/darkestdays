@@ -24,7 +24,7 @@ end
 
 ENT.Target = NULL
 
-local c_maxbound = Vector(3, 3, 3)
+local c_maxbound = Vector(8, 8, 8)
 local c_minbound = c_maxbound * -1
 
 local player_GetAll = player.GetAll
@@ -34,7 +34,7 @@ function ENT:Initialize()
 	self:DrawShadow(false)
 	self:SetModel("models/crow.mdl")
 	
-	self:PhysicsInitSphere(6)
+	self:PhysicsInitSphere(16)
 	self:SetCollisionBounds( c_maxbound, c_minbound )
 	--self:PhysicsInit(SOLID_VPHYSICS)
 
@@ -55,7 +55,7 @@ function ENT:Initialize()
 		phys:Wake()
 	end
 
-	self.DeathTime = CurTime() + math.random(7,9)
+	self.DeathTime = CurTime() + 20//math.random(7,9)
 end
 
 function ENT:Think()
@@ -68,9 +68,15 @@ function ENT:Think()
 		return
 	end
 
-	if self.DeathTime <= CurTime() or self.PhysicsData and (!IsValid(self.Target) or IsValid(self.Target) and (!self.Target:Alive() or self.Target:IsGhosting())) then
+	if self.DeathTime <= CurTime() then// or self.PhysicsData and (!IsValid(self.Target) or IsValid(self.Target) and (!self.Target:Alive() or self.Target:IsGhosting())) then
 		self:Remove()
 	else
+	
+		if IsValid(self.Target) and !self.Target:Alive() then
+			self.Target = NULL
+		end
+	
+		//follow target
 		local target = self.Target
 		if IsValid(target) and target:Alive() and not target:IsGhosting() then
 			local mypos = self:GetPos()
@@ -90,11 +96,29 @@ function ENT:Think()
 		else
 			local mypos = self:GetPos()
 			for _, ent in ipairs(player_GetAll()) do
-				if ent:IsPlayer() and not ent:IsTeammate(self:GetOwner()) /*ent:Team() ~= self:GetOwner():Team()*/ and ent:Alive() and ent:GetPos():Distance(mypos) <= 256 and TrueVisible(mypos, ent:NearestPoint(mypos)) then
+				if ent:IsPlayer() and not ent:IsTeammate(self:GetOwner()) /*ent:Team() ~= self:GetOwner():Team()*/ and ent:Alive() and ent:GetPos():DistToSqr(mypos) <= 65536 and TrueVisible(mypos, ent:NearestPoint(mypos)) then
 					self.Target = ent
 					break
 				end
 			end
+			
+			//follow owner
+			local owner = self:GetOwner()
+			local mypos = self:GetPos()
+			local nearest = (owner:NearestPoint(mypos) + owner:LocalToWorld(owner:OBBCenter()) * 0.6) / 1.6
+			local vHeading = (nearest - mypos):GetNormalized()
+			local aOldHeading = self:GetVelocity():Angle()
+
+			self:SetAngles(aOldHeading)
+			local diffang = self:WorldToLocalAngles(vHeading:Angle())
+
+			local ft = FrameTime()*math.Rand(1,13)// * math.max(3, math.min(7, 7 - nearest:Distance(mypos) * 0.97))
+			aOldHeading:RotateAroundAxis(aOldHeading:Up(), (diffang.yaw + math.Rand(-10, 10))* ft)
+			aOldHeading:RotateAroundAxis(aOldHeading:Right(), (diffang.pitch + math.Rand(-40, 40))* -ft)
+
+			local vNewHeading = aOldHeading:Forward()
+			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(280,330))
+			
 		end
 	end
 
@@ -122,7 +146,7 @@ function ENT:Attack(obj,hitpos, hitnormal)
 	
 	if obj and obj:IsPlayer() and not self.EntOwner:IsTeammate(obj) then//obj:Team() ~= self.EntOwner:Team() then
 		if self.NextAttack < CurTime() then
-			self.NextAttack = CurTime() + math.Rand(0.95,1.1)//0.74
+			self.NextAttack = CurTime() + math.Rand(0.9,1.1)//0.74
 			local Dmg = DamageInfo()
 			Dmg:SetAttacker(self.EntOwner or self.Entity)
 			Dmg:SetInflictor(self.Entity)
@@ -240,6 +264,13 @@ end
 
 function ENT:DrawTranslucent()
 
+	local blend
+	
+	if MySelf == self:GetOwner() then
+		local dist_sqr = MySelf:EyePos():DistToSqr( self:GetPos() )
+		blend = math.Clamp( dist_sqr / 2000, 0.3, 1 )
+	end
+
 	self.NextSeq = self.NextSeq or 0
 	self.Entity:SetPlaybackRate( self.PlaybackRate or 3 )
 	if self.NextSeq <= CurTime() then
@@ -249,7 +280,9 @@ function ENT:DrawTranslucent()
 
 	self:FrameAdvance( ( RealTime() - ( self.LastRender or 0 ) ) * ( 1 ) )
 	--self:SetPlaybackRate( self.PlaybackRate or 3 )
+	if blend then render.SetBlend( blend ) end
 	self:DrawModel()
+	if blend then render.SetBlend( 1 ) end
 	self.LastRender = RealTime()
 	
 end

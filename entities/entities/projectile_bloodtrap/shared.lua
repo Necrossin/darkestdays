@@ -194,6 +194,8 @@ function ENT:OnRemove()
 	//end
 end
 
+local mat = Material( "darkestdays/hud/bloodtrap.png" )
+local col = Color( 255, 255, 255, 100 )
 function ENT:Draw()
 	--self:DrawModel()
 	
@@ -202,6 +204,19 @@ function ENT:Draw()
 	if not self.Particle then
 		ParticleEffect("bloodtrap_projectile",pos,Angle(0,0,0),self.Entity)
 		self.Particle = true
+	end
+	
+	if MySelf == self:GetOwner() then
+		
+		local pos = self:GetPos()
+		local norm = ( MySelf:EyePos() - pos ):GetNormal()
+		local size = 16 + ( self:GetDTBool( 0 ) and math.sin( RealTime() * 10 ) * 3 or 0 )
+		
+		render.SetMaterial( mat )
+		cam.IgnoreZ( true )
+		render.DrawQuadEasy( pos , norm, size, size, col, ( CurTime() * -10 ) % 360 )
+		cam.IgnoreZ( false )
+		
 	end
 	
 	//if self:GetPos():Distance(EyePos()) > 990 then return end

@@ -60,6 +60,7 @@ function ENT:CreateTrap(pos)
 	trap:SetPos(pos+vector_up*-2)
 	trap:SetAngles(Angle(90,0,0))
 	trap.EntOwner = self.EntOwner
+	trap:SetOwner( self.EntOwner )
 	trap:SetDTEntity(0,self.Entity)
 	trap:Spawn()
 	

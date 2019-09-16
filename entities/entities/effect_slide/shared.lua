@@ -70,13 +70,13 @@ function ENT:OnRemove()
 	end
 end
 
-local kick_trace = { mask = MASK_SOLID, mins = Vector( -16, -16, -40 ), maxs = Vector( 16, 16, 10 ) }
+local kick_trace = { mask = MASK_SOLID, mins = Vector( -16, -16, -50 ), maxs = Vector( 16, 16, 10 ) }
 function ENT:CheckDropKick()
 	
-	if not self.DidDropKick and self.DropKickFrames and self.DropKickFrames > CurTime() then
+	if not self.DidDropKick and self.DropKickFrames and self.DropKickFrames > CurTime() and not self.EntOwner:OnGround() then
 		
 		kick_trace.start = self.EntOwner:GetShootPos()
-		kick_trace.endpos = kick_trace.start + self.EntOwner:GetForward() * 64
+		kick_trace.endpos = kick_trace.start + self.EntOwner:GetForward() * 72
 		kick_trace.filter = self.EntOwner:GetMeleeFilter()
 		
 		local tr = util.TraceHull( kick_trace )
@@ -87,6 +87,10 @@ function ENT:CheckDropKick()
 			if hitent and hitent:IsValid() then
 			
 				self.DidDropKick = true
+				
+				if self.SaveVel then
+					self.EntOwner:SetLocalVelocity( self.SaveVel )
+				end
 			
 				if hitent:GetClass() == "func_breakable_surf" then
 					hitent:Fire("break", "", 0)
@@ -139,7 +143,7 @@ function ENT:Think()
 		end
 		
 		
-		if self.EntOwner._NextKick and self.EntOwner._NextKick > CurTime() and self.EntOwner:GetVelocity():LengthSqr() > 10000 then// and !self.EntOwner:OnGround() then
+		if self.EntOwner._NextKick and self.EntOwner._NextKick > CurTime() and self.EntOwner:GetVelocity():LengthSqr() > 1600 then// and !self.EntOwner:OnGround() then
 			//basically player is forced to slide for the duration of kick effect, otherwise obey the normal sliding rules
 		else
 			if not self.EntOwner:KeyDown(IN_DUCK) or self.EntOwner:GetVelocity():LengthSqr() < 40000 then //self.EntOwner:KeyDown(IN_JUMP) or 
@@ -157,6 +161,7 @@ function ENT:Think()
 		end
 	end
 	self:NextThink( CurTime() )
+	return true
 end
 
 function ENT:SetNextJump( time )

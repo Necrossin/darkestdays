@@ -105,7 +105,7 @@ function ENT:DoDash()
 	vec.z = 140 * self:GetChargePower()
 	
 	if self:GetChargePower() >= 0.5 then
-		self:SetDTFloat(1,CurTime()+1.2)
+		self:SetDTFloat( 1, CurTime()+ 1 )
 		self.EntOwner._WallJumpBonus = CurTime()+2
 		--self.EntOwner:PlayGesture( ACT_GMOD_GESTURE_BOW )
 	end
@@ -142,8 +142,6 @@ function ENT:DoDash()
 	self.EntOwner:SetGroundEntity(NULL)
 	self.EntOwner:SetLocalVelocity(vec)
 
-	
-	
 end
 
 local trace = { mask = MASK_PLAYERSOLID }
@@ -170,13 +168,13 @@ function ENT:OnThink()
 	
 	if SERVER then
 	
-		if self:GetDTFloat(1) >= CurTime() then
+		if self:GetDTFloat(1) >= CurTime() and self.EntOwner:GetVelocity():LengthSqr() > 40000 then
 	
 			local aimvec = self.EntOwner:GetAimVector()
 
 			trace.start = self.EntOwner:GetShootPos()
 			trace.endpos = self.EntOwner:GetShootPos() + aimvec * 16
-			trace.mins = Vector(-8,-8,-14)
+			trace.mins = Vector(-8,-8, self.EntOwner:Crouching() and self.EntOwner:OnGround() and -10 or -40)
 			trace.maxs = Vector(8,8,8)
 			trace.filter = self.EntOwner
 				

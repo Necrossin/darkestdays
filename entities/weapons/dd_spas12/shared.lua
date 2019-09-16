@@ -77,8 +77,9 @@ SWEP.Caliber = CAL_12_GAUGE
 
 SWEP.Primary.Sound			= Sound("Weapon_Shotgun.DoubleDD")//Sound("Weapon_Shotgun.Single")
 SWEP.Primary.Recoil			= 5//25 -- 3.5
+SWEP.Primary.RecoilKick		= 0.3
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
-SWEP.Primary.NumShots		= 7//5
+SWEP.Primary.NumShots		= 6//5
 SWEP.Primary.ClipSize		= 2//4
 SWEP.Primary.Delay			= 0.25
 SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//16
@@ -87,9 +88,9 @@ SWEP.Primary.Ammo			= "buckshot"
 SWEP.IsShotgun = true
 SWEP.ReloadSound			= Sound("Weapon_Shotgun.Reload")
 
-SWEP.Primary.Cone = 0.2
-SWEP.Primary.ConeMoving = 0.22
-SWEP.Primary.ConeCrouching = 0.22
+SWEP.Primary.Cone = 0.1
+SWEP.Primary.ConeMoving = 0.12
+SWEP.Primary.ConeCrouching = 0.1
 
 SWEP.SprintPos = Vector(0.201, -15.277, -3.217)
 SWEP.SprintAng = Angle(-7.035, 53.466, -24.623)
@@ -110,7 +111,7 @@ SWEP.ShellEffect			= "rg_shelleject_shotgun"
 
 //SWEP.MuzzleAttachment = "muzzle"
 
-SWEP.ReloadDelay = 0.3
+SWEP.ReloadDelay = 0.8
 
 SWEP.reloadtimer = 0
 SWEP.nextreloadfinish = 0
@@ -158,7 +159,11 @@ function SWEP:DoReload()
 		return
 	end
 	
+	local vm = self:GetOwner():GetViewModel()
+	
 	self:SendWeaponAnim(ACT_VM_RELOAD)
+	vm:SetPlaybackRate( 0.5 )
+	//print(vm:SequenceDuration() / 0.5)
 	self:EmitSound( self.ReloadSound )
 	--self.Owner:AnimRestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_HL2MP_GESTURE_RELOAD_SHOTGUN ) 
 

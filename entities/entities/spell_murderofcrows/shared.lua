@@ -4,7 +4,7 @@ ENT.Type = "anim"
 ENT.Base = "spell__base"
 
 ENT.Mana = 75
-ENT.Damage = 3*7
+ENT.Damage = 6 * 1
 
 ENT.CastGesture = ACT_SIGNAL_FORWARD
 
@@ -24,59 +24,21 @@ util.PrecacheSound("npc/crow/hop1.wav")
 util.PrecacheSound("npc/crow/hop2.wav")
 util.PrecacheSound("npc/crow/flap2.wav")
 
+if SERVER then
+function ENT:OnInitialize()
+	self.Crows = {}
+end
+end
+
 function ENT:Cast()
 	
 	if !self.EntOwner:CanCast(self) then 
 		self.EntOwner._efCantCast = CurTime() + 1
 	return end
 	
-	/*local distance = 460
-	local aimvec = self.EntOwner:GetAimVector()
-	
-	local trace = util.TraceLine({start = self.EntOwner:GetShootPos(), endpos = self.EntOwner:GetShootPos() + aimvec * distance, filter = self.EntOwner})
-	
-	local tr = {}
-	tr.start = self.EntOwner:GetShootPos()
-	tr.endpos = self.EntOwner:GetShootPos() + aimvec * distance
-	tr.mins = Vector(-22,-22,-14)
-	tr.maxs = Vector(22,22,14)
-	tr.filter = self.EntOwner
-	
-	tr = util.TraceHull(tr)
-	
-	if tr.Hit and ValidEntity(tr.Entity) and not tr.Entity:IsWorld() then
-		trace = tr
-	end
-	
-	local pos = trace.HitPos
-	*/
 	if SERVER then
 		self:UseDefaultMana()
-		
 		self:CreateProjectile()
-		
-		--WorldSound("npc/waste_scanner/grenade_fire.wav",trace.HitPos,105,math.random(100,130))	
-		/*local gib = 1
-		
-		if ValidEntity(trace.Entity) and not trace.Entity:IsWorld() and not (trace.Entity:IsPlayer() and trace.Entity:Team() == self.EntOwner:Team()) then
-			
-			
-			if trace.Entity:IsPlayer() and !trace.Entity:IsCrow() then	
-				local crows = trace.Entity:SetEffect("murderofcrows")	
-				crows.EntAttacker = self.EntOwner	
-				gib	= 0			
-			end
-			
-		end
-		
-		
-		
-		local e = EffectData()
-		e:SetOrigin(pos)
-		e:SetEntity(self.EntOwner)
-		e:SetMagnitude(gib)
-		util.Effect("crows_spawn",e,true,true)
-		*/
 	end
 	
 	
@@ -84,9 +46,44 @@ end
 
 function ENT:CreateProjectile()
 	
-	local aimang = self.EntOwner:GetAimVector():Angle()
+	if self.Crows then
+		for k, v in pairs( self.Crows ) do
+			if v and v:IsValid() then
+				v:Remove()
+				self.Crows[ k ] = nil
+			end
+		end
+	end
+	
+	for i=1, 6 do
 		
-	for i=1,4 do
+		local crow = ents.Create("projectile_crow")
+		if IsValid( crow ) then
+			
+			local pos = self.EntOwner:GetShootPos()
+			
+			crow:SetPos( pos + VectorRand() * 4 )
+			crow:SetAngles( VectorRand():Angle() )
+			crow.EntOwner = self.EntOwner
+			crow:SetOwner(self.EntOwner)
+			crow:Spawn()
+			
+			local phys = crow:GetPhysicsObject()
+			if phys:IsValid() then
+				phys:Wake()
+				phys:ApplyForceCenter(VectorRand() * math.random(20,30))
+			end
+			
+			self.Crows[ #self.Crows + 1 ] = crow
+		end
+		
+		
+	end
+	
+	
+	/*local aimang = self.EntOwner:GetAimVector():Angle()	
+		
+	for i=1,6 do
 		local aimvec = aimang
 		aimvec.yaw = aimvec.yaw + math.Rand(-2, 2)
 		aimvec.pitch = aimvec.pitch + math.Rand(-2, 2)
@@ -110,7 +107,9 @@ function ENT:CreateProjectile()
 			//phys:SetVelocityInstantaneous(self.EntOwner:GetAimVector() * 400)
 			phys:ApplyForceCenter(aimvec  * math.random(450,550))
 		end
-	end
+	end*/
+	
+	
 end
 
 if CLIENT then
