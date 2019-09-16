@@ -7,6 +7,7 @@ function EFFECT:Init( data )
 	norm.r = math.random(-90,90)
 
 	if MySelf:EyePos():DistToSqr( pos ) > 250000 then
+		self.DieTime = 0
 		return		
 	end
 	
