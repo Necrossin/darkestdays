@@ -92,7 +92,7 @@ function ENT:Think()
 			aOldHeading:RotateAroundAxis(aOldHeading:Right(), (diffang.pitch + math.Rand(-40, 40))* -ft)
 
 			local vNewHeading = aOldHeading:Forward()
-			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(220,330))
+			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(320,390))
 		else
 			local mypos = self:GetPos()
 			for _, ent in ipairs(player_GetAll()) do
@@ -117,7 +117,7 @@ function ENT:Think()
 			aOldHeading:RotateAroundAxis(aOldHeading:Right(), (diffang.pitch + math.Rand(-40, 40))* -ft)
 
 			local vNewHeading = aOldHeading:Forward()
-			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(280,330))
+			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(320,390))
 			
 		end
 	end

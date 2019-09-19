@@ -10,9 +10,9 @@ if CLIENT then
 	SWEP.Slot = 3
 	SWEP.SlotPos = 1
 	SWEP.ViewModelFOV = 50
-	SWEP.IconLetter = "k"
+	SWEP.IconLetter = "B"
 
-	killicon.AddFont( "dd_riot", 	"HL2MPTypeDeath", 	"0", 	Color(231,231,231,255) )
+	killicon.AddFont( "dd_riot", 	"CSKillIcons", 	SWEP.IconLetter, 	Color(231,231,231,255) )
 	
 	SWEP.ShowWorldModel = true
 	

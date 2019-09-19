@@ -81,16 +81,16 @@ SWEP.Primary.RecoilKick		= 0.3
 SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 6//5
 SWEP.Primary.ClipSize		= 2//4
-SWEP.Primary.Delay			= 0.25
+SWEP.Primary.Delay			= 0.2
 SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//16
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "buckshot"
 SWEP.IsShotgun = true
 SWEP.ReloadSound			= Sound("Weapon_Shotgun.Reload")
 
-SWEP.Primary.Cone = 0.1
-SWEP.Primary.ConeMoving = 0.12
-SWEP.Primary.ConeCrouching = 0.1
+SWEP.Primary.Cone = 0.08
+SWEP.Primary.ConeMoving = 0.1
+SWEP.Primary.ConeCrouching = 0.08
 
 SWEP.SprintPos = Vector(0.201, -15.277, -3.217)
 SWEP.SprintAng = Angle(-7.035, 53.466, -24.623)

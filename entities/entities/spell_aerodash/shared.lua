@@ -148,7 +148,7 @@ local trace = { mask = MASK_PLAYERSOLID }
 
 function ENT:OnThink()
 	
-	if self:GetDTBool( 3 ) and ( !self.EntOwner:KeyDown( IN_ATTACK2 ) or !self.EntOwner:CanCast( self, self:GetManaCost() ) or self.EntOwner:IsSprinting() ) then --!self:IsCharging() or 
+	if self:GetDTBool( 3 ) and ( !self.EntOwner:KeyDown( IN_ATTACK2 ) or !self.EntOwner:CanCast( self, self:GetManaCost() ) or self.EntOwner:IsSprinting() or self.EntOwner:GetCurrentSpell() ~= self ) then --!self:IsCharging() or 
 		self:DoDash()
 	end
 	
