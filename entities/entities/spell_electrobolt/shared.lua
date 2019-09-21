@@ -42,14 +42,24 @@ function ENT:Cast()
 	local distance = 900
 	local aimvec = self.EntOwner:GetAimVector()
 	
-	local trace = util.TraceLine({start = self.EntOwner:GetShootPos(), endpos = self.EntOwner:GetShootPos() + aimvec * distance, filter = {self.EntOwner, GetHillEntity()}})	
+	local filter = self.EntOwner:GetMeleeFilter()
+	
+	local trace = util.TraceLine(
+		{
+		start = self.EntOwner:GetShootPos(), 
+		endpos = self.EntOwner:GetShootPos() + aimvec * distance, 
+		filter = filter,
+		mask = MASK_PLAYERSOLID
+		}
+	)	
 	
 	local tr = {}
 	tr.start = self.EntOwner:GetShootPos()
 	tr.endpos = self.EntOwner:GetShootPos() + aimvec * distance
 	tr.mins = Vector(-22,-22,-14)
 	tr.maxs = Vector(22,22,14)
-	tr.filter = {self.EntOwner, GetHillEntity()}
+	tr.filter = filter
+	tr.mask = MASK_PLAYERSOLID
 	
 	tr = util.TraceHull(tr)
 	
@@ -263,31 +273,7 @@ function ENT:OnDraw()
 				["attachtype"] = PATTACH_ABSORIGIN_FOLLOW,
 				}
 			self.End:CreateParticleEffect("electrobolt_main_beam",{CPoint0,CPoint1})
-			/*local dlight = DynamicLight( owner:EntIndex() )
-			if ( dlight ) then
-				dlight.Pos = point:GetPos()
-				dlight.r = 20
-				dlight.g = 100
-				dlight.b = 255
-				dlight.Brightness = 1
-				dlight.Size = 160
-				dlight.Decay = 160 * 2.5
-				dlight.DieTime = CurTime() + 1
-				dlight.Style = 0
-			end
-			local dlight = DynamicLight( self.End:EntIndex() )
-			if ( dlight ) then
-				dlight.Pos = self.End:GetPos()
-				dlight.r = 20
-				dlight.g = 100
-				dlight.b = 255
-				dlight.Brightness = 1
-				dlight.Size = 160
-				dlight.Decay = 160 * 2.5
-				dlight.DieTime = CurTime() + 1
-				dlight.Style = 0
-			end*/
-			//util.ParticleTracerEx( "electrobolt_main_beam", owner:GetAttachment( owner:LookupAttachment("anim_attachment_LH")).Pos,self:GetDTVector(0),true, owner:EntIndex(),owner:LookupAttachment("anim_attachment_LH") );	
+			
 		end
 	
 	end
@@ -339,32 +325,7 @@ function ENT:HandDraw( owner, reverse, point, ignore_passive)
 				["attachtype"] = PATTACH_ABSORIGIN_FOLLOW,
 				}
 			self.End:CreateParticleEffect("electrobolt_main_beam",{CPoint0,CPoint1})
-			//util.ParticleTracerEx( "electrobolt_main_beam", point:GetPos(),self:GetDTVector(0),true, point:EntIndex(),-1 );	//
-			//ParticleEffectAttach("electrobolt_main_beam",PATTACH_ABSORIGIN_FOLLOW,point,0)
-			/*local dlight = DynamicLight( MySelf:EntIndex() )
-			if ( dlight ) then
-				dlight.Pos = point:GetPos()
-				dlight.r = 20
-				dlight.g = 100
-				dlight.b = 255
-				dlight.Brightness = 1
-				dlight.Size = 160
-				dlight.Decay = 160 * 2.5
-				dlight.DieTime = CurTime() + 1
-				dlight.Style = 0
-			end
-			local dlight = DynamicLight( self.End:EntIndex() )
-			if ( dlight ) then
-				dlight.Pos = self.End:GetPos()
-				dlight.r = 20
-				dlight.g = 100
-				dlight.b = 255
-				dlight.Brightness = 1
-				dlight.Size = 160
-				dlight.Decay = 160 * 2.5
-				dlight.DieTime = CurTime() + 1
-				dlight.Style = 0
-			end*/
+			
 		end
 	
 	end
@@ -373,25 +334,6 @@ function ENT:HandDraw( owner, reverse, point, ignore_passive)
 		ParticleEffectAttach("v_electrobolt",PATTACH_ABSORIGIN_FOLLOW,point,0)
 		point.Particle = true
 	end
-	
-	/*local vm = owner:GetViewModel()
-		
-	if vm and vm:IsValid() and point then
-	
-		local dlight = DynamicLight( vm:EntIndex() )
-		if ( dlight ) then
-			dlight.Pos = point:GetPos()+VectorRand()*math.Rand(0,0.1)
-			dlight.r = 20
-			dlight.g = 100
-			dlight.b = 255
-			dlight.Brightness = 1
-			dlight.Size = 14
-			dlight.Decay = 14 * 5
-			dlight.DieTime = CurTime() + 1
-			dlight.Style = 0
-		end
-		
-	end*/
 	
 	end
 

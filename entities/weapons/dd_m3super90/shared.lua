@@ -101,9 +101,9 @@ SWEP.ViewmodelOffset = Vector(-4, 0, 0)
 SWEP.SprintPos = Vector(1.588, -7.644, 0.592)
 SWEP.SprintAng = Angle(-13.195, 46.192, -17.199)
 
-SWEP.Primary.Cone = 0.13
-SWEP.Primary.ConeMoving = 0.13
-SWEP.Primary.ConeCrouching = 0.09
+SWEP.Primary.Cone = 0.18
+SWEP.Primary.ConeMoving = 0.19
+SWEP.Primary.ConeCrouching = 0.14
 
 //SWEP.Tracer = ""
 

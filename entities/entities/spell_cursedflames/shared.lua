@@ -94,16 +94,16 @@ function ENT:CreateProjectile()
 	
 	local aimang = self.EntOwner:GetAimVector():Angle()
 		
-	for i=1,math.random(3,4) do
+	for i=1, 4 do
 		local aimvec = aimang
-		aimvec.yaw = aimvec.yaw + math.Rand(-15, 15)
-		aimvec.pitch = aimvec.pitch + math.Rand(-5, 5)
+		aimvec.yaw = aimvec.yaw + math.Rand(-5, 5)
+		aimvec.pitch = aimvec.pitch + math.Rand(-2, 2)
 		aimvec = aimvec:Forward()
 		local trap = ents.Create("projectile_cursedflames")
 		if IsValid(trap) then
 			local v = self.EntOwner:GetShootPos()
-			v = v + self.EntOwner:GetForward() * math.random(2,10)
-			v = v + self.EntOwner:GetRight() * math.random(-3,3)
+			v = v + self.EntOwner:GetForward() * math.random(2,4)
+			v = v + self.EntOwner:GetRight() * math.random(-2,2)
 			v = v + self.EntOwner:GetUp() * math.random(-4,3)
 			trap:SetPos(v)
 			trap:SetAngles(aimvec:Angle())
@@ -126,30 +126,17 @@ end
 if CLIENT then
 
 function ENT:OnInitialize()
-	/*self.Emitter = ParticleEmitter(self:GetPos())
-	self.Emitter2 = ParticleEmitter(self:GetPos())
-	self.Emitter2:SetNoDraw()*/
+
 end
 
 function ENT:OnThink()
 	
 	self:SetRenderBounds(Vector(-40, -40, -18), Vector(40, 40, 90))
 
-	/*if self.Emitter then
-		self.Emitter:SetPos(self:GetPos())
-	end
-	if self.Emitter2 then
-		self.Emitter2:SetPos(self:GetPos())
-	end*/
 end
 
 function ENT:OnRemove()
-	/*if self.Emitter then
-		self.Emitter:Finish()
-	end
-	if self.Emitter2 then
-		self.Emitter2:Finish()
-	end*/
+	
 	if IsValid(self.EntOwner) then
 		self.EntOwner:StopParticles()
 	end
@@ -185,51 +172,6 @@ function ENT:OnDraw()
 		ParticleEffectAttach("cursedflames",PATTACH_POINT_FOLLOW,owner,owner:LookupAttachment("anim_attachment_LH"))
 		self.Particle = true
 	end
-	
-	/*if owner:GetCurSpellInd() ~= self:GetDTInt(0) then return end
-	
-	if LocalPlayer() == owner then return end
-	
-		local bone = owner:LookupBone("ValveBiped.Bip01_L_Hand")
-		
-		self.NextEmit = self.NextEmit or 0
-		
-		if self.NextEmit > CurTime() then return end
-		
-		if bone then
-		
-			local pos, ang = owner:GetBonePosition(bone)
-			
-			local dlight = DynamicLight( self:EntIndex() )
-				if ( dlight ) then
-					dlight.Pos = pos+ang:Forward()*2
-					dlight.r = math.random(220,235)//math.random(30,45)
-					dlight.g = 0
-					dlight.b = 0
-					dlight.Brightness = 1
-					dlight.Size = 20
-					dlight.Decay = 20 * 5
-					dlight.DieTime = CurTime() + 1
-					dlight.Style = 0
-				end				
-			
-			self.NextEmit = CurTime() + 0.006
-					
-			local particle = self.Emitter:Add("effects/muzzleflash"..math.random(1,3), pos+ang:Forward()*2 +VectorRand()*2 )
-				particle:SetPos(pos+ang:Forward() +VectorRand()*1.5)
-				particle:SetVelocity(owner:GetVelocity())
-				particle:SetDieTime(math.Rand(0.3, 0.5))
-				particle:SetStartAlpha(255)
-				particle:SetStartSize(math.Rand(1.1, 1.7))
-				particle:SetEndSize(math.Rand(0.3, 0.7))
-				--particle:SetRoll(math.Rand(0, 360))
-				particle:SetRollDelta(math.Rand(-1, 1))
-				particle:SetColor(math.random(220,235),0,0)
-				particle:SetGravity(VectorRand()*(math.sin(RealTime()*3)*5)+vector_up*math.random(20,45))
-				particle:SetCollide(true)
-				particle:SetAirResistance(2)		
-		end
-	*/
 end
 
 function ENT:HandDraw(owner,reverse,point)

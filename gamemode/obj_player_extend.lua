@@ -302,7 +302,7 @@ end
 
 function meta:GetMeleeFilter()
 	if GAMEMODE:GetGametype() == "ffa" then
-		return { self }
+		return self
 	end
 	return team.GetPlayers(self:Team())
 end

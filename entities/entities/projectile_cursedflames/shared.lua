@@ -8,6 +8,7 @@ AddCSLuaFile("shared.lua")
 end
 
 ENT.Target = NULL
+ENT.StartDuration = 0.5
 
 local player_GetAll = player.GetAll
 
@@ -19,6 +20,9 @@ function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetCollisionGroup(COLLISION_GROUP_PROJECTILE)
+	
+	self:SetTrigger(true)
+	
 	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:EnableDrag(false)
@@ -27,7 +31,7 @@ function ENT:Initialize()
 	end
 
 	self.DeathTime = CurTime() + 7
-	self.SpawnTime = CurTime() + 1//0.6
+	self.SpawnTime = CurTime() + self.StartDuration
 end
 
 function ENT:Think()
@@ -82,8 +86,21 @@ function ENT:Think()
 end
 
 function ENT:PhysicsCollide(data, physobj)
-	self.PhysicsData = data
-	self:NextThink(CurTime())
+	if data and data.HitEntity and not data.HitEntity:IsPlayer() then
+		self.PhysicsData = data
+		self:NextThink(CurTime())
+	end
+end
+
+function ENT:StartTouch( ent )
+		
+	if self.Exploded then return end
+		
+	if IsValid( ent ) and ( ent:IsPlayer() and not ent:IsTeammate( self.EntOwner ) ) or ent:IsNPC() then
+		local nearest = ent:NearestPoint( self:GetPos() )
+		self:Explode( nearest, ( nearest - self:GetPos() ):GetNormal() )
+	end
+		
 end
 
 function ENT:Explode(hitpos, hitnormal)
@@ -120,6 +137,7 @@ function ENT:Initialize()
 	//WorldSound("npc/crow/die"..math.random(1,2)..".wav",self:GetPos(),100,math.random(80,110),1)
 	
 	self.FlySound = CreateSound( self, "NPC_HeadCrab.Burning" )
+	self.SpawnTime = CurTime() + self.StartDuration
 end
 
 function ENT:OnRemove()
@@ -137,23 +155,12 @@ function ENT:Think()
 end
 
 function ENT:Draw()
-		if not self.Particle then
+	self.SpawnTime = self.SpawnTime or 0
+	if not self.Particle and self.SpawnTime and self.SpawnTime < CurTime() then
 		ParticleEffectAttach("cursedflames_projectile",PATTACH_ABSORIGIN_FOLLOW,self,0)
 		self.Particle = true
 	end	
 	self:DrawModel()
-	
-		/*local dlight = DynamicLight( self:EntIndex() )
-		if ( dlight ) then
-			dlight.Pos = self:GetPos()
-			dlight.r = 50
-			dlight.g = 255
-			dlight.b = 50
-			dlight.Brightness = 1
-			dlight.Size = 90
-			dlight.Decay = 90 * 5
-			dlight.DieTime = CurTime() + 1
-			dlight.Style = 0
-		end*/
+
 end
 end

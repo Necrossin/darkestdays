@@ -39,7 +39,13 @@ function ENT:Cast()
 	return end
 
 	local aimvec = self.EntOwner:GetAimVector()
-	local trace = util.TraceLine({start = self.EntOwner:GetShootPos(), endpos = self.EntOwner:GetShootPos() + aimvec * 800, filter = {self.EntOwner,GetHillEntity()}})
+	local trace = util.TraceLine(
+		{
+			start = self.EntOwner:GetShootPos(), 
+			endpos = self.EntOwner:GetShootPos() + aimvec * 800, 
+			filter = self.EntOwner:GetMeleeFilter()
+		}
+	)
 	
 	if trace.Hit and trace.HitWorld and SERVER and trace.HitNormal.z > 0.5 then
 		self:UseDefaultMana()

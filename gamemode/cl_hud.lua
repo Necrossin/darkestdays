@@ -16,6 +16,7 @@ local hud_health = Material( "darkestdays/hud/hud_health.png" )
 local hud_mana = Material( "darkestdays/hud/hud_mana.png" )
 
 local hud_grenade = Material( "darkestdays/hud/grenade.png" )
+local hud_magic_shield = Material( "darkestdays/hud/magic.png" )
 
 
 local surface = surface
@@ -196,18 +197,33 @@ function DrawAmmoSpells(MySelf)
 	local tH = tW/1.333333//200
 	local posX,posY = w-100-tW/2,h-50-tH/2
 	
+	//grenade
 	if IsValid(MySelf._efGrenade) and MySelf._efGrenade.IsReady and MySelf._efGrenade:IsReady() then
 		
 		local nadeW,nadeH = 75,75
 		
-		surface_SetDrawColor( 255, 255, 255, 240)
+		surface_SetDrawColor( 255, 255, 255, 240 )
 		surface_SetMaterial(hud_grenade)
 		
 		surface_DrawTexturedRect(posX+tW/2-nadeW*1.4,posY-tH/2-nadeH*0.8,nadeW,nadeH)
 		draw_SimpleText(string.upper( input.GetKeyName( DD_GRENADEBUTTON or KEY_G )  ), "Bison_45", posX+tW/2-nadeW*.4,posY-tH/2, col_231_231_231_170, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-		
-		
+
 	end
+	//magic shield
+	if IsValid(MySelf._efMagShield) and MySelf._efMagShield:GetDTBool( 0 ) then
+		
+		local charge = MySelf._efMagShield:GetEnergy()
+		
+		local magW,magH = 45,45
+		
+		surface_SetDrawColor( 255, 255, 255, 240 )
+		surface_SetMaterial( hud_magic_shield )
+		
+		surface_DrawTexturedRect(posX+tW/2-magW*2.4,posY-tH/2-magH*0.8,magW,magH)
+		draw_SimpleText( charge, "Bison_45", posX+tW/2-magW*.7,posY-tH/2, col_231_231_231_170, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+
+	end
+	
 	
 	if clip == -1 then return end
 	

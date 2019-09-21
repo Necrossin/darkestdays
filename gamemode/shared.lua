@@ -107,7 +107,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 19/09/2019"
+GM.Version		= "v 21/09/2019"
 GM.Email 		= ""
 GM.Website 		= ""
 
@@ -240,11 +240,17 @@ function table.Shuffle(t)
   return t
 end
 
+local TrueVisibleTrace = { mask = MASK_SHOT }
 function TrueVisible(posa, posb)
-	local filt = ents.FindByClass("projectile_*")
-	filt = table.Add(filt, player.GetAll())
 
-	return not util.TraceLine({start = posa, endpos = posb, filter = filt}).Hit
+	local filt = ents.FindByClass( "projectile_*" )
+	filt = table.Add( filt, player.GetAll() )
+	TrueVisibleTrace.start = posa
+	TrueVisibleTrace.endpos = posb
+	TrueVisibleTrace.filter = filt
+	TrueVisibleTrace.mask = MASK_SHOT
+
+	return not util.TraceLine(TrueVisibleTrace).Hit
 end
 
 

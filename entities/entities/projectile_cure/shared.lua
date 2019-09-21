@@ -31,6 +31,7 @@ function ENT:Initialize()
 		self:PhysicsInitSphere( size )
 		self:SetMoveType(MOVETYPE_VPHYSICS)
 		self:SetSolid(SOLID_VPHYSICS)
+		self:SetCollisionGroup( COLLISION_GROUP_DEBRIS )
 		
 		WorldSound(startsound,self:GetPos(),90,math.random(90,110),1)
 		

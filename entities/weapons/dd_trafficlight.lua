@@ -56,7 +56,7 @@ util.PrecacheModel( "models/props/cs_assault/stoplight.mdl" )
 function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
 	if not block and hitent:IsValid() and hitent:IsPlayer() and not self.m_ChangingDamage and hitent:IsSprinting() then
 		self.m_ChangingDamage = true
-		self.MeleeDamage = self.MeleeDamage * 1.2
+		self.MeleeDamage = self.MeleeDamage * 1.5
 	end
 end
 
@@ -64,7 +64,7 @@ function SWEP:PostOnMeleeHit(hitent, hitflesh, tr, block)
 	if self.m_ChangingDamage then
 		self.m_ChangingDamage = false
 
-		self.MeleeDamage = self.MeleeDamage / 1.2
+		self.MeleeDamage = self.MeleeDamage / 1.5
 	end
 end
 

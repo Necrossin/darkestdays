@@ -48,21 +48,24 @@ function ENT:ResetShield()
 		self.ManaPercentage = 0.5
 	end
 
-	self.Energy = math.Round(self.EntOwner._DefaultMana*self.ManaPercentage)
+	//self.Energy = math.Round(self.EntOwner._DefaultMana*self.ManaPercentage)
+	self:SetEnergy( math.Round(self.EntOwner._DefaultMana*self.ManaPercentage) )
 	
 	if self.EntOwner:HasWeapon( "dd_striker" ) then
-		self.Energy = math.Round( self.Energy * 0.3 )
+		//self.Energy = math.Round( self.Energy * 0.3 )
+		self:SetEnergy( math.Round( self.Energy * 0.3 ) )
 	end
 	
-	self:SetDTBool(0,true)
+	self:SetDTBool( 0, true )
 end
 
 function ENT:SetEnergy(am)
-	self.Energy = am
+	//self.Energy = am
+	self:SetDTInt( 0, am )
 end
 
 function ENT:GetEnergy()
-	return self.Energy
+	return self:GetDTInt( 0 )//self.Energy
 end
 
 //physics\surfaces\underwater_impact_bullet1.wav
@@ -79,7 +82,7 @@ end
 function ENT:BreakShield(norm)
 
 	self.NextRechargeTime = CurTime() + self.RechargeTime
-	self:SetDTBool(0,false)
+	self:SetDTBool( 0, false )
 	
 	self:EmitSound("physics/glass/glass_sheet_break"..math.random(1,3)..".wav",90,math.random(90,110))
 	
@@ -140,7 +143,7 @@ function ENT:Draw()
 		
 	end
 	
-	if self:GetDTBool(0) and not (self.EntOwner:IsCrow() or self.EntOwner:IsGhosting()) then
+	if self:GetDTBool(0) and not (self.EntOwner:IsCrow() or self.EntOwner:IsGhosting() or self.EntOwner == MySelf and !GAMEMODE.ThirdPerson) then
 		if not self.Particle then
 			ParticleEffectAttach(self.EntOwner:Team() == TEAM_BLUE and "dd_magic_shield_idle" or "dd_magic_shield_idle_red",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
 			self.Particle = true

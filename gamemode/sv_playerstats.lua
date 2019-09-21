@@ -500,6 +500,10 @@ function CheckAchievementSimpleKills(pl,victim,spell)
 		end
 	end
 	
+	if spell == "effect_thug" then
+		pl:UnlockAchievement("stompkill")
+	end
+	
 	if victim:IsThug() then
 		local wep = victim:GetActiveWeapon()
 		if IsValid(wep) and wep.IsChargeAttacking then

@@ -31,7 +31,13 @@ function ENT:Cast()
 	return end
 
 	local aimvec = self.EntOwner:GetAimVector()
-	local trace = util.TraceLine({start = self.EntOwner:GetShootPos(), endpos = self.EntOwner:GetShootPos() + aimvec * 500, filter = team.GetPlayers(self.EntOwner:Team())})
+	local trace = util.TraceLine(
+		{
+			start = self.EntOwner:GetShootPos(), 
+			endpos = self.EntOwner:GetShootPos() + aimvec * 500, 
+			filter = self.EntOwner:GetMeleeFilter()
+		}
+	)
 	
 	if trace.Hit and SERVER then
 		self:UseDefaultMana()

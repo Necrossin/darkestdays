@@ -29,7 +29,10 @@ function ENT:Initialize()
 		self:PhysicsInitSphere( size )
 		self:SetMoveType(MOVETYPE_VPHYSICS)
 		self:SetSolid(SOLID_VPHYSICS)
-		//self:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+		
+		self:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+		self:SetTrigger(true)
+
 		
 		//self:SetTrigger(true)
 		
@@ -82,19 +85,6 @@ function ENT:OnRemove()
 		end
 		//WorldSound("ambient/fire/gascan_ignite1.wav",self:GetPos(),75,math.random(90,110))
 		sound.Play("ambient/explosions/explode_8.wav",self:GetPos(),75,math.random(110,135))
-		
-		/*local dlight = DynamicLight( self:EntIndex() )
-		if ( dlight ) then
-			dlight.Pos = self:GetPos()
-			dlight.r = 255
-			dlight.g = 255
-			dlight.b = 50
-			dlight.Brightness = 2
-			dlight.Size = 300
-			dlight.Decay = 300 * 1.5
-			dlight.DieTime = CurTime() + 1
-			dlight.Style = 0
-		end*/
 
 	end
 end
@@ -136,34 +126,21 @@ if SERVER then
 	end
 	
 	function ENT:PhysicsCollide( data, physobj )	
-		
-		self.PhysicsData = data
-		self:NextThink(CurTime())
-		
-	/*	local ent = data.HitEntity
-
-		if ent then
-			if ent == game.GetWorld() then 
-				local hitpos = data.HitPos
-				local hitnormal = data.HitNormal
-				ExplosiveDamage(self.EntOwner, hitpos, 72, 72, 1, 0.63, 1, self)
-				util.Decal("SmallScorch", hitpos + hitnormal, hitpos - hitnormal)
-				physobj:SetVelocity( vector_origin )
-				self:SetDTFloat(0, 0)
-				return 
-			end
-			
-			if ent:GetClass() == "projectile_cyclonetrap" and ent:Team() == self.EntOwner:Team() and not (ent:GetDTBool(0) or ent:GetDTBool(2)) then
-				ent:SetDTBool(1,true)
-				self:Remove()
-				return 
-			end
-			
-			
+		if data and data.HitEntity and not data.HitEntity:IsPlayer() then
+			self.PhysicsData = data
+			self:NextThink(CurTime())
 		end
-		self:NextThink(CurTime())
-		return true
-*/
+	end
+	
+	function ENT:StartTouch( ent )
+		
+		if self.Exploded then return end
+		
+		if IsValid( ent ) and ( ent:IsPlayer() and not ent:IsTeammate( self.EntOwner ) ) or ent:IsNPC() then
+			local nearest = ent:NearestPoint( self:GetPos() )
+			self:Explode( nearest, ( nearest - self:GetPos() ):GetNormal(), ent )
+		end
+		
 	end
 	
 end
@@ -178,18 +155,5 @@ function ENT:Draw()
 	end	
 	self:SetModelScale(0.4,0)
 	self:DrawModel()
-	
-	/*local dlight = DynamicLight( self:EntIndex() )
-		if ( dlight ) then
-			dlight.Pos = self:GetPos()
-			dlight.r = 255
-			dlight.g = 255
-			dlight.b = 50
-			dlight.Brightness = 1
-			dlight.Size = 100
-			dlight.Decay = 100 * 5
-			dlight.DieTime = CurTime() + 1
-			dlight.Style = 0
-		end*/
 end
 end

@@ -69,7 +69,7 @@ end
 function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
 	if not block and hitent:IsValid() and hitent:IsPlayer() and not self.m_ChangingDamage and hitent:Health() >= hitent:GetMaxHealth() / 2 then
 		self.m_ChangingDamage = true
-		self.MeleeDamage = self.MeleeDamage * 1.2
+		self.MeleeDamage = self.MeleeDamage * 1.5
 	end
 end
 
@@ -77,7 +77,7 @@ function SWEP:PostOnMeleeHit(hitent, hitflesh, tr, block)
 	if self.m_ChangingDamage then
 		self.m_ChangingDamage = false
 
-		self.MeleeDamage = self.MeleeDamage / 1.2
+		self.MeleeDamage = self.MeleeDamage / 1.5
 	end
 end
 

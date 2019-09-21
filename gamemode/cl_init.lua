@@ -663,6 +663,7 @@ function GM:PreDrawViewModel( ViewModel, Player, Weapon )
 end
 
 local blood_mat = Material( "models/flesh" )
+local parry_mat = Material( "models/spawn_effect2" )
 function GM:PostDrawViewModel( ViewModel, Player, Weapon )
 	
 	if ( !IsValid( Weapon ) ) then return false end
@@ -675,8 +676,18 @@ function GM:PostDrawViewModel( ViewModel, Player, Weapon )
 	if ( Weapon.UseHands || !Weapon:IsScripted() ) then
 
 		local hands = Player:GetHands()
-		if ( IsValid( hands ) ) then			
+		if ( IsValid( hands ) ) then
+
 			hands:DrawModel()	
+			
+			/*if Weapon.IsParrying and Weapon:IsParrying() then
+				render_MaterialOverride( parry_mat )
+				local col = team_GetColor( Player )
+				//render_SetColorModulation( col.r / 255, col.g / 255, col.b / 255 )
+				hands:DrawModel()	
+				//render_SetColorModulation(1, 1, 1)
+				render_MaterialOverride( )
+			end*/
 			
 			if DD_BLOODYMODELS and hands.Bloody then
 			

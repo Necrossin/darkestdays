@@ -9,6 +9,10 @@ if SERVER then
 	AddCSLuaFile("shared.lua")
 end
 
+if CLIENT then
+	killicon.AddFont( "effect_thug", "Bison_30", "flattened", Color(231, 231, 231, 255 ) ) 
+end
+
 local bones = {
 	["ValveBiped.Bip01_Spine2"] = { scale = Vector(2.131, 2.121, 2.131), pos = Vector(2.335, 0, 0), angle = Angle(0, 0, 0) },
 	["ValveBiped.Bip01_L_Foot"] = { scale = Vector(1.299, 1.299, 1.299), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) },

@@ -542,7 +542,7 @@ Weapons = {
 	["dd_crowbar"] = {
 		Name = "Crowbar",
 		Melee = true,
-		Pr = "+20% extra damage done to enemies\nthat are above 50% of health", 
+		Pr = "+50% extra damage done to enemies\nthat are above 50% of health", 
 		Mat = Material( "darkestdays/icons/crowbar_256x128.png", "smooth" ), 
 		Description = "If only you could hunt down the owner"
 	},
@@ -559,6 +559,7 @@ Weapons = {
 		Name = "Axe",
 		Melee = true,
 		Mat = Material( "darkestdays/icons/axe_256x128.png", "smooth" ),
+		Pr = "+50% extra damage when owner is\nbelow 50% of max health",
 		Description = "Perfect for cutting zombies."
 	},
 	["dd_fists"] = {
@@ -581,7 +582,7 @@ Weapons = {
 		Name = "Traffic Light",
 		Melee = true,
 		Mat = Material( "darkestdays/icons/trafficlight_256x128.png", "smooth" ), 
-		Pr = "+20% extra damage done to\nsprinting enemies",
+		Pr = "+50% extra damage done to\nsprinting enemies",
 		Co = "-20 max speed on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 20 end
@@ -684,7 +685,7 @@ Spells = {
 	["scorn"] = {Name = "Scorn",Mat = Material( "darkestdays/hud/scorn.png" ), Pr = "- Creates a ball of dark energy\n- Ball will bounce off walls\n - Accumulates damage via bouncing\n- Can penetrate 1 target", Co = "",Description = ""},
 	//["cotn"] = {Name = "Curse of the Night",Mat = Material( "darkestdays/hud/cotn.png" ), Pr = "- Become a crow for few seconds", Co = "- You will die in cramped areas",Description = ""},
 	["murderofcrows"] = {Name = "Murder of Crows",Mat = Material( "darkestdays/hud/murderofcrows.png" ), Pr = "- Summon a flock of 6 crow companions\n- Crows will attack all nearby enemies", Co = "- Only one active flock at a time\n- Crows dissapear after 20 seconds\n- Crows will die from ANY damage", Description = ""},
-	["cursedflames"] = {Name = "Cursed Flames",Mat = Material( "darkestdays/hud/cursedflames.png" ), Pr = "- Create few small homing fireballs", Co = "- No damage done on first second\n- Owner is not immune to damage", Description = ""},
+	["cursedflames"] = {Name = "Cursed Flames",Mat = Material( "darkestdays/hud/cursedflames.png" ), Pr = "- Create 4 small homing fireballs", Co = "- No damage done on first half a second\n- Owner is not immune to damage", Description = ""},
 	["barrier"] = {Name = "Barrier",Mat = Material( "darkestdays/hud/barrier.png" ), Pr = "- Deploy 3 magic barriers for 6 seconds\n- Caster is able to shoot through\n- Barrier absorbs all incoming damage", Co = "- Doesn't blocks player movement",Description = ""},
 	["raiseundead"] = {Name = "Raise Undead",Mat = Material( "darkestdays/hud/raiseundead.png" ), Pr = "- Raise an undead AntGuard for\nfew seconds", Co = "- Necromancy: Requires an orb to cast",Description = ""},
 	["gravitywell"] = {Name = "Gravity Well",Mat = Material( "darkestdays/hud/gravitywell.png" ), Pr = "- Pulls nearby props towards\nyour enemies", Co = "",Description = ""},
@@ -695,7 +696,7 @@ Spells = {
 Perks = {
 	["hpregen"] = {Name = "Health Regeneration",Pr = "Ability to slowly regenerate\nyour health\n+15 health on wearer", Co = "-25 max speed\n-50% healing from health orbs", Description = "Regeneration rate is increased while\nstanding still.", OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth + 15; pl._DefaultSpeed = pl._DefaultSpeed - 25;  end},
 	//["bff"] = {Name = "BFF", Pr = "Killing an enemy restores some\nhealth for nearby allies", Co = "-50% health gained from orbs\n-15 max speed",OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 15 end},
-	["thug"] = {Name = "Thug",AdminFree = true,Special = "Class mod: Overrides skill trees/loadout\nGains changes from builds", Pr = "Become the mighty thug!\n200% max health", Co = "-20 max speed\nLimited parkour\nCan not carry flag\n-50% healing from health orbs", Description = "Hold RMB for a charge attack!\nPress jump button to launch\nyourself upwards when charging!", OnSet = function(pl) pl:SetEffect("thug") end},
+	["thug"] = {Name = "Thug",AdminFree = true,Special = "Class mod: Overrides skill trees/loadout\nGains changes from builds", Pr = "Become the mighty thug!\n200% max health\nDeal 3x fall damage to anything\nyou land on", Co = "-20 max speed\nLimited parkour\nCan not carry flag\n-50% healing from health orbs", Description = "Hold RMB for a charge attack!\nPress jump button to launch\nyourself upwards when charging!", OnSet = function(pl) pl:SetEffect("thug") end},
 	//["fireandfury"] = {Name = "Fire and Fury", PrColor = Color(235,93,0,255), Pr = "+5%(+15%) fire damage done\n(+20%) damage resistance\n20% chance to light yourself on fire\nwhen dealing fire damage", Co = "+10% bullet damage taken\n+120% cold damage taken", Description = "Values in (brackets) when owner is\non fire"},
 	//["berserker"] = {Name = "Berserker", Pr = "+10% magic damage resistance\n+3% more melee damage", Co = "-20 max mana\n-25% bullet damage done", Description = "",OnSet = function(pl) pl._DefaultMResBonus = pl._DefaultMResBonus + 10; pl._DefaultMeleeBonus = pl._DefaultMeleeBonus + 3; pl._DefaultMana = pl._DefaultMana - 20 end},
 	//["houdini"] = {Name = "Houdini", Pr = "+66% Ghosting duration\nNo speed reduction while Ghosting\n+15 max speed", Co = "-20 max health", Description = "",OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 20; pl._DefaultSpeed = pl._DefaultSpeed + 15; end},
@@ -783,6 +784,7 @@ Achievements = {
 	["punch"] = {Name = "Tiger mask", Description = "Kill 5 players in one life barehanded."},
 	["breaking"] = {Name = "Breaking badly", Description = "Destroy 7 players in one life as Thug."},
 	["weaklings"] = {Name = "Weaklings!", Description = "\"I stepped on a sliding guy with my huge shoe!\""},
+	["stompkill"] = {Name = "Worth the Weight", Description = "Kill an enemy by landing on top of them as thug."},
 }
 
 Unlocks = {

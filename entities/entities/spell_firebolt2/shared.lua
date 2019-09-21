@@ -86,7 +86,7 @@ function ENT:CastFlames()
 	tr.endpos = self.EntOwner:GetShootPos() + aimvec * range
 	tr.mins = Vector(-10,-10,-10)
 	tr.maxs = Vector(10,10,10)
-	tr.filter = self.EntOwner
+	tr.filter = self.EntOwner:GetMeleeFilter()
 	
 	local trace = util.TraceHull(tr)
 	

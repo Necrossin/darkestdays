@@ -112,8 +112,8 @@ function GM:AddResources()
 
 	//local a,b = file.Find("resource/fonts/*.*" , "GAME") //gamemodes/darkestdays/content/
 	//for _, filename in pairs(a) do
-	resource.AddSingleFile("resource/fonts/bison.ttf")
-	resource.AddSingleFile("cache/workshop/resource/fonts/bison.ttf") //just to see if it will fix broken fonts if hosted on dedicated server
+	resource.AddFile("resource/fonts/bison.ttf")
+	resource.AddFile("cache/workshop/resource/fonts/bison.ttf") //just to see if it will fix broken fonts if hosted on dedicated server
 	//end
 
 	//local a,b = file.Find("models/weapons/*.*" , "GAME") //gamemodes/darkestdays/content/
@@ -2218,6 +2218,12 @@ function GM:EntityTakeDamage( ent,dmginfo )
 				
 				dmg = dmg/3
 				
+				local ground_ent = ent:GetGroundEntity()
+				
+				if ground_ent and ground_ent:IsValid() and not ground_ent:IsWorld() and ground_ent ~= ent then
+					ground_ent:TakeDamage( originaldmg * 3, ent, ent._efThug or inflictor or ent )
+				end
+				
 			end
 			
 			if game.GetMap() == "fy_highrise_09" and originaldmg > 60 then
@@ -2716,7 +2722,11 @@ function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
 		 hitgroup == HITGROUP_RIGHTLEG ||
 		 hitgroup == HITGROUP_GEAR ) then
 	 
-		dmginfo:ScaleDamage( 0.5 )
+		if (dmginfo:IsBulletDamage() and attacker and attacker:GetActiveWeapon():IsValid() and attacker:GetActiveWeapon().IsShotgun) then
+			dmginfo:ScaleDamage( 0.35 )
+		else
+			dmginfo:ScaleDamage( 0.5 )
+		end
 	 
 	 end
 
@@ -2765,6 +2775,14 @@ function GM:PlayerUse( pl, entity )
 		entity.LastDoorUse = CurTime()
 	end
 	return true
+end
+
+function GM:EntityRemoved( ent ) 
+	
+	/*if ent and ent:GetClass() == "npc_grenade_frag" then
+		ParticleEffect( "dd_explosion_medium", ent:GetPos(), Angle( 0, 90, 0 ), nil )
+	end*/
+	
 end
 
 function DoPhysicsMultiplayer()

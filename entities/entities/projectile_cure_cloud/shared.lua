@@ -22,7 +22,7 @@ function ENT:Initialize()
 	self.DieTime = CurTime() + math.random(4,7)
 	self.Radius = 75
 	self.HealRate = 0.018
-	self.HealAmount = 3
+	self.HealAmount = 4
 	
 	--self.EntOwner = self.Entity:GetOwner()
 	if SERVER then
@@ -85,7 +85,7 @@ function ENT:Think()
 						
 						self.EntOwner.Healed = self.EntOwner.Healed + 1
 						
-						self.EntOwner:RefillHealth(math.random(0,1))
+						self.EntOwner:RefillHealth( 2 )
 						
 						if self.EntOwner.Healed >= 250 then
 							self.EntOwner:UnlockAchievement( "heal1" )
