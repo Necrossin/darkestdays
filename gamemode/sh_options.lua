@@ -324,7 +324,7 @@ Abilities = {
 	//["wallrun"] = {Name = "Wall Run", Pr = "Ability to sprint on wall surfaces\nWallrun power is based on your velocity",Description = "\nJump near wall while sprinting\nto start wall running.", OnSet = function(pl) pl:SetEffect("wallrun") end},
 	
 	//Gun Mastery
-	["gmbasic"] = {Name = "Unlock Gun Mastery", Pr = "- Grants chance not to consume ammo\n- Increased bullet damage for\nsmgs/rifles/pistols", Co = "",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
+	["gmbasic"] = {Name = "Unlock Gun Mastery", Pr = "- Grants chance not to consume ammo\n- Increased bullet damage for\nsmgs/rifles/pistols/shotguns", Co = "",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
 	["fastreload"] = {Name = "Fast Reload", Pr = "- 70% faster reload speed", Co = "- Only works with pistols/smgs/rifles",Description = "",OnSet = function(pl) pl._SkillFastReload = true; if SERVER then pl:SendLua("LocalPlayer()._FastReload = true") end end, OnReset = function(pl) pl._SkillFastReload = false; pl:SendLua("LocalPlayer()._FastReload = nil") end},
 	["scavenger"] = {Name = "Scavenger", Pr = "- Restore small amount of ammo on kill",Description = "",OnSet = function(pl) pl._SkillScavenger = true end, OnReset = function(pl) pl._SkillScavenger = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of clip on kill", p*SKILL_BULLET_SCAVENGER_PER_LEVEL*100) end},
 	["grenade"] = {Name = "Grenade", Mat = Material( "darkestdays/hud/grenade.png" ), Pr = "- Throw a grenade by pressing 'G'\n- Grenade recharges after 12 seconds", Co = "", Description = "",OnSet = function(pl) if SERVER then pl:SetEffect("grenade") end end},
@@ -382,7 +382,7 @@ CaliberDamage = {
 	[CAL_9] = 13,
 	[CAL_11_43] = 18,
 	[CAL_11_20] = 60,
-	[CAL_12_GAUGE] = 9,
+	[CAL_12_GAUGE] = 7,
 }
 
 // Faloff distance

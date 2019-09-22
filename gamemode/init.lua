@@ -2087,7 +2087,7 @@ function GM:EntityTakeDamage( ent,dmginfo )
 			if dmginfo:IsBulletDamage() then
 				
 				if attacker._DefaultBulletFalloffBonus and attacker._DefaultBulletFalloffBonus > 0 then
-					if inflictor and (inflictor.IsLight or inflictor.IsHeavy) then
+					if inflictor and (inflictor.IsLight or inflictor.IsHeavy or inflictor.IsShotgun) then
 						dmginfo:ScaleDamage(1+attacker._DefaultBulletFalloffBonus/100)
 					end
 				end
