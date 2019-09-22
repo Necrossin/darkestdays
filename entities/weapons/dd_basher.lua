@@ -139,14 +139,7 @@ end
 function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
 	if not block and IsValid(hitent) and hitent:IsPlayer() and hitflesh then
 		if SERVER then
-			/*for i=1,math.random(4) do
-				local effectdata = EffectData()
-				effectdata:SetOrigin( tr.HitPos )
-				effectdata:SetNormal( tr.HitNormal * -1 )
-				effectdata:SetMagnitude(180)
-				effectdata:SetRadius( 0 )
-				util.Effect( "gib", effectdata, nil, true)
-			end*/
+
 			local e = EffectData()
 				e:SetOrigin(tr.HitPos)
 				e:SetNormal(tr.HitNormal*-1)
@@ -155,8 +148,21 @@ function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
 			hitent:SetGroundEntity( NULL )
 			hitent:SetMana( math.Clamp( hitent:GetMana() - 15, 0, hitent:GetMaxMana() ) )
 		end
-		
-		
-		
+	end
+
+	if not block and hitent:IsValid() and hitent:IsPlayer() and not self.m_ChangingDamage and hitent:IsThug() then
+		self.m_ChangingDamage = true
+		self.MeleeDamage = self.MeleeDamage * 1.4
+	end
+	
+end
+
+function SWEP:PostOnMeleeHit(hitent, hitflesh, tr, block)
+	if self.m_ChangingDamage then
+		self.m_ChangingDamage = false
+
+		self.MeleeDamage = self.MeleeDamage / 1.4
 	end
 end
+
+

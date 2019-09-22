@@ -134,6 +134,10 @@ function meta:IsSliding()
 	return self._efSlide and IsValid(self._efSlide)
 end
 
+function meta:IsDiving()
+	return self._efSlide and IsValid(self._efSlide) and self._efSlide.IsDive and self._efSlide:IsDive()
+end
+
 function meta:IsWallrunning()
 	return IsValid(self._efWallRun) and self._efWallRun.IsActive and self._efWallRun:IsActive() == true
 end

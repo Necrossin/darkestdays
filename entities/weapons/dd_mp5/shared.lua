@@ -172,3 +172,20 @@ function SWEP:EmitFireSound()
 	self:EmitSound(self.Primary.Sound)
 	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
 end
+
+function SWEP:FireBullet()
+
+	if self.Owner:GetVelocity():Length() > 30 then		
+		self:ShootBullets( self.Primary.Damage, self.Primary.NumShots, self.Owner:IsDiving() and self.Primary.ConeCrouching or self.Primary.ConeMoving)
+	else
+		if self.Owner:Crouching() then
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeCrouching)
+		else
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.Cone)
+		end
+	end
+end
+
+function SWEP:GetPrimaryDelayModifier()
+	return self.Owner:IsDiving() and 0.8 or 1
+end

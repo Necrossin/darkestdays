@@ -420,7 +420,7 @@ function SWEP:PrimaryAttack()
 		self.Owner.SpawnProtection = 0
 	end
 	
-	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay * self:GetPrimaryDelayModifier() )
 	self:EmitFireSound()
 
 	self:TakeAmmo()
@@ -466,6 +466,10 @@ end
 
 function SWEP:OnPrimaryAttack()
 
+end
+
+function SWEP:GetPrimaryDelayModifier()
+	return 1
 end
 
 function SWEP:Think()

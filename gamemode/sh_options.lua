@@ -447,7 +447,7 @@ Weapons = {
 	["dd_mp5"] = {
 		Name = "MP5",
 		Mat = Material( "VGUI/gfx/VGUI/mp5" ),
-		Pr = "+10 max speed on wearer", Co = "-15 max health on wearer",
+		Pr = "+10 max speed on wearer\nIncreased accuracy and fire rate\nwhen diving", Co = "-15 max health on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed + 10; pl._DefaultHealth = pl._DefaultHealth - 15; end
 	},
@@ -490,7 +490,7 @@ Weapons = {
 		Secondary = true,
 		AdminFree = true,
 		Mat = Material( "VGUI/gfx/VGUI/elites" ), 
-		Pr = "Can attack when sprinting\n+20% damage done when sprinting\n+10 max speed on wearer",
+		Pr = "Can attack when sprinting\n+20% damage done when sprinting\n+50% damage done when diving\n+10 max speed on wearer",
 		Co = "-15 max health on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed + 10; pl._DefaultHealth = pl._DefaultHealth - 15; end
@@ -644,7 +644,7 @@ Weapons = {
 		Name = "Baseball Bat", 
 		Mat = Material( "darkestdays/icons/bat_256x128.png", "smooth" ), 
 		Melee = true, 
-		Pr = "Drains 15 enemy mana on hit\nStrong knockback",
+		Pr = "+40% damage done to Thugs\nDrains 15 enemy mana on hit\nStrong knockback",
 		Co = "-25 max mana on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultMana = pl._DefaultMana - 25 end
@@ -1877,6 +1877,7 @@ HelpPage[3] = {
 		> Sprint and hold crouch to perform a slide.
 		> Crouch when falling to perform a roll.
 		> Press "Use" button or spacebar to climb over small ledges.
+		> Press "Walk" or "Use" button (if enabled) to perform a dive.
 	]],
 
 }

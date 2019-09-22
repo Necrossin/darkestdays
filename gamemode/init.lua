@@ -1903,7 +1903,14 @@ function GM:KeyPress( pl, key )
 	end
 	
 	if key == IN_USE then//IN_USE
-		pl:GrabLedge()
+		local grab = pl:GrabLedge()
+		if not grab and util.tobool( tonumber( pl:GetInfo("_dd_usekeydive") ) ) then
+			pl:Dive()
+		end
+	end
+	
+	if key == IN_WALK then
+		pl:Dive()
 	end
 	
 	if key == IN_DUCK and pl:IsRunning() and pl:OnGround() then

@@ -9,6 +9,8 @@ if SERVER then
 end
 
 util.PrecacheSound("physics/body/body_medium_scrape_smooth_loop1.wav")
+util.PrecacheSound("npc/combine_soldier/gear1.wav")
+util.PrecacheSound("npc/combine_soldier/gear2.wav")
 
 function ENT:Initialize()
 
@@ -23,21 +25,30 @@ function ENT:Initialize()
 	
 	self.EntOwner._efSlide = self.Entity
 	if SERVER then
-		self.Entity:DrawShadow(false)
-		//self.EntOwner:SetVelocity(self.EntOwner:GetVelocity() * 1.3)
-		
-		//self:DoBones()
-		
-		//self.BoneTime = CurTime() + 1
-		
+		self.Entity:DrawShadow(false)		
 	end
 	
 	if CLIENT then
 		self.Sound = CreateSound(self.Entity, "physics/body/body_medium_scrape_smooth_loop1.wav")
-		//self.Emitter = ParticleEmitter(self:GetPos())
 	end
 	
-	self.EntOwner:SetVelocity(self.EntOwner:GetVelocity() * 0.5)
+	local vel = self.EntOwner:GetVelocity()
+	
+	if self:IsDive() then
+		//if CLIENT and self.EntOwner:OnGround() then
+			//self:EmitSound( "npc/combine_soldier/gear"..math.random(2)..".wav", 75, 120 )
+		//end
+		self.EntOwner:SetVelocity(vel * 0.5 + vector_up * 250 )
+		self.EntOwner:SetGroundEntity( NULL )
+		//self.IgnoreGround = CurTime() + 0.3
+		//self.EntOwner:SetGravity( 0.8 ) 
+	else
+		self.EntOwner:SetVelocity(vel * 0.6)
+		self:SetMoveX( -1 )
+		self:SetMoveY( 0 )
+	end
+	
+	self.IgnoreGround = CurTime() + 0.3
 	
 end
 
@@ -59,6 +70,7 @@ function ENT:OnRemove()
 	if ValidEntity(self.EntOwner) then
 		self.EntOwner:ResetBones()
 		self.EntOwner._efSlide = nil
+		//self.EntOwner:SetGravity( 1 ) 
 	end
 	if CLIENT then
 		if self.Sound then
@@ -127,6 +139,91 @@ function ENT:CheckDropKick()
 
 	end
 	
+	if self.DropKickFrames and self.EntOwner:OnGround() and self.IgnoreGround and self.IgnoreGround < CurTime() then
+		self.IgnoreGround = nil
+		self.EntOwner:SetLuaAnimation( "slide" )
+	end
+	
+	
+end
+
+// just so we can break glass and stuff when diving
+function ENT:CheckDiveBreakables()
+	
+	if self:IsDive() and not self.DiveHit then
+		
+		local normal = self.EntOwner:GetVelocity()
+		normal.z = 0
+		
+		normal = normal:GetNormal()
+		
+		kick_trace.start = self.EntOwner:GetShootPos()
+		kick_trace.endpos = kick_trace.start + normal * 72
+		kick_trace.filter = self.EntOwner:GetMeleeFilter()
+		
+		local tr = util.TraceHull( kick_trace )
+	
+		if tr.Hit and !tr.HitWorld then
+			local hitent = tr.Entity
+			
+			if hitent and hitent:IsValid() then
+			
+				self.DiveHit = true
+				
+				if self.SaveVel then
+					self.EntOwner:SetLocalVelocity( self.SaveVel )
+				end
+			
+				if hitent:GetClass() == "func_breakable_surf" then
+					hitent:Fire("break", "", 0)
+				end			
+			end
+		end
+
+	end
+	
+end
+
+/*
+	x = 1 forward
+	x = -1 backward
+	y = 1 right
+	y = -1 left
+*/
+
+function ENT:PickSlideAnimation()
+	
+	local x = self:GetMoveX()
+	local y = self:GetMoveY()
+	
+	if x > 0 then
+	
+		//forward/right
+		if y > x and y > 0 then
+			return "slide_right"
+		end
+		//forward/left	
+		if math.abs( y ) > x and y < 0 then
+			return "slide_left"
+		end
+		//forward
+		return "slide_back"
+	
+	else
+	
+		//back/right
+		if y > math.abs( x ) and y > 0 then
+			return "slide_right"
+		end
+		//back/left	
+		if math.abs( y ) > math.abs( x ) and y < 0 then
+			return "slide_left"
+		end
+		//backward
+		return "slide"
+	
+	end
+
 end
 
 function ENT:Think()
@@ -142,17 +239,33 @@ function ENT:Think()
 			return
 		end
 		
-		
-		if self.EntOwner._NextKick and self.EntOwner._NextKick > CurTime() and self.EntOwner:GetVelocity():LengthSqr() > 1600 then// and !self.EntOwner:OnGround() then
-			//basically player is forced to slide for the duration of kick effect, otherwise obey the normal sliding rules
-		else
-			if not self.EntOwner:KeyDown(IN_DUCK) or self.EntOwner:GetVelocity():LengthSqr() < 40000 then //self.EntOwner:KeyDown(IN_JUMP) or 
-				self:Remove()
-				return
+		//diving
+		if self:IsDive() then
+			
+			self:CheckDiveBreakables()
+			
+			if self.EntOwner:OnGround() and self.IgnoreGround and self.IgnoreGround < CurTime() then
+				self:SetDive( false )
+				self.EntOwner._NextKick = CurTime() + 1
+				//self.EntOwner:SetGravity( 1 ) 
+				self.EntOwner:SetLuaAnimation( self:PickSlideAnimation() or "slide_back" )
 			end
+		//default sliding
+		else
+			if self.EntOwner._NextKick and self.EntOwner._NextKick > CurTime() and self.EntOwner:GetVelocity():LengthSqr() > 1600 then// and !self.EntOwner:OnGround() then
+				//basically player is forced to slide for the duration of kick effect, otherwise obey the normal sliding rules
+				if not self:ShouldForceDuck() then
+					self:ForceDuck( true )
+				end
+			else
+				if not self.EntOwner:KeyDown(IN_DUCK) or self.EntOwner:GetVelocity():LengthSqr() < 40000 then //self.EntOwner:KeyDown(IN_JUMP) or 
+					self:Remove()
+					return
+				end
+			end
+			
+			self:CheckDropKick()
 		end
-		
-		self:CheckDropKick()
 		
 	end
 	if CLIENT then
@@ -172,19 +285,61 @@ function ENT:GetNextJump()
 	return self:GetDTFloat( 0 )
 end
 
+function ENT:SetDive( bl )
+	self:SetDTBool( 0, bl )
+end
+
+function ENT:IsDive()
+	return self:GetDTBool( 0 )
+end
+
+//quack
+function ENT:ForceDuck( bl )
+	self:SetDTBool( 1, bl )
+end
+
+function ENT:ShouldForceDuck()
+	return self:GetDTBool( 1 )
+end
+
+function ENT:SetMoveX( fl )
+	self:SetDTFloat( 1, fl )
+end
+
+function ENT:SetMoveY( fl )
+	self:SetDTFloat( 2, fl )
+end
+
+function ENT:GetMoveX( fl )
+	return self:GetDTFloat( 1 )
+end
+
+function ENT:GetMoveY( fl )
+	return self:GetDTFloat( 2 )
+end
+
 local vec_up = vector_up
 function ENT:Move( mv )
 	
-	if mv:KeyPressed( IN_JUMP ) and self.EntOwner:OnGround() and self:GetNextJump() < CurTime() then
-		mv:SetVelocity( mv:GetVelocity() + vec_up * 200 )
-		self:SetNextJump( CurTime() + 0.1 )
-	end
+	if self:IsDive() then
+		
+	else
 	
-	self.EntOwner:SetGroundEntity(NULL)
-	mv:SetSideSpeed(0)
-	mv:SetForwardSpeed(0)
+		if self:ShouldForceDuck() then
+			mv:AddKey( IN_DUCK )
+		end
+	
+		if mv:KeyPressed( IN_JUMP ) and self.EntOwner:OnGround() and self:GetNextJump() < CurTime() then
+			mv:SetVelocity( mv:GetVelocity() + vec_up * 200 )
+			self:SetNextJump( CurTime() + 0.1 )
+		end
+		
+		self.EntOwner:SetGroundEntity(NULL)
+		mv:SetSideSpeed(0)
+		mv:SetForwardSpeed(0)
 
-	mv:SetVelocity(mv:GetVelocity() * (1 - FrameTime() * 0.2))
+		mv:SetVelocity(mv:GetVelocity() * (1 - FrameTime() * 0.2))
+	end
 	
 end
 

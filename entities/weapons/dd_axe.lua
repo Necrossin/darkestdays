@@ -24,8 +24,11 @@ SWEP.StartSwingAnimation = ACT_VM_SECONDARYATTACK
 
 SWEP.IdleAnim = ACT_VM_IDLE_1
 
-SWEP.BlockPos  = Vector(-9.36, 1.001, -0.447)
-SWEP.BlockAng = Angle(-0.235, -25.39, -69.953)
+SWEP.BlockPos = Vector(-23.2, -8.5, 4.8)
+SWEP.BlockAng = Angle(68.32, -28.1, -100)
+
+/*SWEP.BlockPos  = Vector(-9.36, 1.001, -0.447)
+SWEP.BlockAng = Angle(-0.235, -25.39, -69.953)*/
 
 SWEP.HoldType = "melee2"
 
@@ -44,6 +47,7 @@ SWEP.SwingHoldType = "melee2"
 
 SWEP.NoHitSoundFlesh = true
 SWEP.Dismember = true
+SWEP.CanSlice = true
 
 
 for i=6,8 do
@@ -59,8 +63,8 @@ function SWEP:PlayHitSound()
 end
 
 function SWEP:PlayHitFleshSound()
-	self:EmitSound("physics/body/body_medium_break"..math.random(2, 4)..".wav", 75, math.Rand(86, 90)) 
-	self:EmitSound("ambient/machines/slicer"..math.random(1,4)..".wav",100, math.Rand(86, 100))
+	self:EmitSound("physics/body/body_medium_break"..math.random(2, 4)..".wav", 75, math.Rand(86, 90), 0.75, CHAN_WEAPON + 20) 
+	self:EmitSound("ambient/machines/slicer"..math.random(1,4)..".wav",100, math.Rand(66, 80))
 end
 
 //Killicon

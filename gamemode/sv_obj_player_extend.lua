@@ -488,6 +488,7 @@ function meta:GrabLedge()
 	
 	if self:IsCrow() then return end//self:IsThug() or 
 	//if not self._SkillLedgeGrab then return end
+	if self:IsSliding() then return end
 	
 	self._NextLedgeGrab = self._NextLedgeGrab or 0
 	
@@ -505,9 +506,11 @@ function meta:GrabLedge()
 	local trwall = util.TraceHull(walltrace)
 	local trspace
 	local finalpos
+	local hitwall
 	
 	//we are humping a wall, lets see if there is a ledge
 	if trwall.Hit and not trwall.HitSky and trwall.HitNormal.z < 0.3 and trwall.HitNormal.z > -0.3 then
+		hitwall = true
 		for i=1,self:OBBMaxs().z,5 do
 			if not trspace or trspace.Hit then
 				walltrace.start = shootpos + vector_up*i
@@ -530,8 +533,17 @@ function meta:GrabLedge()
 		
 		self:ViewPunch(Angle(3,0,0))
 		
-		self._NextLedgeGrab = CurTime() + 1//1.5
-	end	
+		self._NextLedgeGrab = CurTime() + 1
+		self._NextSlide = CurTime() + 1
+		return true
+	end
+	//dont dive against walls
+	
+	if hitwall then
+		return true
+	end
+	
+	return false
 end
 
 function meta:Roll()
@@ -624,7 +636,7 @@ function meta:DropKick()
 	
 	if self._NextKick >= CurTime() then return end
 	
-	self:SetVelocity( vector_up * 200 )
+	self:SetVelocity( self:GetVelocity() * 0.3 + vector_up * 150 )
 	
 	self._NextKick = CurTime() + 2
 	self._NextSlide = 0
@@ -700,10 +712,78 @@ function meta:Slide( dropkick )
 	if slide and dropkick then
 		slide.DropKickFrames = CurTime() + dropkick
 		slide.SaveVel = self:GetVelocity()
+		slide:SetMoveX( -1 )
+		slide:SetMoveY( 0 )
 	end
-	self:SetLuaAnimation("slide")
+	if not dropkick then
+		self:SetLuaAnimation("slide")
+	end
 	
 	self._NextSlide = CurTime() + 3
+	
+end
+
+local kick_trace = { mask = MASK_SOLID, mins = Vector( -16, -16, -50 ), maxs = Vector( 16, 16, 10 ) }
+function meta:Dive()
+	
+	if self:IsThug() or self:IsCrow() then return end
+	self._NextSlide = self._NextSlide or 0
+	
+	if self._NextSlide >= CurTime() then return end
+	if IsValid(self._efSlide) then return end
+	
+	if self:GetVelocity():LengthSqr() < 10000 then return end
+
+	if self:OnGround() then
+		self:EmitSound( "npc/combine_soldier/gear"..math.random(2)..".wav", 45, 120 )
+	end
+	
+	local ent = ents.Create( "effect_slide" )
+	if ent:IsValid() then
+		ent:SetPos( self:GetPos() )
+		ent:SetOwner( self )
+		ent:SetParent( self )
+		ent:SetDive( true )
+		ent:SetMoveX( self:GetPoseParameter( "move_x" ) )
+		ent:SetMoveY( self:GetPoseParameter( "move_y" ) )
+		ent:Spawn()
+		ent:Activate()	
+		ent.SaveVel = self:GetVelocity()
+
+		local normal = self:GetVelocity()
+		normal.z = 0
+		
+		normal = normal:GetNormal()
+		
+		kick_trace.start = self:GetShootPos()
+		kick_trace.endpos = kick_trace.start + normal * 72
+		kick_trace.filter = self:GetMeleeFilter()
+		
+		local tr = util.TraceHull( kick_trace )
+		
+		if tr.Hit and !tr.HitWorld then
+			local hitent = tr.Entity
+			
+			if hitent and hitent:IsValid() then
+			
+				ent.DiveHit = true
+				
+				if ent.SaveVel then
+					self:SetLocalVelocity( ent.SaveVel )
+				end
+			
+				if hitent:GetClass() == "func_breakable_surf" then
+					hitent:Fire("break", "", 0)
+				end			
+			end
+		end
+
+	end
+	
+	//self:SetLuaAnimation("slide")
+	
+	self._NextSlide = CurTime() + 3
+	
 	
 end
 

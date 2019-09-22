@@ -169,7 +169,12 @@ function GM:UpdateAnimation( pl, velocity, maxseqgroundspeed )
 	if pl._efSlide and IsValid(pl._efSlide) then
 		E_SetPlaybackRate(pl, 0)
 		E_SetCycle(pl, 0.2)
-		E_SetPoseParameter( pl, "move_x", -1 )
+		//if pl._efSlide.IsDive and pl._efSlide:IsDive() then
+			E_SetPoseParameter( pl, "move_x", pl._efSlide:GetMoveX() or -1 )
+			E_SetPoseParameter( pl, "move_y", pl._efSlide:GetMoveY() or 0 )
+		//else
+			//E_SetPoseParameter( pl, "move_x", -1 )
+		//end
 		return true
 	end
 	

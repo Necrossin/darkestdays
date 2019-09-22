@@ -976,6 +976,7 @@ RegisterLuaAnimation('melee_idle_2hand', {
 	Type = TYPE_POSTURE
 })
 
+// legs forward
 RegisterLuaAnimation('slide', {
 	FrameData = {
 		{
@@ -991,6 +992,78 @@ RegisterLuaAnimation('slide', {
 			FrameRate = 1
 		}
 	},
+	TimeToArrive = 0.16,
+	ShouldPlay = function(pl, sGestureName, tGestureTable, iCurFrame, tFrameData)
+		return pl:IsSliding()
+	end,
+	Type = TYPE_POSTURE
+})
+
+// legs behind
+RegisterLuaAnimation('slide_back', {
+	FrameData = {
+		{
+			BoneInfo = {
+				['ValveBiped.Bip01_Pelvis'] = {
+					RF = 30,
+					MU = -33,
+				},
+				['ValveBiped.Bip01_Spine4'] = {
+					RU = -45
+				}
+			},
+			FrameRate = 1
+		}
+	},
+	TimeToArrive = 0.16,
+	ShouldPlay = function(pl, sGestureName, tGestureTable, iCurFrame, tFrameData)
+		return pl:IsSliding()
+	end,
+	Type = TYPE_POSTURE
+})
+
+// legs on the right
+RegisterLuaAnimation('slide_left', {
+	FrameData = {
+		{
+			BoneInfo = {
+				['ValveBiped.Bip01_Pelvis'] = {
+					RU = -45,
+					MU = -30,
+				},
+				['ValveBiped.Bip01_Spine4'] = {
+					RR = 25,
+					RU = -10
+				}
+			},
+			FrameRate = 1
+		}
+	},
+	TimeToArrive = 0.16,
+	ShouldPlay = function(pl, sGestureName, tGestureTable, iCurFrame, tFrameData)
+		return pl:IsSliding()
+	end,
+	Type = TYPE_POSTURE
+})
+
+// legs on the left
+RegisterLuaAnimation('slide_right', {
+	FrameData = {
+		{
+			BoneInfo = {
+				['ValveBiped.Bip01_Pelvis'] = {
+					RU = 45,
+					MU = -30,
+				},
+				['ValveBiped.Bip01_Spine4'] = {
+					RR = -25,
+					RU = -10
+				}
+			},
+			FrameRate = 1
+		}
+	},
+	TimeToArrive = 0.16,
 	ShouldPlay = function(pl, sGestureName, tGestureTable, iCurFrame, tFrameData)
 		return pl:IsSliding()
 	end,
@@ -1352,6 +1425,7 @@ RegisterLuaAnimation('wallrun_left', {
 			FrameRate = 1
 		}
 	},
+	TimeToArrive = 0.1,
 	ShouldPlay = function(pl, sGestureName, tGestureTable, iCurFrame, tFrameData)
 		if IsValid(pl) then
 			pl.RollLeft = CurTime() + 0.05
@@ -1381,6 +1455,7 @@ RegisterLuaAnimation('wallrun_right', {
 			FrameRate = 1
 		}
 	},
+	TimeToArrive = 0.1,
 	ShouldPlay = function(pl, sGestureName, tGestureTable, iCurFrame, tFrameData)
 		if IsValid(pl) then
 			pl.RollRight = CurTime() + 0.05

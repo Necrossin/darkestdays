@@ -104,7 +104,17 @@ end
 function SWEP:FireBullet()
 
 	if self.Owner:GetVelocity():Length() > 30 then
-		self:ShootBullets(self.Owner:IsSprinting() and self.Primary.Damage*1.2 or self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeMoving)
+		local damage = self.Primary.Damage
+		
+		if self.Owner:IsSprinting() then
+			damage = self.Primary.Damage*1.2
+		end
+		
+		if self.Owner:IsDiving() then
+			damage = self.Primary.Damage*1.5
+		end
+		
+		self:ShootBullets( damage, self.Primary.NumShots, self.Primary.ConeMoving)
 	else
 		if self.Owner:Crouching() then
 			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeCrouching)
