@@ -195,6 +195,10 @@ function SWEP:PrimaryAttack()
 	if self.Owner:IsGhosting() then return end
 	if self.Owner:IsDashing() then return end
 	
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	if self:IsSpinning() then
 		self:SetShooting(true)
 		self:StopSpinning()
@@ -258,6 +262,10 @@ function SWEP:SecondaryAttack()
 	if self.Owner:IsDashing() then return end
 	if self.NextCharge >= CurTime() then return end
 
+	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
+		self.Owner.SpawnProtection = 0
+	end
+	
 	self:SetChargeEnd(CurTime()+1.1)
 	
 end
