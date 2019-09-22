@@ -717,7 +717,7 @@ end
 
 function SWEP:PrimaryAttack()
 	if self.Owner:IsCrow() then return end
-	if self.Owner:IsSprinting() and not self.IgnoreSprint then return end
+	if self.Owner:IsSprinting() and not ( self.IgnoreSprint or self.Owner:IsSliding() ) then return end
 	if self:IsBlocking() then return end
 	if not self:CanPrimaryAttack() then return end
 	
