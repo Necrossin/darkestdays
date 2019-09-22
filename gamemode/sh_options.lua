@@ -342,7 +342,7 @@ Abilities = {
 	
 	//Strength
 	["stbasic"] = {Name = "Unlock Strength", Pr = "- Increased melee damage\n- Grants resistance to magic damage\n- Increased melee speed", Co = "- Works only when you wield melee",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
-	["bulletblock"] = {Name = "Bullet Blocking", Pr = "- Gives 90% chance to block incoming\nbullet damage with your melee weapons\n- Unlocks passive Dodge ability\n- Grants a chance to avoid bullets when\nyou sprint with melee\n- Also increases your health by 10",Co = "", Description = "Hold 'Reload' button to block incoming\nbullets.",OnSet = function(pl) pl._SkillBulletBlock = true; pl._DefaultHealth = pl._DefaultHealth + 10; end, OnReset = function(pl) pl._SkillBulletBlock = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% chance to dodge bullets", p*SKILL_STRENGTH_DODGE_PER_LEVEL*100) end},
+	["bulletblock"] = {Name = "Bullet Blocking", Pr = "- Gives 80% chance to block incoming\nbullet damage with your melee weapons\n- Unlocks passive Dodge ability\n- Grants a chance to avoid bullets when\nyou sprint with melee\n- Also increases your health by 10",Co = "", Description = "Hold 'Reload' button to block incoming\nbullets.",OnSet = function(pl) pl._SkillBulletBlock = true; pl._DefaultHealth = pl._DefaultHealth + 10; end, OnReset = function(pl) pl._SkillBulletBlock = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% chance to dodge bullets", p*SKILL_STRENGTH_DODGE_PER_LEVEL*100) end},
 	["bloodthirst"] = {Name = "Blood Thirst", Pr = "- Restore small amount of health\nby dealing melee damage\n- Also increases your speed by 15",Co = "- Does not stack with damage", Description = "\"Berzerking!\"",OnSet = function(pl) pl._SkillBloodThirst = true; pl._DefaultSpeed = pl._DefaultSpeed + 15; end, OnReset = function(pl) pl._SkillBloodThirst = false end},
 	//["rage"] = {Name = "Rage", Pr = "- Increases melee damage as player\ngets injured",Co = "- Works only at below 50% of health",OnSet = function(pl) pl._SkillRage = true end, OnReset = function(pl) pl._SkillRage = false end},
 	["grit"] = {Name = "Grit", Pr = "- 20% chance to ignore damage that\n would otherwise kill you\n- Also increases your health by 25", Co = "- Not applied to self-damage\n- Works only when you wield melee", Description = "",OnSet = function(pl) pl._SkillGrit = true; pl._DefaultHealth = pl._DefaultHealth + 25; end, OnReset = function(pl) pl._SkillGrit = false end},
@@ -559,7 +559,7 @@ Weapons = {
 		Name = "Axe",
 		Melee = true,
 		Mat = Material( "darkestdays/icons/axe_256x128.png", "smooth" ),
-		Pr = "+50% extra damage when owner is\nbelow 50% of max health",
+		Pr = "+35% extra damage when owner is\nbelow 50% of max health",
 		Description = "Perfect for cutting zombies."
 	},
 	["dd_fists"] = {

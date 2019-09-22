@@ -93,9 +93,9 @@ sound.Add( {
 	sound = "weapons/xm1014/xm1014-1.wav"
 } )
 
-SWEP.Primary.Cone = 0.11
-SWEP.Primary.ConeMoving = 0.14
-SWEP.Primary.ConeCrouching = 0.08
+SWEP.Primary.Cone = 0.13
+SWEP.Primary.ConeMoving = 0.15
+SWEP.Primary.ConeCrouching = 0.12
 
 //SWEP.Tracer = ""
 

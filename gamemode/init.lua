@@ -2076,7 +2076,7 @@ function GM:EntityTakeDamage( ent,dmginfo )
 		local wep = IsValid(ent:GetActiveWeapon()) and ent:GetActiveWeapon()
 		
 		if attacker:GetClass() == "npc_antlionguard" then
-			dmginfo:ScaleDamage(4)
+			dmginfo:ScaleDamage(2)
 			if attacker.Owner then
 				inflictor = attacker
 				attacker = attacker.Owner
@@ -2151,7 +2151,7 @@ function GM:EntityTakeDamage( ent,dmginfo )
 		//Bullet blocking
 		if (dmginfo:IsBulletDamage() or inflictor and inflictor:GetClass() == "crossbow_bolt") and ent._SkillBulletBlock then
 			local norm = dmginfo:GetDamageForce( ):GetNormal()
-			if norm:Dot(ent:GetAimVector()) <= -0.3 and ent:IsDefending() and math.Rand(0,1) <= 0.9 then//and dmginfo:GetDamagePosition().z - ent:GetPos().z >= ent:OBBMaxs().z / 3.4
+			if norm:Dot(ent:GetAimVector()) <= -0.3 and ent:IsDefending() and math.Rand(0,1) <= 0.8 then//and dmginfo:GetDamagePosition().z - ent:GetPos().z >= ent:OBBMaxs().z / 3.4
 				local force = dmginfo:GetDamage()
 				dmginfo:SetDamage(0)
 				local e = EffectData()
