@@ -65,7 +65,7 @@ function ENT:Initialize()
 	end
 	
 	if CLIENT then
-		self.Emitter = ParticleEmitter(self:GetPos())
+		//self.Emitter = ParticleEmitter(self:GetPos())
 		ParticleEffect("water_splash_01",self:GetPos()+vector_up*8,Angle(0,0,0),nil)
 	end
 	
@@ -80,18 +80,22 @@ function ENT:OnRemove()
 		e:SetNormal(vector_up)
 		util.Effect("watersplash",e)
 		ParticleEffect("water_splash_01",self:GetPos()+vector_up*3,Angle(0,0,0),nil)
-		for i=1,math.random(10,25) do
-			local particle = self.Emitter:Add(math.random(1,3) == 1 and "sprites/heatwave" or "effects/splashwake1", self:GetPos() +VectorRand()*math.random(0,20))
-			particle:SetVelocity(VectorRand()*math.random(-10,10)+vector_up*4*i)
-			particle:SetDieTime(math.Rand(0.8, 3))
-			particle:SetStartAlpha(125)
-			particle:SetStartSize(math.Rand(2, i*4))
-			particle:SetEndSize(0)
-			particle:SetRoll(math.Rand(0, 360))
-			particle:SetRollDelta(math.Rand(-1, 1))
-			particle:SetGravity(vector_up*math.Rand(-10,1))
-			particle:SetCollide(true)
-			particle:SetAirResistance(5)
+		local emitter = ParticleEmitter( self:GetPos() )
+		if emitter then
+			for i=1,math.random(10,25) do
+				local particle = emitter:Add(math.random(1,3) == 1 and "sprites/heatwave" or "effects/splashwake1", self:GetPos() +VectorRand()*math.random(0,20))
+				particle:SetVelocity(VectorRand()*math.random(-10,10)+vector_up*4*i)
+				particle:SetDieTime(math.Rand(0.8, 3))
+				particle:SetStartAlpha(125)
+				particle:SetStartSize(math.Rand(2, i*4))
+				particle:SetEndSize(0)
+				particle:SetRoll(math.Rand(0, 360))
+				particle:SetRollDelta(math.Rand(-1, 1))
+				particle:SetGravity(vector_up*math.Rand(-10,1))
+				particle:SetCollide(true)
+				particle:SetAirResistance(5)
+			end
+			emitter:Finish() emitter = nil collectgarbage("step", 64)
 		end
 	end
 	if SERVER then
@@ -114,7 +118,14 @@ if SERVER then
 	function ENT:StartTouch( ent )
 		if ent:IsValid() and (ent:IsPlayer() and ent:Alive() and (ent == self.EntOwner or not ent:IsTeammate(self.EntOwner)) or ent:IsNPC() ) and self.ReadyTime <= CurTime() then
 			ent:SetGroundEntity(NULL)
-			ent:SetLocalVelocity(vector_up*math.random(500,600))
+			
+			if ent == self.EntOwner then
+				local vel = ent:GetVelocity()
+				vel.z = math.abs( vel.z )
+				ent:SetVelocity( vel * 0.7 + vector_up * 700)
+			else
+				ent:SetLocalVelocity(vector_up*math.random(500,600))
+			end
 			
 			if self:GetDTBool(0) then
 				ent:TakeDamage(math.random(90,100),self.EntOwner,self)

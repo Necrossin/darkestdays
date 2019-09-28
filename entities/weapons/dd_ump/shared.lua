@@ -85,8 +85,8 @@ SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]//SWEP.Primary.ClipSize*4
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
-SWEP.Primary.Cone = 0.055
-SWEP.Primary.ConeMoving = 0.064
+SWEP.Primary.Cone = 0.06
+SWEP.Primary.ConeMoving = 0.06
 SWEP.Primary.ConeCrouching = 0.035
 
 SWEP.MuzzleEffect			= "rg_muzzle_smg"

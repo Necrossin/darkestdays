@@ -85,7 +85,7 @@ function SWEP:GetViewModelPosition(pos, ang)
 				pos = pos + offset.x * power * ang:Right() + offset.y * power * ang:Forward() + offset.z * power * ang:Up()
 			else
 				--if IsFirstTimePredicted() then
-					lerp = math.Approach(lerp, (self.Owner:IsSprinting() and not self.IgnoreSprint and 1) or 0, RealFrameTime()*1*((lerp + 1) ^ 2.5))
+					lerp = math.Approach(lerp, (self.Owner:IsSprinting() and not self.IgnoreSprint and not self.Owner:IsSliding() and 1) or 0, RealFrameTime()*1*((lerp + 1) ^ 2.5))
 				--end
 				ang:RotateAroundAxis(ang:Right(), (self.IdleAnim == ACT_VM_IDLE_1 and 30 or -20) * lerp)
 				if self.IdleAnim == ACT_VM_IDLE_1 then

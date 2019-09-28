@@ -2505,10 +2505,10 @@ function GM:InitPostEntity( )
 	toDestroy = table.Add(toDestroy, ents.FindByClass("item_ammo_357_large"))
 	toDestroy = table.Add(toDestroy, ents.FindByClass("item_ammo_ar2_altfire"))
 	toDestroy = table.Add(toDestroy, ents.FindByClass("item_suitcharger"))
-	//toDestroy = table.Add(toDestroy, ents.FindByClass("npc_zombie"))
-	//toDestroy = table.Add(toDestroy, ents.FindByClass("npc_maker"))
-	//toDestroy = table.Add(toDestroy, ents.FindByClass("npc_template_maker"))
-	//toDestroy = table.Add(toDestroy, ents.FindByClass("npc_maker_template"))	
+	toDestroy = table.Add(toDestroy, ents.FindByClass("npc_zombie"))
+	toDestroy = table.Add(toDestroy, ents.FindByClass("npc_maker"))
+	toDestroy = table.Add(toDestroy, ents.FindByClass("npc_template_maker"))
+	toDestroy = table.Add(toDestroy, ents.FindByClass("npc_maker_template"))	
 	toDestroy = table.Add(toDestroy, ents.FindByClass("game_player_equip"))
 	toDestroy = table.Add(toDestroy, ents.FindByClass("weapon_physicscannon"))
 	toDestroy = table.Add(toDestroy, ents.FindByClass("weapon_crowbar"))
@@ -2540,13 +2540,13 @@ function GM:InitPostEntity( )
 	
 	-- Sort out spawnpoints
 	self.RedSpawnPoints = {}
-	self.RedSpawnPoints = ents.FindByClass("info_player_undead") -- Red Survival spawnpoints
-	self.RedSpawnPoints = table.Add(self.RedSpawnPoints, ents.FindByClass("info_player_Red"))
+	self.RedSpawnPoints = ents.FindByClass("info_player_undead") -- Zombie Survival spawnpoints
+	self.RedSpawnPoints = table.Add(self.RedSpawnPoints, ents.FindByClass("info_player_zombie"))
 	self.RedSpawnPoints = table.Add(self.RedSpawnPoints, ents.FindByClass("info_player_rebel")) -- HL2 DM spawns
 	self.RedSpawnPoints = table.Add( self.RedSpawnPoints, ents.FindByClass( "info_player_axis" ) ) -- DoD spawns
 	
 	self.BlueSpawnPoints = {}
-	self.BlueSpawnPoints = ents.FindByClass("info_player_human") -- Red Survival spawnpoints
+	self.BlueSpawnPoints = ents.FindByClass("info_player_human") -- Zombie Survival spawnpoints
 	self.BlueSpawnPoints = table.Add( self.BlueSpawnPoints, ents.FindByClass("info_player_combine")) -- HL2 DM spawns
 	self.BlueSpawnPoints = table.Add( self.BlueSpawnPoints, ents.FindByClass( "info_player_allies" ) ) -- DoD spawns
 	
@@ -2577,15 +2577,17 @@ function GM:InitPostEntity( )
 		end
 	end	
 	-- If no team spawn have been found, it's probably a deathmatch map.
-	if #self.BlueSpawnPoints <= 0 then
+	if self:GetGametype() == "ffa" or #self.BlueSpawnPoints <= 0 then
 		self.DeathMatchMap = true
-		self.BlueSpawnPoints = table.Add( self.SpawnPoints, ents.FindByClass("info_player_start"))
-		self.BlueSpawnPoints = table.Add( self.SpawnPoints, ents.FindByClass("info_player_deathmatch" ))
+		self.BlueSpawnPoints = table.Add( self.BlueSpawnPoints, ents.FindByClass("info_player_start"))
+		self.BlueSpawnPoints = table.Add( self.BlueSpawnPoints, ents.FindByClass("info_player_deathmatch" ))
+		self.BlueSpawnPoints = table.Add( self.BlueSpawnPoints, ents.FindByClass("info_sigilnode" )) // from zs
 	end
-	if #self.RedSpawnPoints <= 0 then
+	if self:GetGametype() == "ffa" or #self.RedSpawnPoints <= 0 then
 		self.DeathMatchMap = true
-		self.RedSpawnPoints = table.Add( self.SpawnPoints, ents.FindByClass("info_player_start"))
-		self.RedSpawnPoints = table.Add( self.SpawnPoints, ents.FindByClass("info_player_deathmatch"))
+		self.RedSpawnPoints = table.Add( self.RedSpawnPoints, ents.FindByClass("info_player_start"))
+		self.RedSpawnPoints = table.Add( self.RedSpawnPoints, ents.FindByClass("info_player_deathmatch"))
+		self.RedSpawnPoints = table.Add( self.RedSpawnPoints, ents.FindByClass("info_sigilnode" )) // from zs
 	end
 	
 	if #self.BlueSpawnPoints <= 0 then
@@ -2595,6 +2597,12 @@ function GM:InitPostEntity( )
 	if #self.RedSpawnPoints <= 0 then
 		self.RedSpawnPoints = ents.FindByClass("info_player_start")
 	end
+	
+	/*print"Blue ----------------"
+	PrintTable(self.BlueSpawnPoints)
+	print"\n\n"
+	print"Red ----------------"
+	PrintTable(self.RedSpawnPoints)*/
 	
 	
 	self:LoadKOTHPoints()
@@ -2776,6 +2784,7 @@ function GM:PlayerUse( pl, entity )
 	// door exploit prevention
 	local doors = { "func_door", "prop_door_rotating", "func_door_rotating" }
 	if table.HasValue(doors,entity:GetClass()) then
+		pl._NextSlide = CurTime() + 1
 		if (entity.LastDoorUse and entity.LastDoorUse + 4 or 0) > CurTime() then
 			return false
 		end

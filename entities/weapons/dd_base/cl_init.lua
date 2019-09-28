@@ -70,7 +70,7 @@ local lerp = 0
 function SWEP:GetViewModelPosition(pos, ang)
 	
 	--if IsFirstTimePredicted() then
-		lerp = math.Approach(lerp, ((self.Owner:IsSprinting() or self.Owner:IsWallrunning() ) and not self.IgnoreSprint and 1) or 0, RealFrameTime()*1*((lerp + 1) ^ 2.5))
+		lerp = math.Approach(lerp, ((self.Owner:IsSprinting() or self.Owner:IsWallrunning() ) and not self.IgnoreSprint and not self.Owner:IsSliding() and 1) or 0, RealFrameTime()*1*((lerp + 1) ^ 2.5))
 	--end
 	
 	if self.SprintPos and self.SprintAng then

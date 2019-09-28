@@ -142,7 +142,7 @@ SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
 SWEP.Primary.Cone = 0.055
-SWEP.Primary.ConeMoving = 0.065
+SWEP.Primary.ConeMoving = 0.055//0.065
 SWEP.Primary.ConeCrouching = 0.04
 
 SWEP.Tracer = "Tracer" //temp fix

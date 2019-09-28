@@ -232,7 +232,6 @@ function EFFECT:CreateDummy()
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
 	
-	
 	local phys = self:GetPhysicsObject()
 	
 	if IsValid(phys) then

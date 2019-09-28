@@ -170,7 +170,7 @@ function ENT:OnThink()
 					hull2.endpos = hull2.start //pos+Vector(0,0,2)+Vector(0,0,5*i)
 					hull2.mins = self.EntOwner:OBBMins()
 					hull2.maxs = self.EntOwner:OBBMaxs()
-					hull2.mask = MASK_PLAYERSOLID_BRUSHONLY - CONTENTS_PLAYERCLIP
+					hull2.mask = MASK_PLAYERSOLID - CONTENTS_PLAYERCLIP
 					
 					local trhull2 = util.TraceHull( hull2 )
 					

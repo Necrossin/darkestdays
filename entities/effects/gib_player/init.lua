@@ -41,6 +41,7 @@ local function gib_callback( self, data )
 end
 
 local bounds = Vector(128, 128, 128)
+local collision_bounds = Vector( 5, 5, 5 )
 function EFFECT:Init( data )
 	local ent = data:GetEntity()
 	local Pos = data:GetOrigin()
@@ -69,8 +70,8 @@ function EFFECT:Init( data )
 		return
 	end*/
 	
-	if CurTime() < NextEffect then return end
-	NextEffect = CurTime() + 0.1
+	//if CurTime() < NextEffect then return end
+	//NextEffect = CurTime() + 0.1
 	
 	if ent:IsPlayer() then
 		//if ent.GetRagdollEntity and ent:GetRagdollEntity():IsValid() then
@@ -105,8 +106,11 @@ function EFFECT:Init( data )
 						
 						if PlayerGibs[ i ] and PlayerGibs[ i ].bbox then
 							gib:PhysicsInitBox( PlayerGibs[ i ].bbox[1], PlayerGibs[ i ].bbox[2] ) 
+							gib:SetCollisionBounds( PlayerGibs[ i ].bbox[1], PlayerGibs[ i ].bbox[2] )
 						else
-							gib:PhysicsInit( ph )
+							gib:PhysicsInitBox( collision_bounds * -1, collision_bounds )
+							gib:SetCollisionBounds( collision_bounds * -1, collision_bounds )
+							//gib:PhysicsInit( ph )
 						end
 						if PlayerGibs[ i ] and PlayerGibs[ i ].big_decal then
 							gib.BigDecal = true
@@ -189,7 +193,9 @@ function EFFECT:Init( data )
 				gib:SetPos(Pos + i * Vector(0,0,6) + VectorRand() * 3)
 				gib:SetAngles( VectorRand():Angle() )
 				
-				gib:PhysicsInit( ph )
+				//gib:PhysicsInit( ph )
+				gib:PhysicsInitBox( collision_bounds * -1, collision_bounds )
+				gib:SetCollisionBounds( collision_bounds * -1, collision_bounds )
 						
 				gib:AddCallback( "PhysicsCollide", gib_callback )
 

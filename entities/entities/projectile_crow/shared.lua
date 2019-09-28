@@ -87,12 +87,12 @@ function ENT:Think()
 			self:SetAngles(aOldHeading)
 			local diffang = self:WorldToLocalAngles(vHeading:Angle())
 
-			local ft = FrameTime()*math.Rand(1,13)// * math.max(3, math.min(7, 7 - nearest:Distance(mypos) * 0.97))
+			local ft = FrameTime()*math.Rand(10,13)// * math.max(3, math.min(7, 7 - nearest:Distance(mypos) * 0.97))
 			aOldHeading:RotateAroundAxis(aOldHeading:Up(), (diffang.yaw + math.Rand(-10, 10))* ft)
 			aOldHeading:RotateAroundAxis(aOldHeading:Right(), (diffang.pitch + math.Rand(-40, 40))* -ft)
 
 			local vNewHeading = aOldHeading:Forward()
-			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(320,390))
+			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(420,490))
 		else
 			local mypos = self:GetPos()
 			for _, ent in ipairs(player_GetAll()) do
@@ -112,12 +112,12 @@ function ENT:Think()
 			self:SetAngles(aOldHeading)
 			local diffang = self:WorldToLocalAngles(vHeading:Angle())
 
-			local ft = FrameTime()*math.Rand(1,13)// * math.max(3, math.min(7, 7 - nearest:Distance(mypos) * 0.97))
+			local ft = FrameTime()*math.Rand(10,13)// * math.max(3, math.min(7, 7 - nearest:Distance(mypos) * 0.97))
 			aOldHeading:RotateAroundAxis(aOldHeading:Up(), (diffang.yaw + math.Rand(-10, 10))* ft)
 			aOldHeading:RotateAroundAxis(aOldHeading:Right(), (diffang.pitch + math.Rand(-40, 40))* -ft)
 
 			local vNewHeading = aOldHeading:Forward()
-			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(320,390))
+			self:GetPhysicsObject():SetVelocityInstantaneous(vNewHeading * math.random(420,490))
 			
 		end
 	end
