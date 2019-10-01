@@ -1,6 +1,11 @@
 MapCycle = {}
+MapCycleRaw = {}
+MapCycleRawString = nil
 MapCycleBackup = {}
 MapCycleLimits = {}
+
+GM.MapCyclePassword = nil
+GM.AllowMapCycleEditing = GM.AllowMapCycleEditing or {}
 
 local tab
 local function AddMap( name, minpl, maxpl )
@@ -107,6 +112,17 @@ function GM:SetMapList()
 	
 	if not MapCycle then return end
 	
+	if not self.MapCyclePassword then
+		if file.Exists( "darkestdays/dd_mapcycle_access.txt", "DATA" ) then
+			local pass = file.Read( "darkestdays/dd_mapcycle_access.txt" )
+			pass = string.gsub( pass, " ", "" )
+			pass = string.gsub( pass, "\n", "" )
+			if pass ~= "" then
+				self.MapCyclePassword = pass
+			end
+		end
+	end
+	
 	local hasfolder = file.IsDir( "darkestdays", "DATA" )
 	
 	if not hasfolder then
@@ -132,10 +148,12 @@ function GM:SetMapList()
 	
 	local raw_data = file.Read( "darkestdays/dd_mapcycle.txt" )
 	raw_data = string.gsub( raw_data, " ", "" )
-		
+	
+	MapCycleRawString = raw_data		
 	MapCycle = string.Explode( "\n", raw_data )
 		
 	for k, v in pairs( MapCycle ) do
+		//MapCycleRaw[ k ] = v
 		if v and !file.Exists( "maps/"..v..".bsp", "GAME" ) then
 			MapCycle[k] = nil
 			//print( "Removing map "..v )
@@ -143,7 +161,7 @@ function GM:SetMapList()
 	end
 	
 	if game.GetMap() == "dm_lockdown" then
-		table.Shuffle(MapCycle)
+		//table.Shuffle(MapCycle)
 	end
 
 	table.Resequence ( MapCycle )
@@ -214,3 +232,65 @@ function GM:GetVoteMaps()
 	return VoteMaps
 	
 end
+
+local function RequestMapCycleEditor( pl, cmg, args )
+	
+	local allow = false
+	
+	if pl:IsAdmin() then allow = true end
+	
+	if GAMEMODE.MapCyclePassword and args and args[1] and GAMEMODE.MapCyclePassword == tostring( args[1] ) then
+		if not GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] then
+			GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] = true
+		end
+	end
+	
+	if GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] then allow = true end
+	
+	if not allow then return end
+	
+	GAMEMODE:SendMapCycleToClient( pl )
+	
+end
+concommand.Add( "dd_mapcycle", RequestMapCycleEditor )
+
+
+util.AddNetworkString( "SendMapCycleToClient" )
+util.AddNetworkString( "SendMapCycleToServer" )
+
+function GM:SendMapCycleToClient( pl )
+
+	if MapCycleRawString then
+				
+		local compressed = util.Compress( MapCycleRawString ) 
+		local len = string.len( compressed )
+		
+		net.Start( "SendMapCycleToClient" )
+			net.WriteInt( len, 32 )
+			net.WriteData( compressed, len )
+		net.Send( pl )
+	
+	end
+
+end
+
+net.Receive( "SendMapCycleToServer", function( len, pl )
+
+	local allow = false
+	
+	if pl:IsAdmin() then allow = true end
+	if GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] then allow = true end
+	
+	if not allow then return end
+
+	local data_len = net.ReadInt( 32 )
+	local data = net.ReadData( data_len )
+	local decompressed = util.Decompress( data )
+	
+	file.Write( "darkestdays/dd_mapcycle.txt", decompressed )
+	
+	GAMEMODE:SetMapList()
+	
+	pl:ChatPrint( "Map Cycle was successfully updated!" )
+	
+end)

@@ -1608,3 +1608,138 @@ function HelpMenu()
 	end	
 	
 end
+
+// mapcycle thingy
+
+MapCycle_cl = nil
+
+local function ConfirmMapcycle( txt )
+	
+	if txt then
+		
+		local raw_data = string.gsub( txt, " ", "" )
+		local compressed = util.Compress( raw_data ) 
+		local len = string.len( compressed )
+		
+		net.Start( "SendMapCycleToServer" )
+			net.WriteInt( len, 32 )
+			net.WriteData( compressed, len )
+		net.SendToServer()
+		
+	end
+	
+end
+
+function MapManagerMenu()
+
+	local w,h = ScrW(),ScrH()
+	local Ow,Oh = 300,h/1.4
+	
+	if InLobby then return end
+	
+	if MapMenu then
+		MapMenu:Remove()
+		MapMenu = nil
+	end
+	
+	MapMenu = vgui.Create("DFrame")
+	MapMenu:SetSize(Ow,Oh)
+	MapMenu:SetPos(w/2-Ow/2,h/2-Oh/2)
+	MapMenu:SetDraggable ( false )
+	MapMenu:SetTitle("")
+	MapMenu:ShowCloseButton (true)
+	MapMenu:MakePopup()
+	MapMenu.Paint = function()
+
+	end
+	
+	local name = vgui.Create("DLabel",MapMenu)
+	name:SetTall(50)
+	name:SetText("")
+	name:Dock( TOP )
+	name:DockMargin( 0,0,0,10 )
+	name.Paint = function(self,fw,fh)
+		draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+		draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+		draw.SimpleText( "Map Cycle", "Bison_40", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+	
+	local saveBtn = vgui.Create( "DButton", MapMenu )
+	saveBtn:SetTall( 30 )
+	saveBtn:Dock( BOTTOM )
+	name:DockMargin( 0,10,0,0 )
+	saveBtn:SetText("")
+	saveBtn.OnCursorEntered = function(self)
+		self.Overed = true
+	end
+	saveBtn.OnCursorExited = function(self)
+		self.Overed = false
+	end
+	saveBtn.Paint = function(self,fw,fh)
+		if self.Overed then
+			draw.RoundedBox( 6,0,0, fw, fh, COLOR_MISC_SELECTED_BRIGHT_OUTLINE)
+			draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_INNER)
+		else
+			draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+			draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_INNER)
+		end
+		draw.SimpleText( "SAVE MAPCYCLE", "Arial_Bold_20", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+	
+	MapList = vgui.Create( "DScrollPanel", MapMenu )
+	MapList:Dock( FILL )
+	MapList:DockMargin( 4, 2, 4, 2 )
+	MapList.Paint = function(self,fw,fh)
+		draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+		draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+	end
+	
+	MapText = vgui.Create( "DTextEntry", MapList )
+	MapText:SetFont( "Arial_Bold_18" )
+	//MapText:SetTextColor( COLOR_TEXT_SOFT_BRIGHT )
+	//MapText:SetCursorColor( COLOR_TEXT_SOFT_BRIGHT )
+	MapText:SetMultiline( true )
+	MapText:SetEditable( true )
+	MapText:SetWide( Ow - 8 )
+	MapText:SetText( MapCycle_cl or "Loading map cycle...")//
+	if MapCycle_cl then
+		MapText.GotMapCycle = true
+	end
+	//MapText:SetDrawBackground( false )
+	MapText:SetDrawBorder( true )
+	MapText.Think = function( self )
+	
+		if not self.GotMapCycle and MapCycle_cl then
+			self:SetText( MapCycle_cl )
+			self.GotMapCycle = true
+		end
+	
+		surface.SetFont("Arial_Bold_18")
+		local tw,th = surface.GetTextSize( self:GetValue() or "" )
+		self:SetTall( math.max( th*1.1, MapList:GetTall() ) )
+	end	
+	
+	saveBtn.DoClick = function()
+		if MapCycle_cl and MapText:GetValue() ~= "" then
+			surface.PlaySound("buttons/button9.wav")
+			ConfirmMapcycle( MapText:GetValue() )
+		end
+	end
+	
+	//MapText:Dock( FILL )
+	
+end
+
+net.Receive( "SendMapCycleToClient", function( len )
+
+	MapCycle_cl = nil
+
+	local data_len = net.ReadInt( 32 )
+	local data = net.ReadData( data_len )
+	local decompressed = util.Decompress( data )
+	
+	MapCycle_cl = decompressed
+	
+	MapManagerMenu()
+	
+end)
