@@ -1667,7 +1667,7 @@ function MapManagerMenu()
 	local saveBtn = vgui.Create( "DButton", MapMenu )
 	saveBtn:SetTall( 30 )
 	saveBtn:Dock( BOTTOM )
-	name:DockMargin( 0,10,0,0 )
+	saveBtn:DockMargin( 0,10,0,0 )
 	saveBtn:SetText("")
 	saveBtn.OnCursorEntered = function(self)
 		self.Overed = true
@@ -1730,6 +1730,219 @@ function MapManagerMenu()
 	
 end
 
+local Points_cl = nil
+local Exploits_cl = nil
+
+local function LookupClientsidePoints()
+	local a, b = file.Find("darkestdays/koth_points/*.txt", "DATA")	
+	return a or {}
+end
+
+local function LookupClientsideExploits()
+	local a, b = file.Find("darkestdays/exploits/*.txt", "DATA")	
+	return a or {}
+end
+
+local function ConfirmPointsFile( name )
+	
+	if name then
+		
+		local txt = file.Read( "darkestdays/koth_points/"..name..".txt", "DATA" )
+		
+		if txt then
+		
+			local compressed = util.Compress( txt ) 
+			local len = string.len( compressed )
+			
+			net.Start( "SendMapPointsToServer" )
+				net.WriteString( name )
+				net.WriteInt( len, 32 )
+				net.WriteData( compressed, len )
+			net.SendToServer()
+			
+		end
+		
+	end
+	
+end
+
+local function ConfirmExploitsFile( name )
+	
+	if name then
+		
+		local txt = file.Read( "darkestdays/exploits/"..name..".txt", "DATA" )
+		
+		if txt then
+		
+			local compressed = util.Compress( txt ) 
+			local len = string.len( compressed )
+			
+			net.Start( "SendMapExploitsToServer" )
+				net.WriteString( name )
+				net.WriteInt( len, 32 )
+				net.WriteData( compressed, len )
+			net.SendToServer()
+			
+		end
+		
+	end
+	
+end
+
+function MapProfilerMenu()
+
+	local w,h = ScrW(),ScrH()
+	local Ow,Oh = 720,h/1.4
+	
+	if InLobby then return end
+	
+	if ProfilerMenu then
+		ProfilerMenu:Remove()
+		ProfilerMenu = nil
+	end
+	
+	ProfilerMenu = vgui.Create("DFrame")
+	ProfilerMenu:SetSize(Ow,Oh)
+	ProfilerMenu:SetPos(w/2-Ow/2,h/2-Oh/2)
+	ProfilerMenu:SetDraggable ( false )
+	ProfilerMenu:SetTitle("")
+	ProfilerMenu:ShowCloseButton (true)
+	ProfilerMenu:MakePopup()
+	ProfilerMenu.Paint = function()
+
+	end
+	
+	local name = vgui.Create("DLabel",ProfilerMenu)
+	name:SetTall(50)
+	name:SetText("")
+	name:Dock( TOP )
+	name:DockMargin( 0,0,0,10 )
+	name.Paint = function(self,fw,fh)
+		draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+		draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+		draw.SimpleText( "Map Profiler", "Bison_40", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+	
+	local list_parent = vgui.Create( "DPanel", ProfilerMenu )
+	list_parent:Dock( FILL )
+	list_parent:DockMargin( 4, 2, 4, 2 )
+	list_parent.Paint = function(self,fw,fh)
+		//draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+		//draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+	end
+	
+		
+	local PointsList = vgui.Create( "DScrollPanel", list_parent )
+	PointsList:Dock( LEFT )
+	PointsList:SetWide( ProfilerMenu:GetWide() / 2 - 16 )
+	PointsList:DockMargin( 0, 2, 4, 2 )
+	PointsList.Paint = function(self,fw,fh)
+		draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+		draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+	end
+	
+	local ExploitList = vgui.Create( "DScrollPanel", list_parent )
+	ExploitList:Dock( RIGHT )
+	ExploitList:SetWide( ProfilerMenu:GetWide() / 2 - 16 )
+	ExploitList:DockMargin( 0, 2, 4, 2 )
+	ExploitList.Paint = function(self,fw,fh)
+		draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+		draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+	end
+	
+	
+	-- fill points list
+	
+	for _, profile in pairs( LookupClientsidePoints() ) do
+		
+		if profile then
+		
+			local Btn = vgui.Create( "DButton", PointsList )
+			Btn:SetTall( 30 )
+			Btn:Dock( TOP )
+			Btn:DockMargin( 0,0,0,2 )
+			Btn:SetText("")
+			Btn.FileName = profile
+			Btn.MapName = string.gsub( Btn.FileName, ".txt", "" )
+			Btn.OnCursorEntered = function(self)
+				self.Overed = true
+			end
+			Btn.OnCursorExited = function(self)
+				self.Overed = false
+			end
+			Btn.Paint = function(self,fw,fh)
+				if self.Overed then
+					draw.RoundedBox( 6,0,0, fw, fh, COLOR_MISC_SELECTED_BRIGHT_OUTLINE)
+					draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_INNER)
+				else
+					draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+					draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_INNER)
+				end
+				draw.SimpleText( "[PNT] "..self.MapName, "Arial_Bold_16", 4, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				if Points_cl and Points_cl[ Btn.FileName ] or Btn.SentToServer then
+					draw.SimpleText( "[ON SERVER]", "Arial_Bold_16", self:GetWide() - 4, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+				end
+			end
+			Btn.DoClick = function( self )
+				if not self.SentToServer and self.MapName then
+					surface.PlaySound("buttons/button9.wav")
+					ConfirmPointsFile( self.MapName )
+					self.SentToServer = true
+				end
+			end
+		
+		end
+
+	end
+	
+	-- same but for exploits
+	
+	for _, profile in pairs( LookupClientsideExploits() ) do
+		
+		if profile then
+		
+			local Btn = vgui.Create( "DButton", ExploitList )
+			Btn:SetTall( 30 )
+			Btn:Dock( TOP )
+			Btn:DockMargin( 0,0,0,2 )
+			Btn:SetText("")
+			Btn.FileName = profile
+			Btn.MapName = string.gsub( Btn.FileName, ".txt", "" )
+			Btn.OnCursorEntered = function(self)
+				self.Overed = true
+			end
+			Btn.OnCursorExited = function(self)
+				self.Overed = false
+			end
+			Btn.Paint = function(self,fw,fh)
+				if self.Overed then
+					draw.RoundedBox( 6,0,0, fw, fh, COLOR_MISC_SELECTED_BRIGHT_OUTLINE)
+					draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_INNER)
+				else
+					draw.RoundedBox( 6,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
+					draw.RoundedBox( 6,1,1, fw-2,fh-2, COLOR_BACKGROUND_INNER)
+				end
+				draw.SimpleText( "[EXP] "..self.MapName, "Arial_Bold_16", 4, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				if Exploits_cl and Exploits_cl[ Btn.FileName ] or Btn.SentToServer then
+					draw.SimpleText( "[ON SERVER]", "Arial_Bold_16", self:GetWide() - 4, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+				end
+			end
+			Btn.DoClick = function( self )
+				if not self.SentToServer and self.MapName then
+					surface.PlaySound("buttons/button9.wav")
+					ConfirmExploitsFile( self.MapName )
+					self.SentToServer = true
+				end
+			end
+		
+		end
+
+	end
+	
+	
+	
+end
+
 net.Receive( "SendMapCycleToClient", function( len )
 
 	MapCycle_cl = nil
@@ -1741,5 +1954,40 @@ net.Receive( "SendMapCycleToClient", function( len )
 	MapCycle_cl = decompressed
 	
 	MapManagerMenu()
+	
+end)
+
+net.Receive( "SendMapProfilesToClient", function( len )
+
+	Points_cl = nil
+	Exploits_cl = nil
+
+	local data_len = net.ReadInt( 32 )
+	local data = net.ReadData( data_len )
+	local decompressed = util.Decompress( data )
+	
+	local points_temp = string.Explode( " ", decompressed )
+	
+	Points_cl = {}
+	for k, v in pairs( points_temp ) do
+		if v and v ~= "" then
+			Points_cl[ v ] = true
+		end
+	end
+	
+	local data_len2 = net.ReadInt( 32 )
+	local data2 = net.ReadData( data_len2 )
+	local decompressed2 = util.Decompress( data2 )
+	
+	local exploits_temp = string.Explode( " ", decompressed2 )
+	
+	Exploits_cl = {}
+	for k, v in pairs( exploits_temp ) do
+		if v and v ~= "" then
+			Exploits_cl[ v ] = true
+		end
+	end
+	
+	MapProfilerMenu()
 	
 end)

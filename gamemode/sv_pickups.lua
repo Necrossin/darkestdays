@@ -49,6 +49,12 @@ function GM:LoadKOTHPoints()
 	
 	self.ConquestPoints = {}
 	
+	local hasfolder = file.IsDir( "darkestdays/koth_points", "DATA" )
+	
+	if not hasfolder then
+		file.CreateDir( "darkestdays/koth_points" )
+	end
+	
 	local filename = "darkestdays/koth_points/".. game.GetMap() ..".txt"
 	
 	local stuff_exists = false
@@ -331,7 +337,121 @@ function GM:IsGametypeLocked( gm )
 	return self.GametypeRounds[ gm ] and self.GametypeRounds[ gm ].played >= ROUNDS_PER_GAMETYPE, self.GametypeRounds[ gm ].tounlock
 end
 
+local function RequestMapProfiler( pl, cmg, args )
+	
+	local allow = false
+	
+	if pl:IsAdmin() then allow = true end
+	
+	if GAMEMODE.MapCyclePassword and args and args[1] and GAMEMODE.MapCyclePassword == tostring( args[1] ) then
+		if not GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] then
+			GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] = true
+		end
+	end
+	
+	if GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] then allow = true end
+	
+	if not allow then return end
+	
+	GAMEMODE:SendMapProfilesToClient( pl )
+	
+end
+concommand.Add( "dd_mapprofiler", RequestMapProfiler )
+
 util.AddNetworkString( "HUDMessage" )
+util.AddNetworkString( "SendMapProfilesToClient" )
+util.AddNetworkString( "SendMapPointsToServer" )
+util.AddNetworkString( "SendMapExploitsToServer" )
+
+function GM:SendMapProfilesToClient( pl )
+
+	local a, b = file.Find("darkestdays/koth_points/*.txt", "DATA")	
+	local a2, b2 = file.Find("darkestdays/exploits/*.txt", "DATA")	
+	
+	a = a or {}
+	a2 = a2 or {}
+	
+	if a and a2 then
+		
+		local data = table.concat( a, " " )
+		local compressed = util.Compress( data ) 
+		local len = string.len( compressed )
+		
+		net.Start( "SendMapProfilesToClient" )
+			net.WriteInt( len, 32 )
+			net.WriteData( compressed, len )
+		
+		local data2 = table.concat( a2, " " )
+		local compressed2 = util.Compress( data2 ) 
+		local len2 = string.len( compressed2 )
+		
+			net.WriteInt( len2, 32 )
+			net.WriteData( compressed2, len2 )
+		net.Send( pl )
+		
+	end
+
+end
+
+net.Receive( "SendMapPointsToServer", function( len, pl )
+
+	local allow = false
+	
+	if pl:IsAdmin() then allow = true end
+	if GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] then allow = true end
+	
+	if not allow then return end
+
+	local map_name = net.ReadString()
+	local data_len = net.ReadInt( 32 )
+	local data = net.ReadData( data_len )
+	local decompressed = util.Decompress( data )
+	
+	local check = util.JSONToTable( decompressed )
+	
+	if check then
+	
+		local hasfolder = file.IsDir( "darkestdays/koth_points", "DATA" )
+	
+		if not hasfolder then
+			file.CreateDir( "darkestdays/koth_points" )
+		end
+	
+		file.Write( "darkestdays/koth_points/"..map_name..".txt", decompressed )
+		pl:ChatPrint( "Successfully uploaded 'darkestdays/koth_points/"..map_name..".txt' file!" )
+	end
+	
+end)
+
+net.Receive( "SendMapExploitsToServer", function( len, pl )
+
+	local allow = false
+	
+	if pl:IsAdmin() then allow = true end
+	if GAMEMODE.AllowMapCycleEditing[ tostring( pl:SteamID() ) ] then allow = true end
+	
+	if not allow then return end
+
+	local map_name = net.ReadString()
+	local data_len = net.ReadInt( 32 )
+	local data = net.ReadData( data_len )
+	local decompressed = util.Decompress( data )
+	
+	local check = util.JSONToTable( decompressed )
+	
+	if check then
+	
+		local hasfolder = file.IsDir( "darkestdays/exploits", "DATA" )
+	
+		if not hasfolder then
+			file.CreateDir( "darkestdays/exploits" )
+		end
+	
+		file.Write( "darkestdays/exploits/"..map_name..".txt", decompressed )
+		pl:ChatPrint( "Successfully uploaded 'darkestdays/exploits/"..map_name..".txt' file!" )
+	end
+	
+end)
 
 function GM:HUDMessage(to, txt, about, snd)
 	
