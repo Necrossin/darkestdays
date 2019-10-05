@@ -1535,7 +1535,45 @@ function change_map(pl,cmd,args)
 	//RunConsoleCommand( "changelevel", map )
 	
 end
-concommand.Add("admin_changelevel",change_map)
+concommand.Add("admin_changelevel",change_map,
+	
+	function( cmd, stringargs )
+		
+		stringargs = string.Trim(stringargs)
+		stringargs = string.lower(stringargs)
+		
+		local res = {}
+		local gametypes = {}
+		local toshow = {}
+		local mapFiles = file.Find( "maps/*.bsp", "GAME" )
+		local clean
+		
+		for _,mapname in pairs( mapFiles ) do
+			clean = string.StripExtension( mapname )
+			table.insert( res, clean )
+		end
+				
+		for k, v in pairs( GAMEMODE.Gametypes ) do
+			table.insert( gametypes, k )
+		end
+		
+		for _,mapname in pairs( res ) do
+			if string.find( string.lower( mapname ), stringargs ) then
+				if #stringargs >= #mapname then
+					for k, v in pairs( gametypes ) do
+						table.insert( toshow, cmd.." "..mapname.." "..v )
+					end
+				else
+					table.insert( toshow, cmd.." "..mapname)
+				end
+				
+			end
+		end
+		
+		return toshow
+		
+	end
+)
 
 
 /*---------------------------------------------------------
@@ -2603,6 +2641,30 @@ function GM:InitPostEntity( )
 	print"\n\n"
 	print"Red ----------------"
 	PrintTable(self.RedSpawnPoints)*/
+	
+	-- do something about doors with this small zs snippet
+	local doors = ents.FindByClass("prop_door_rotating")
+	
+	for k, ent in pairs( doors ) do
+		if ent and ent:IsValid() then
+			if ent:GetKeyValues().damagefilter == "invul" or ent:HasSpawnFlags(2048) and ent:GetSaveTable().m_bLocked then continue end
+			
+			ent:Fire("unlock", "", 0)
+			ent:Fire("open", "", 0.01)
+			ent:Fire("break", "", 0.1)
+			ent:Fire("kill", "", 0.15)
+		end
+	end
+	
+	
+	local e = ents.FindByClass("shadow_control")[1]
+	if not e then
+		e = ents.Create("shadow_control")
+		e:Spawn()
+	end
+	if e:IsValid() then
+		e:SetKeyValue("disableallshadows", "1")
+	end
 	
 	
 	self:LoadKOTHPoints()

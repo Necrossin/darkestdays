@@ -66,3 +66,7 @@ end
 function ENT:SetStartTime(time)
 	self:SetDTFloat(3,time) 
 end
+
+function ENT:TeamToHill(tm)
+	return 
+end

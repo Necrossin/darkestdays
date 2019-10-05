@@ -64,6 +64,12 @@ function SWEP:SpawnPoint()
 	ent.Point = true
 	ent:Spawn()
 	
+	local effectdata = EffectData()
+		effectdata:SetEntity( ent )
+		effectdata:SetOrigin( ent:GetPos() )
+		effectdata:SetRadius( self:GetDTInt(0) )
+	util.Effect("koth_manager_entity", effectdata, true, true)
+	
 	local Phys = ent:GetPhysicsObject()
 	if ValidEntity ( Phys ) then
 		Phys:EnableMotion ( false )
@@ -218,5 +224,30 @@ function SWEP:DrawHUD()
 	draw.SimpleTextOutlined( Description1,"Arial_Bold_20",ScaleW(673),ScaleH(726), Color ( 240,240,240,255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 	draw.SimpleTextOutlined( Description2 ,"Arial_Bold_20",ScaleW(673),ScaleH(756), Color ( 240,240,240,255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255)) 
 end
+
+effects.Register(
+            {
+                Init = function(self, data)
+				
+					self.Ent = data:GetEntity()
+					self.Radius = data:GetRadius()
+					
+					self.Particle = CreateParticleSystem( self.Ent, "hill_neutral", PATTACH_ABSORIGIN_FOLLOW )
+					self.Particle:SetControlPoint( 2, Vector( self.Radius, 0, 0 ) ) 
+	
+				
+                end,
+ 
+                Think = function( self ) 
+					
+					return IsValid( self.Ent )
+				
+				end,
+ 
+                Render = function(self) end
+            },
+ 
+            "koth_manager_entity"
+        )
 
 end

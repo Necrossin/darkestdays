@@ -6,6 +6,9 @@ function EFFECT:Init(data)
 	self.EfOwner = data:GetEntity()
 	self.Entity:SetModel("models/props_combine/combine_mine01.mdl")	
 	
+	self.Particle = CreateParticleSystem( self.Entity, "hill_neutral", PATTACH_ABSORIGIN_FOLLOW )  //ParticleEffectAttach( "hill_neutral", PATTACH_ABSORIGIN_FOLLOW, self.Entity, 0 ) 
+	
+	
 end
 
 function EFFECT:Think()
@@ -57,7 +60,15 @@ function EFFECT:Render()
 		norm = trace.HitNormal
 	end
 	
-	if not self.Emitter then return end
+	if self.Particle then
+		
+		self.radius = self.radius or 100
+		
+		self.Particle:SetControlPoint( 2, Vector( self.radius, 0, 0 ) ) 
+		
+	end
+	
+	/*if not self.Emitter then return end
 	
 	local ang = norm:Angle()
 	
@@ -92,5 +103,5 @@ function EFFECT:Render()
 		particle:SetGravity(vector_up*math.Rand(-6,-3))
 		particle:SetCollide(true)
 		particle:SetAirResistance(12)
-	end
+	end*/
 end
