@@ -1459,7 +1459,7 @@ local blood_mat = Material( "models/flesh" )
 			local model = v.modelEnt
 			local sprite = v.spriteMaterial
 			
-			if model.Spell and IsValid( self.Owner:GetCurrentSpell() ) and self.Owner:GetCurrentSpell().ClassName ~= model.Spell then continue end
+			if IsValid( model ) and model.Spell and IsValid( self.Owner:GetCurrentSpell() ) and self.Owner:GetCurrentSpell().ClassName ~= model.Spell then continue end
 			
 			if (!v.bone) then continue end
 			
