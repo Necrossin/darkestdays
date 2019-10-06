@@ -142,11 +142,12 @@ function meta:IsWallrunning()
 	return IsValid(self._efWallRun) and self._efWallRun.IsActive and self._efWallRun:IsActive() == true
 end
 
-/*function meta:IsSprinting()
+function meta:IsSprinting()
 	local walk_spd = self:GetWalkSpeed()
 	--return self:GetVelocity():LengthSqr() >= ( walk_spd * walk_spd + PLAYER_DEFAULT_RUNSPEED_BONUS_SQR - 100 ) and (self:KeyDown( IN_SPEED ) and self:OnGround() and !self:IsDashing()) and !IsValid(self._efSlide)
-	return self:IsRunning() and (self:KeyDown( IN_SPEED ) and self:OnGround() and !self:IsDashing()) and !IsValid(self._efSlide)
-end*/
+	//return self:IsRunning() and (self:KeyDown( IN_SPEED ) and self:OnGround() and !self:IsDashing()) and !IsValid(self._efSlide)
+	return self:IsRunning() and (self:KeyDown( IN_SPEED ) and !self:IsDashing()) and !IsValid(self._efSlide)
+end
 /*
 function meta:IsSprinting()
 	return self:GetVelocity():Length() >= (self:GetWalkSpeed()+PLAYER_DEFAULT_RUNSPEED_BONUS-10) and (self:KeyDown( IN_SPEED ) and self:OnGround() and !self:IsDashing()) and !IsValid(self._efSlide)

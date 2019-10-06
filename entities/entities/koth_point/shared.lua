@@ -153,7 +153,9 @@ function ENT:GetPlayersOnPoint()
     players[TEAM_RED] = {}
     players[TEAM_BLUE] = {}
 
-    for _, p in ipairs(player_GetAll()) do
+   // for _, p in ipairs(player_GetAll()) do
+	for i = 1, #player_GetAll() do
+		local p = player_GetAll()[ i ]
         if p:IsValid() and p:Alive() and not p:IsCrow() and self:GetPos():DistToSqr(p:GetPos()) <= self:GetRadiusSqr() and CheckZ(p, self.Entity) then
             local team = p:Team()
             if (team == TEAM_RED or team == TEAM_BLUE) then
@@ -210,15 +212,19 @@ end*/
 
 if CLIENT then
 
+local vec = Vector( 500, 500, 150 )
+
 function ENT:Draw()
 	
 	local radius = self:GetRadius()
 	self.LastRadius = self.LastRadius or radius
 	
-	if self.LastRadius ~= radius then
-		local vec = Vector(radius*1.6,radius*1.6,50)
-		self.Entity:SetRenderBounds( vec, -vec) 
-	end
+	self:SetRenderBounds( -vec, vec ) 
+	
+	/*if self.LastRadius ~= radius then
+		local vec = Vector(radius*1.6,radius*1.6,150)
+		self.Entity:SetRenderBounds( -vec, vec) 
+	end*/
 	
 	local eff = "hill_neutral"
 

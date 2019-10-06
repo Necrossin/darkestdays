@@ -107,7 +107,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 05/10/2019"
+GM.Version		= "v 06/10/2019"
 GM.Email 		= ""
 GM.Website 		= ""
 
@@ -149,6 +149,28 @@ function GM:ShouldCollide( ent1, ent2 )
 	end
 	
 	return true
+end
+
+function GM:StartCommand( pl, cmd ) 
+	
+	/*local wep = pl:GetActiveWeapon()
+	
+	local attack_1 = pl:KeyDown( IN_ATTACK )
+	local attack_2 = pl:KeyDown( IN_ATTACK2 )
+	
+	if wep and IsValid( wep ) and !wep.IgnoreSprint and ( ( attack_1 or attack_2 ) and ( pl:IsSprinting() or pl:IsWallrunning() ) or ( pl.NextSprint and pl.NextSprint >= CurTime() ) or ( wep.IsSwinging and wep:IsSwinging() ) ) then
+		cmd:RemoveKey( IN_SPEED )
+		if ( pl.NextSprint or 0 ) < CurTime() then
+			pl.NextSprint = CurTime() + 0.5
+		end
+	end*/
+	
+	local wep = pl:GetActiveWeapon()
+	
+	if ( pl.NextSprint and pl.NextSprint >= CurTime() ) or ( wep and IsValid( wep ) and wep.IsSwinging and wep:IsSwinging() ) then
+		cmd:RemoveKey( IN_SPEED )
+	end
+	
 end
 
 function GM:Move( pl, mv )

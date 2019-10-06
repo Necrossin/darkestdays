@@ -897,11 +897,11 @@ function GM:_CalcView( pl, origin, angles, fov, znear, zfar )
 	end
 	
 	if pl:IsCrow() then
-		return {origin = pl:GetThirdPersonCrowCameraPos(origin, angles), angles = angles, drawviewer = true}
+		return {origin = pl:GetThirdPersonCrowCameraPos(origin, angles), angles = angles, drawviewer = true, znear = 0.1}
 	end
 	if GAMEMODE.ThirdPerson and pl:Alive() then
 		local pos,ang = pl:GetThirdPersonCameraPosAng(origin, angles)
-		return {origin = pos, angles = pl.camera_ang, drawviewer = true}		
+		return {origin = pos, angles = pl.camera_ang, drawviewer = true, znear = 0.1}		
 	end
 	
 	return self.BaseClass.CalcView(self, pl, origin, angles, fov, znear, zfar)
@@ -955,6 +955,9 @@ function GM:PlayerBindPress(ply, bind, pressed)
 		if ply:IsCarryingFlag() then
 			return true
 		end
+	end
+	if string.find ( bind, "impulse 100" ) and self:GetGametype() == "ts" and ply:Team() == TEAM_THUG then
+		return true
 	end
 end
 

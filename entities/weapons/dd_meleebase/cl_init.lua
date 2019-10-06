@@ -137,42 +137,58 @@ function SWEP:CalculateHandMovement()
 	local time = self.SpellTime*0.8
 		
 	local sp = self.Owner:GetCurrentSpell()
+	
+	local bonemods = self.ViewModelBoneMods
+	local sorted = self.ViewModelBoneModsSorted
+	local default = self.DefaultViewModelBoneMods
+	local action = self.ActionMods
+	local swingmods = self.SwingMods
+	local attackmods = self.AttackMods
+	local attackmods2 = self.AttackMods2
+	local blockmods = self.BlockMods
+	local idlemods = self.IdleMods
+	
+	local is_attacking = self:IsAttacking()
+	local is_blocking = self:IsBlocking()
+	local is_swinging = self:IsSwinging()
 		
-	if self.ViewModelBoneMods and self.ViewModelBoneModsSorted then
+	if bonemods and sorted then
 		
-		for k,bone in ipairs(self.ViewModelBoneModsSorted) do
-			if not self.ViewModelBoneMods[bone] then continue end
+		for i = 1, #sorted do
+		
+			local bone = sorted[ i ]
+			if not bonemods[bone] then continue end
 			
 			local offset = vec_zero
 			local rot = ang_zero
 		
-			if self:IsCasting() and self.ActionMods[bone] then
-				if self:IsAttacking() or self:IsBlocking() then
+			if self.SpellCastingTime and self.SpellCastingTime > 0 and action[bone] then
+				if is_attacking or is_blocking then
 					rot = ang_zero
 					offset = vec_zero
 				else
-					offset = self.ActionMods[bone].pos
-					rot = self.ActionMods[bone].angle
+					offset = action[bone].pos
+					rot = action[bone].angle
 				end
 			else
-				if self:IsSwinging() and self.SwingMods and self.SwingMods[bone] and not self:IsBlocking() then
-					offset = self.SwingMods[bone].pos
-					rot = self.SwingMods[bone].angle
-				elseif self:IsBlocking() and self.BlockMods and self.BlockMods[bone] and not self:IsAttacking() then
-					offset = self.BlockMods[bone].pos
-					rot = self.BlockMods[bone].angle
-				elseif self:IsAttacking() and self.AttackMods and self.AttackMods[bone] and not self:IsBlocking() then
-					if self.Switch and self.AttackMods2 and self.AttackMods2[bone] then
-						offset = self.AttackMods2[bone].pos
-						rot = self.AttackMods2[bone].angle
+				if self:IsSwinging() and swingmods and swingmods[bone] and not is_blocking then
+					offset = swingmods[bone].pos
+					rot = swingmods[bone].angle
+				elseif is_blocking and blockmods and blockmods[bone] and not is_attacking then
+					offset = blockmods[bone].pos
+					rot = blockmods[bone].angle
+				elseif is_attacking and attackmods and attackmods[bone] and not is_blocking then
+					if self.Switch and attackmods2 and attackmods2[bone] then
+						offset = attackmods2[bone].pos
+						rot = attackmods2[bone].angle
 					else
-						offset = self.AttackMods[bone].pos
-						rot = self.AttackMods[bone].angle
+						offset = attackmods[bone].pos
+						rot = attackmods[bone].angle
 					end
 				else
-					if self.IdleMods then
-						if self.IdleMods[bone] then
-							rot,offset = self.IdleMods[bone].angle,self.IdleMods[bone].pos
+					if idlemods then
+						if idlemods[bone] then
+							rot,offset = idlemods[bone].angle,idlemods[bone].pos
 						end
 					else
 						rot = ang_zero
@@ -181,16 +197,14 @@ function SWEP:CalculateHandMovement()
 				end
 			end
 
-			if self.ViewModelBoneMods[bone].angle ~= rot then
-				self.ViewModelBoneMods[bone].angle = LerpAngle( 0.1, self.ViewModelBoneMods[bone].angle, rot )
+			if bonemods[bone].angle ~= rot then
+				bonemods[bone].angle = LerpAngle( 0.1, bonemods[bone].angle, rot )
 			end
-			if self.ViewModelBoneMods[bone].pos ~= offset then
-				self.ViewModelBoneMods[bone].pos = LerpVector( 0.1, self.ViewModelBoneMods[bone].pos, offset )
+			if bonemods[bone].pos ~= offset then
+				bonemods[bone].pos = LerpVector( 0.1, bonemods[bone].pos, offset )
 			end
 		end
 		
-		--self.ViewModelBoneMods[bone].angle = self:LerpAng( 0.27, self.ViewModelBoneMods[bone].angle, rot )
-		--self.ViewModelBoneMods[bone].pos = self:LerpVec( 0.27, self.ViewModelBoneMods[bone].pos, offset )
 	end
 								
 end

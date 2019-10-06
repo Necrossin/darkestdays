@@ -89,7 +89,7 @@ function SWEP:InitializeClientsideModels()
 	self.WElements = {} 	
 end
 
-function SWEP:InitializeClientsideModels_Additional()
+function SWEP:InitializeClientsideModels_Additional( spell_1, spell_2 )
 
 	self.AddElements = {}
 		
@@ -150,10 +150,13 @@ function SWEP:InitializeClientsideModels_Additional()
 			self.AddElements[spell][elname].Spell = spell
 		end
 	end
-
+		
 	if self.VElements then
-		for key,uh in pairs(self.AddElements) do
-			table.Add(self.VElements,self.AddElements[key])
+		if spell_1 and IsValid( spell_1 ) and spell_1:GetClass() and self.AddElements[ spell_1:GetClass() ] then
+			table.Add( self.VElements, self.AddElements[ spell_1:GetClass() ] )
+		end
+		if spell_2 and IsValid( spell_2 ) and spell_2:GetClass() and self.AddElements[ spell_2:GetClass() ] then
+			table.Add( self.VElements, self.AddElements[ spell_2:GetClass() ] )
 		end
 	end
 
@@ -165,10 +168,16 @@ function SWEP:Initialize()
 
 	if CLIENT then
 	
+		local spell_1, spell_2
+		
+		if self.Owner and self.Owner:IsValid() then
+			spell_1, spell_2 = self.Owner:GetDTEntity( 1 ), self.Owner:GetDTEntity( 2 )
+		end
+	
 		self:InitializeClientsideModels()
-		self:InitializeClientsideModels_Additional()
+		self:InitializeClientsideModels_Additional( spell_1, spell_2 )
 		self:CreateViewModelElements()
-		self:CreateWorldModelElements()   
+		self:CreateWorldModelElements()  
 		
     end
 	
@@ -290,11 +299,14 @@ function SWEP:UpdateBonePositions(vm)
 			end
 		end
 		
-		--for k, v in pairs( self.ViewModelBoneMods ) do
-		for k, name in ipairs( self.ViewModelBoneModsSorted ) do
-			if not self.ViewModelBoneMods[name] then continue end
+		local bonemods = self.ViewModelBoneMods
+		local sorted = self.ViewModelBoneModsSorted
+		
+		for i = 1, #sorted do
+			local name = sorted[ i ]
+			if not bonemods[name] then continue end
 					
-			local v = self.ViewModelBoneMods[name]
+			local v = bonemods[name]
 
 			local bone
 			
@@ -306,7 +318,21 @@ function SWEP:UpdateBonePositions(vm)
 			end
 
 			if (!bone) then continue end
-			if vm:GetManipulateBoneScale(bone) ~= v.scale then
+			
+			if v.cur_scale ~= v.scale then
+				vm:ManipulateBoneScale( bone, v.scale )
+				v.cur_scale = v.scale
+			end
+			if v.cur_angle ~= v.angle then
+				vm:ManipulateBoneAngles( bone, v.angle )
+				v.cur_angle = v.angle
+			end
+			if v.cur_pos ~= v.pos then
+				vm:ManipulateBonePosition( bone, v.pos )
+				v.cur_pos = v.pos
+			end
+			
+			/*if vm:GetManipulateBoneScale(bone) ~= v.scale then
 				vm:ManipulateBoneScale( bone, v.scale )
 			end
 			if vm:GetManipulateBoneAngles(bone) ~= v.angle then
@@ -314,8 +340,8 @@ function SWEP:UpdateBonePositions(vm)
 			end
 			if vm:GetManipulateBonePosition(bone) ~= v.pos then
 				vm:ManipulateBonePosition( bone, v.pos )
-			end
-		end
+			end*/
+		end		
 		self.ChangedBoneMods = true
 	else
 		if self.ChangedBoneMods then
@@ -411,15 +437,24 @@ end
 
 function SWEP:PrimaryAttack()
 
-	if self.Owner:IsCrow() then return end
-	if self.Owner:IsSprinting() and not ( self.IgnoreSprint or self.Owner:IsSliding() ) then return end
-	if self.Owner:IsWallrunning() and not self.IgnoreSprint then return end
-	if not self:CanPrimaryAttack() then return end	
-	
 	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
 		self.Owner.SpawnProtection = 0
 	end
 	
+	if self.Owner:IsCrow() then return end
+	if self.Owner:IsSprinting() and not ( self.IgnoreSprint or self.Owner:IsSliding() ) then 
+		self.Owner.NextSprint = CurTime() + 0.5
+		return 
+	end
+	if self.Owner:IsWallrunning() and not self.IgnoreSprint then 
+		self.Owner.NextSprint = CurTime() + 0.5
+		return 
+	end
+	if not ( self.IgnoreSprint or self.Owner:IsSliding() ) then
+		self.Owner.NextSprint = CurTime() + 0.2
+	end
+	if not self:CanPrimaryAttack() then return end	
+
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay * self:GetPrimaryDelayModifier() )
 	self:EmitFireSound()
 
@@ -768,13 +803,11 @@ end
 
 function SWEP:SecondaryAttack()
 	
-	if self.Owner:IsSprinting() then return end
-	if self:IsReloading() then return end
-	
 	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
 		self.Owner.SpawnProtection = 0
 	end
-	
+	if self:IsReloading() then return end
+
 	self.Weapon:SetNextSecondaryFire(CurTime() + self.SpellTime)
 	if !self.Owner:IsDurationSpell() then
 		self.Owner:CastSpell()

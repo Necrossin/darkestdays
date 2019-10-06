@@ -166,11 +166,18 @@ function ENT:Think()
 	return true
 end
 
+local vector_up = vector_up
+local util_TraceHull = util.TraceHull
+local math_Clamp = math.Clamp 
+local math_abs = math.abs
+local Vector = Vector
+local CurTime = CurTime
+
 function ENT:Move( mv )
 
 	local owner = self.EntOwner		
 		
-	if not owner:OnGround() and owner:KeyDown(IN_SPEED) and not IsValid(owner._efSlide) and owner:IsSprinting() and owner._DefaultRunSpeedBonus and owner._DefaultRunSpeedBonus > 0 then
+	if not owner:OnGround() and owner:KeyDown( IN_SPEED ) and not IsValid(owner._efSlide) and owner:IsSprinting() and owner._DefaultRunSpeedBonus and owner._DefaultRunSpeedBonus > 0 then
 		
 		local right = false
 		local left = false
@@ -181,11 +188,11 @@ function ENT:Move( mv )
 		walltrace.start = pos - vector_up * 40
 		walltrace.endpos = pos + ang:Right() * 30
 			
-		tr = util.TraceHull(walltrace)
+		tr = util_TraceHull( walltrace )
 			
 		if not tr.Hit then
 			walltrace.endpos = pos + ang:Right() * -30
-			tr = util.TraceHull(walltrace)
+			tr = util_TraceHull( walltrace )
 		else
 			right = true
 		end
@@ -199,30 +206,29 @@ function ENT:Move( mv )
 			local max_speed = mv:GetMaxSpeed() * self.MaxSpeedMultiplier
 
 			if prevvel > 160 and prevvelvec.z < 190 and prevvel_2d_sqr > 2500 then
-					
-			
+
 				if not self:IsActive() then
 					if SERVER then
 						self:SetWallRun( true )
-						owner:SetLuaAnimation(right and "wallrun_right" or "wallrun_left")
+						owner:SetLuaAnimation( right and "wallrun_right" or "wallrun_left" )
 					end	
 					self.DecayTime = CurTime() + self.DecayDuration
 				end
 					
-				local decay = math.Clamp( ( self.DecayTime - CurTime() ) / self.DecayDuration, 0, 1 )
+				local decay = math_Clamp( ( self.DecayTime - CurTime() ) / self.DecayDuration, 0, 1 )
 			
-				prevvelvec = Vector(math.Clamp(prevvelvec.x,-400,400),math.Clamp(prevvelvec.y,-400,400),math.Clamp(prevvelvec.z,owner:KeyDown(IN_JUMP) and ( -100 + 130 * decay )  or -100,120))
+				prevvelvec = Vector( math_Clamp( prevvelvec.x, -400, 400 ), math_Clamp( prevvelvec.y, -400, 400 ), math_Clamp( prevvelvec.z, owner:KeyDown( IN_JUMP ) and ( -100 + 130 * decay )  or -100, 120 ) )
 					
-				local boost = math.abs(prevvelvec.z/5) * decay
+				local boost = math_abs( prevvelvec.z / 5 ) * decay
 					
-				mv:SetVelocity(prevvelvec * 1.035 + vector_up * boost )
+				mv:SetVelocity( prevvelvec * 1.035 + vector_up * boost )
 				
 				
 				if SERVER and CurTime() >= nextstep then
 					if step then
-						owner:EmitSound("Default.StepRight")
+						owner:EmitSound( "Default.StepRight" )
 					else
-						owner:EmitSound("Default.StepLeft")
+						owner:EmitSound( "Default.StepLeft" )
 					end
 					step = !step
 					nextstep = CurTime() + 0.12

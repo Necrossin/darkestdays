@@ -89,6 +89,9 @@ local E_OnGround = M_Entity.OnGround
 
 local function BetterBonemerge( ent, bonecount )
 
+	local ent = ent
+	local bonecount = bonecount
+
     local vm = ent:GetParent()
     local pl = ent:GetOwner()
 
@@ -99,6 +102,8 @@ local function BetterBonemerge( ent, bonecount )
         if not ent.HideToBone then
             ent.HideToBone = ent:LookupBone( "ValveBiped.Bip01_Spine" )
         end
+		
+		local hide_to_bone = ent.HideToBone
 
 		if not ent.ArmBones then
 			ent.ArmBones = {}
@@ -123,7 +128,8 @@ local function BetterBonemerge( ent, bonecount )
 				end
 			end			
 		end
-                
+        
+		
         for i=0, bonecount do
 		
 			if not ent.BoneTable then
@@ -135,12 +141,13 @@ local function BetterBonemerge( ent, bonecount )
 			end
 		
             local name
+			local bonetable = ent.BoneTable
 			
-			if ent.BoneTable[ i ] and ent.BoneTable[ i ].bone_name then
-				name = ent.BoneTable[ i ].bone_name
+			if bonetable[ i ] and bonetable[ i ].bone_name then
+				name = bonetable[ i ].bone_name
 			else
 				name = ent:GetBoneName( i )   
-				ent.BoneTable[ i ].bone_name = name
+				bonetable[ i ].bone_name = name
 			end
 
 			if not name then continue end
@@ -148,21 +155,22 @@ local function BetterBonemerge( ent, bonecount )
             local bone = i
             local bone_pl
 			
-			if ent.BoneTable[ i ] and ent.BoneTable[ i ].pl_bone then
-				bone_pl = ent.BoneTable[ i ].pl_bone
+			if bonetable[ i ] and bonetable[ i ].pl_bone then
+				bone_pl = bonetable[ i ].pl_bone
 			else
 				bone_pl = pl:LookupBone( name )  
-				ent.BoneTable[ i ].pl_bone = bone_pl
+				bonetable[ i ].pl_bone = bone_pl
 			end
-
+			
+			
             if bone then
-                local m = E_GetBoneMatrix( ent, bone )--ent:GetBoneMatrix( bone )
+                local m = E_GetBoneMatrix( ent, bone )
 
                 if viewmodel_bones[name] then continue end
                 if ent.ArmBones[name] then continue end
 
                 if bone_pl then
-                    local pos, ang = E_GetBonePosition( pl, bone_pl )--pl:GetBonePosition( bone_pl ) --bone matrix doesnt seem to work when I try to get player bones in first person
+                    local pos, ang = E_GetBonePosition( pl, bone_pl ) --bone matrix doesnt seem to work when I try to get player bones in first person
 
                     if m then
 						if pos and ang then
@@ -182,27 +190,25 @@ local function BetterBonemerge( ent, bonecount )
 
 							VM_SetTranslation( m, translation )
 							VM_SetAngles( m, ang )
-							--m:SetTranslation( translation )
-							--m:SetAngles( ang )
 						end
 
-                        if not body_bones[name] and ent.HideToBone then
-                            local m_to = E_GetBoneMatrix( ent, ent.HideToBone ) --ent:GetBoneMatrix( ent.HideToBone )
+                        if not body_bones[name] and hide_to_bone then
+                            local m_to = E_GetBoneMatrix( ent, hide_to_bone )
                             if m_to then
-                                --m:SetScale( vector_zero )
-                               -- m:SetTranslation( m_to:GetTranslation() )
 							   VM_SetScale( m, vector_zero )
 							   VM_SetTranslation( m, VM_GetTranslation( m_to ) )
                             end
                         end
 
 						E_SetBoneMatrix( ent, bone, m )
-                        --ent:SetBoneMatrix( bone, m )
                     end	
                 end			
             end
-        end
-    end
+			
+		end
+		
+	
+	end
 end
 
 function ENT:Initialize()

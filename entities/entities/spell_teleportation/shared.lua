@@ -16,6 +16,7 @@ local math_Clamp = math.Clamp
 local math_Round = math.Round
 local math_max = math.max
 local math_ceil = math.ceil
+local util_TraceHull = util.TraceHull
 
 if SERVER then
 	AddCSLuaFile("shared.lua")
@@ -89,6 +90,7 @@ end
 
 local trace = {}
 local mins,maxs = Vector(-3,-3,-3), Vector(3,3,3)
+local tiny_vec = Vector(1,1,1)
 local hull = {}
 local hull2 = {}
 local hull_forward = {}
@@ -116,10 +118,11 @@ function ENT:OnThink()
 	trace.endpos = self.EntOwner:GetShootPos()+self.EntOwner:GetAimVector()*math_max(100,self.EntOwner:GetMaxMana())*8//800
 	trace.filter = self.Filter
 	trace.mask = MASK_PLAYERSOLID_BRUSHONLY// - CONTENTS_PLAYERCLIP //MASK_VISIBLE + 
-	//trace.mins = mins
-	//trace.maxs = maxs
 	
-	local tr = util.TraceLine( trace )//util.TraceHull( trace )
+	trace.mins = tiny_vec * -1
+	trace.maxs = tiny_vec
+	
+	local tr = util_TraceHull( trace )//util.TraceHull( trace )
 	
 	if tr.MatType == 88 then return end //dunno why it doesnt knows that mat_default is 88
 	if tr.HitTexture and tr.HitTexture == "TOOLS/TOOLSNODRAW" then return end
@@ -144,7 +147,7 @@ function ENT:OnThink()
 					hull.maxs = self.EntOwner:OBBMaxs()
 					--hull.mask = MASK_VISIBLE + MASK_PLAYERSOLID_BRUSHONLY
 					
-					local trhull = util.TraceHull( hull )
+					local trhull = util_TraceHull( hull )
 					
 					if !trhull.Hit then
 
@@ -172,30 +175,40 @@ function ENT:OnThink()
 					hull2.maxs = self.EntOwner:OBBMaxs()
 					hull2.mask = MASK_PLAYERSOLID - CONTENTS_PLAYERCLIP
 					
-					local trhull2 = util.TraceHull( hull2 )
+					local trhull2 = util_TraceHull( hull2 )
 					
 					if !trhull2.Hit then
-					
+						
 						//check for out of map shit
 						
 						extrace.start = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
-						extrace.endpos = pos + vector_up * 2 + vector_up * 5 * i + vector_up * 500 //pos+Vector(0,0,2)+Vector(0,0,5*i)+vector_up*500
+						extrace.endpos = pos + vector_up * 2 + vector_up * 5 * i + vector_up * 300 //pos+Vector(0,0,2)+Vector(0,0,5*i)+vector_up*500
 						extrace.filter = self.Filter
+						
+						//test
+						extrace.mins = tiny_vec * -1
+						extrace.maxs = tiny_vec
 						
 						
 						extrace_down.start = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
 						extrace_down.endpos = pos + vector_up * -20
 						extrace_down.filter = self.Filter
 						extrace_down.mask = MASK_PLAYERSOLID_BRUSHONLY - CONTENTS_PLAYERCLIP
+						
+						extrace_down.mins = tiny_vec * -1
+						extrace_down.maxs = tiny_vec
+						
 						//extrace_down.mask = MASK_SHOT_PORTAL
 						
 						--extrace.mask = MASK_VISIBLE + MASK_PLAYERSOLID_BRUSHONLY
 						
-						local extr = util.TraceLine( extrace )
-						local extr2 = util.TraceLine( extrace_down )
 						
+						local extr = util_TraceHull( extrace )
+						local extr2 = util_TraceHull( extrace_down )
 						
-						if !extr.HitSky and extr2.MatType ~= 88 and extr2.HitTexture ~= "TOOLS/TOOLSNODRAW" and extr2.HitTexture ~= "PLASTER/PLASTERWALL012A" then
+						--if SERVER then PrintTable( extr ) end
+						
+						if !extr.HitSky and extr2.MatType ~= 88 and extr2.HitTexture ~= "TOOLS/TOOLSNODRAW" and extr2.HitTexture ~= "PLASTER/PLASTERWALL012A" then							
 							self.CurPos = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
 							self.TPPos = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
 							self.ClearSpot = true
@@ -228,7 +241,7 @@ function ENT:OnThink()
 					
 					--hull.mask = MASK_VISIBLE + MASK_PLAYERSOLID_BRUSHONLY
 						
-					local trhull = util.TraceHull( hull_forward )
+					local trhull = util_TraceHull( hull_forward )
 											
 					if !trhull.Hit then
 
@@ -267,7 +280,7 @@ function ENT:OnThink()
 					
 				--hull.mask = MASK_VISIBLE + MASK_PLAYERSOLID_BRUSHONLY
 						
-				local trhull = util.TraceHull( hull_forward )
+				local trhull = util_TraceHull( hull_forward )
 	
 				if !trhull.Hit then
 

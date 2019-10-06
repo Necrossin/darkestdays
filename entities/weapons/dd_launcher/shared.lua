@@ -97,14 +97,19 @@ util.PrecacheSound("physics/metal/paintcan_impact_hard3.wav")
 util.PrecacheSound("physics/metal/paintcan_impact_hard1.wav")
 
 function SWEP:PrimaryAttack()
-	if self.Owner:IsCrow() then return end
-	if self.Owner:IsSprinting() then return end
-	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-	if not self:CanPrimaryAttack() then return end
 	
 	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
 		self.Owner.SpawnProtection = 0
 	end
+	
+	if self.Owner:IsCrow() then return end
+	if self.Owner:IsSprinting() and not ( self.IgnoreSprint or self.Owner:IsSliding() ) then 
+		self.Owner.NextSprint = CurTime() + 0.5
+		return 
+	end
+	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+	if not self:CanPrimaryAttack() then return end
+
 	
 	if SERVER then	
 		local ent = ents.Create("projectile_launchergrenade")

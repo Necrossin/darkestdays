@@ -108,59 +108,50 @@ end
 
 function SWEP:CalculateHandMovement()
 
-	if self.ViewModelBoneMods and self.ViewModelBoneModsSorted then
+	local bonemods = self.ViewModelBoneMods
+	local sorted = self.ViewModelBoneModsSorted
+	local default = self.DefaultViewModelBoneMods
+	local action = self.ActionMods
+
+
+	if bonemods and sorted then
 			
 		local check = false//self:IsReloading() or (self:IsShooting() and !self.OneHandAnim) or self.Owner:IsSprinting() //self:IsDeploying() or 
+
+		for i = 1, #sorted do
+		
+			local bone = sorted[ i ]
+			if not bonemods[bone] then continue end
 			
-		for k,bone in pairs(self.ViewModelBoneModsSorted) do
-			if not self.ViewModelBoneMods[bone] then continue end
-			
-			
-			local offset = vec_zero// Vector(0,0,0)
-			local rot = ang_zero//Angle(0,0,0)
+			local offset = vec_zero
+			local rot = ang_zero
 			
 			local defoffset = offset
 			local defrot = rot
 			
-			if self.DefaultViewModelBoneMods and self.DefaultViewModelBoneMods[bone] then
-				defoffset = self.DefaultViewModelBoneMods[bone].pos
-				defrot = self.DefaultViewModelBoneMods[bone].angle
+			if default and default[bone] then
+				defoffset = default[bone].pos
+				defrot = default[bone].angle
 			end
 
-			if self.SpellCastingTime and self.SpellCastingTime > 0 and self.ActionMods[bone] then//self:IsCasting()
+			if self.SpellCastingTime and self.SpellCastingTime > 0 and action[bone] then//self:IsCasting()
 				if check then
 					rot = defrot
 					offset = defoffset
 				else
-					offset = self.ActionMods[bone].pos
-					rot = self.ActionMods[bone].angle
+					offset = action[bone].pos
+					rot = action[bone].angle
 				end
 			else
-				//if self.IdleMods then
-					
-					/*if check then
-						rot = defrot
-						offset = defoffset
-					else
-						if self.IdleMods[bone] then
-							offset = self.IdleMods[bone].pos
-							rot = self.IdleMods[bone].angle
-						else
-							rot = defrot
-							offset = defoffset
-						end
-					end*/
-				//else
-					rot = defrot
-					offset = defoffset
-				//end
+				rot = defrot
+				offset = defoffset
 			end
 			
-			if self.ViewModelBoneMods[bone].angle ~= rot then
-				self.ViewModelBoneMods[bone].angle = LerpAngle( 0.1, self.ViewModelBoneMods[bone].angle, rot )
+			if bonemods[bone].angle ~= rot then
+				bonemods[bone].angle = LerpAngle( 0.1, bonemods[bone].angle, rot )
 			end
-			if self.ViewModelBoneMods[bone].pos ~= offset then
-				self.ViewModelBoneMods[bone].pos = LerpVector( 0.1, self.ViewModelBoneMods[bone].pos, offset )
+			if bonemods[bone].pos ~= offset then
+				bonemods[bone].pos = LerpVector( 0.1, bonemods[bone].pos, offset )
 			end	
 		end
 	end
@@ -313,13 +304,17 @@ function SWEP:ViewModelDrawn()
 			
 		end
 
-		for k, name in ipairs( self.vRenderOrder ) do
+		for i = 1, #self.vRenderOrder do
+			
+			local name = self.vRenderOrder[ i ]
 		
 			local v = self.VElements[name]
 			if (!v) then self.vRenderOrder = nil break end
 		
 			local model = v.modelEnt
 			local sprite = v.spriteMaterial
+			
+			if model.Spell and IsValid( self.Owner:GetCurrentSpell() ) and self.Owner:GetCurrentSpell().ClassName ~= model.Spell then continue end
 			
 			if (!v.bone) then continue end
 			
@@ -400,13 +395,13 @@ function SWEP:ViewModelDrawn()
 				end
 				
 				if model.Spell then
-					local sp = self.Owner:GetCurrentSpell()
+					/*local sp = self.Owner:GetCurrentSpell()
 					if sp and IsValid(sp) and not self.Owner:IsJuggernaut() then
-						if sp.ClassName == model.Spell then
+						if sp.ClassName == model.Spell then*/
 							--model:SetupBones()
 							model:DrawModel()
-						end
-					end
+					//	end
+					//end
 				else
 					--model:SetupBones()
 					model:DrawModel()

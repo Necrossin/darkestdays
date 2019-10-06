@@ -14,7 +14,7 @@ if CLIENT then
 	SWEP.ViewModelFOV = 57
 	SWEP.ViewModelFlip = false//true
 
-	SWEP.ShowViewModel = true
+	SWEP.ShowViewModel = false
 	SWEP.ShowWorldModel = true
 	
 	killicon.AddFont( "projectile_bolt", "HL2MPTypeDeath","1", color_white )
@@ -100,14 +100,18 @@ SWEP.SprintAng = Angle(-24.623, 52.763, -19.698)
 
 
 function SWEP:PrimaryAttack()
-	if self.Owner:IsCrow() then return end
-	if self.Owner:IsSprinting() then return end
-	self.Weapon:SetNextPrimaryFire(CurTime() + 0.1)
-	if not self:CanPrimaryAttack() then return end
 	
 	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
 		self.Owner.SpawnProtection = 0
 	end
+	
+	if self.Owner:IsCrow() then return end
+	if self.Owner:IsSprinting() and not ( self.IgnoreSprint or self.Owner:IsSliding() ) then 
+		self.Owner.NextSprint = CurTime() + 0.5
+		return 
+	end
+	self.Weapon:SetNextPrimaryFire(CurTime() + 0.1)
+	if not self:CanPrimaryAttack() then return end
 	
 	self:EmitSound( self.Primary.Sound )
 	
@@ -262,6 +266,14 @@ function SWEP:AdjustMouseSensitivity()
 	if zoom_lerp > 0 then
 		return ( 1 - zoom_lerp * 0.8 )
 	end
+end
+
+function SWEP:PreDrawViewModel( ViewModel, Weapon, Player )
+	render.SetBlend(0)
+end
+
+function SWEP:PostDrawViewModel( ViewModel, Weapon, Player )
+	render.SetBlend(1)
 end
 
 local lerp = 0

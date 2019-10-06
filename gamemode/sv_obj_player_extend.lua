@@ -642,6 +642,8 @@ function meta:DropKick()
 	self._NextSlide = 0
 	self:Slide( 0.4 )
 	
+	self:EmitSound( "npc/combine_soldier/gear"..math.random(2)..".wav", 45, 120 )
+	
 	/*kick_trace.start = self:GetShootPos()
 	kick_trace.endpos = kick_trace.start + self:GetForward() * 72
 	kick_trace.filter = self:GetMeleeFilter()

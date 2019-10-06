@@ -1044,9 +1044,9 @@ end
 
 function GM:PlayerSwitchFlashlight( ply, SwitchOn )
 	
-	if self:GetGametype() == "ts" and P_Team( ply ) == TEAM_THUG then
+	/*if self:GetGametype() == "ts" and P_Team( ply ) == TEAM_THUG then
 		return false
-	end
+	end*/
 
 	return true
 end
@@ -1356,6 +1356,8 @@ function GM:EndRound(winner)
 			pl:AddScore( "rndwon", 1 )
 			
 			gamemode.Call( "OnPlayerWonRound", pl, self.Gametype ) 
+			
+			pl:OnLevelUpSpeech()
 			
 			if self.Gametype == "koth" then
 				pl:AddScore( "kothwon", 1 )
