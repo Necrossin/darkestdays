@@ -162,7 +162,7 @@ function SWEP:CalculateHandMovement()
 			local offset = vec_zero
 			local rot = ang_zero
 		
-			if self.SpellCastingTime and self.SpellCastingTime > 0 and action[bone] then
+			if self:IsCasting() and action[bone] then
 				if is_attacking or is_blocking then
 					rot = ang_zero
 					offset = vec_zero
