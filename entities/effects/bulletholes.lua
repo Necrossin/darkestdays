@@ -500,6 +500,10 @@ function EFFECT:Render()
 	
 		local should_draw = EyePos():DistToSqr( ragdoll:GetPos() ) < 40000 --200^2
 		
+		if ragdoll.RenderOverride then
+			ragdoll.RenderOverride = nil
+		end
+		
 		ragdoll:RemoveAllDecals()
 		
 		self:SetModel( "models/gibs/antlion_gib_large_3.mdl" )
