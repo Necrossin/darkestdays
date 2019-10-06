@@ -598,6 +598,7 @@ function SWEP:Deploy()
 		end
 	end
 	
+	self.Weapon:SetNextPrimaryFire( CurTime() + self.Weapon:SequenceDuration() * 0.7 )
 	self.Weapon:SetNextSecondaryFire( CurTime() + 1 )
 	
 	self:OnDeploy()

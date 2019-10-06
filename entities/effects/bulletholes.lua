@@ -52,6 +52,14 @@ function EFFECT:Init( data )
 		self.Bone = self.ent:GetHitBoxBone( self.HitBox, 1 ) //check this one as well
 	end
 	
+	if GAMEMODE:GetGametype() == "ffa" then
+		local col = self.ent:GetPlayerColor()
+		self.GetPlayerColor = function() return Vector( col.x, col.y, col.z ) end
+	else
+		local col = team.GetColor( self.ent:Team() )
+		self.GetPlayerColor = function() return Vector( col.r/255,col.g/255,col.b/255 ) end
+	end
+	
 	if not self.Bone then return end		
 	--if string.find( self.BoneName, "Head" ) then
 		--self.HeadShot = true
@@ -85,6 +93,7 @@ function EFFECT:Init( data )
 	
 	if IsValid( rag ) then
 		rag:SetNoDraw( true )
+		rag:SetRenderMode( RENDERMODE_NONE )
 
 		if HitGroupToBone[self.HitGroup] then
 			self.BoneName = HitGroupToBone[self.HitGroup].base
@@ -292,11 +301,11 @@ function EFFECT:DrawHoles( ragdoll, mask, blend, scale )
 	scale = scale or Vector( 1, 1, 1 )
 	
 	if self.IsThug then
-		scale = scale * 1.3
+		scale = scale * 1.5
 	end
 	
 	self:SetModel( self.HoleModels[ self.HoleType or 1 ] )//"models/props_junk/garbage_bag001a.mdl""models/props_junk/PopCan01a.mdl"
-	--self:SetupBones()
+	//self:SetupBones()
 	
 	local bone = ragdoll:LookupBone( self.BoneName )//"ValveBiped.Bip01_Spine2"
 	
@@ -371,6 +380,7 @@ function EFFECT:DrawSpook( ragdoll )
 	
 	--self:SetupBones()
 	self:SetModel( skeleton )
+	//self:SetupBones()
 
 	self:SetParent( ragdoll )
 	self:AddEffects( EF_BONEMERGE )
@@ -413,6 +423,7 @@ function EFFECT:DrawInsides( ragdoll )
 	self:RemoveEffects( EF_BONEMERGE )*/
 	
 	self:SetModel( ragdoll:GetModel() )
+	//self:SetupBones()
 
 	self:SetParent( ragdoll )
 	self:AddEffects( EF_BONEMERGE )
@@ -429,6 +440,29 @@ function EFFECT:DrawInsides( ragdoll )
 	self:DrawModel()
 	render.ModelMaterialOverride( )
 		
+end
+
+function EFFECT:DrawRagdollAlternate( ragdoll, setup )
+	
+	self:SetModel( ragdoll:GetModel() )
+	
+	if setup then
+		//self:SetupBones()
+	end
+	
+	self:SetParent( ragdoll )
+	self:AddEffects( EF_BONEMERGE )
+	
+	//self:SetModelScale( 1, 0 )
+	
+	self:DrawModel()
+	
+	self:SetParent()
+	self:RemoveEffects( EF_BONEMERGE )
+	
+	
+	self:SetModel( "models/gibs/antlion_gib_large_3.mdl" )
+	
 end
 
 
@@ -468,7 +502,9 @@ function EFFECT:Render()
 		
 		ragdoll:RemoveAllDecals()
 		
-		self:SetupBones()
+		self:SetModel( "models/gibs/antlion_gib_large_3.mdl" )
+		
+		//self:SetupBones()
 		
 		ragdoll.HandleDraw = self
 		
@@ -555,8 +591,9 @@ function EFFECT:Render()
 			render.OverrideDepthEnable( true, true )
 			
 			render.CullMode( MATERIAL_CULLMODE_CW )
-				ragdoll:SetupBones()
-				ragdoll:DrawModel()	
+				//ragdoll:SetupBones()
+				//ragdoll:DrawModel()	
+				self:DrawRagdollAlternate( ragdoll, true )
 			render.CullMode( MATERIAL_CULLMODE_CCW )
 			
 			render.OverrideDepthEnable( false, false )
@@ -589,7 +626,8 @@ function EFFECT:Render()
 			render.SetBlend(0)
 			render.OverrideDepthEnable( true, true )
 			render.SetStencilReferenceValue(3)
-			ragdoll:DrawModel()
+			//ragdoll:DrawModel()
+			self:DrawRagdollAlternate( ragdoll )
 			
 			render.OverrideDepthEnable( false, false )
 			render.SetBlend(1)
@@ -611,31 +649,23 @@ function EFFECT:Render()
 			
 			render.CullMode( MATERIAL_CULLMODE_CW )
 				render.ModelMaterialOverride( flesh )
-				--ragdoll:SetupBones()
-				ragdoll:DrawModel()	
+				self:DrawRagdollAlternate( ragdoll )
+				//ragdoll:DrawModel()	
 				render.ModelMaterialOverride(  )
 			render.CullMode( MATERIAL_CULLMODE_CCW )
 			
-			--ragdoll:SetupBones()
-			ragdoll:DrawModel()
+			self:DrawRagdollAlternate( ragdoll )
+			//ragdoll:DrawModel()
 			
 			blood_overlay:SetFloat( "$detailscale", self.SplatterScale or 2 )
 			
 			render.ModelMaterialOverride( blood_overlay )
 			render.SetColorModulation(0.5, 0, 0)
-				--ragdoll:SetupBones()
-				ragdoll:DrawModel()
+				self:DrawRagdollAlternate( ragdoll, true )
+				//ragdoll:DrawModel()
 			render.SetColorModulation(1, 1, 1)
 			render.ModelMaterialOverride(  )
 			
-			
-			
-			
-			//render.SetStencilReferenceValue(2)
-			//render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_EQUAL)
-			//render.SetStencilPassOperation( STENCILOPERATION_REPLACE )
-			//render.SetStencilFailOperation( STENCILOPERATION_KEEP )
-			//render.SetStencilZFailOperation( STENCILOPERATION_KEEP )
 			
 			
 		render.SetStencilEnable(false)
