@@ -56,7 +56,7 @@ local function ThrowNade(pl,cmd,args)
 end
 concommand.Add("dd_thrownade",ThrowNade)
 
-hook.Add("PlayerButtonDown", "CheckGrenadeInput", function( pl, btn )
+/*hook.Add("PlayerButtonDown", "CheckGrenadeInput", function( pl, btn )
 
 	if pl:Alive() and IsValid(pl._efGrenade) and btn == pl:GetInfoNum( "_dd_grenadebutton", KEY_G ) and not pl:IsTyping() then
 	
@@ -73,7 +73,7 @@ hook.Add("PlayerButtonDown", "CheckGrenadeInput", function( pl, btn )
 		
 	end
 
-end)
+end)*/
 
 end
 function ENT:Think()

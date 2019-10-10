@@ -799,6 +799,17 @@ function GM:PlayerSpawn( pl )
 			pl:SetModel( self.BotPlayerModels[ math.random( #self.BotPlayerModels ) ] )
 		end
 		
+		
+		local skin = pl:GetInfoNum( "cl_playerskin", 0 )
+		pl:SetSkin( skin )
+
+		local groups = pl:GetInfo( "cl_playerbodygroups" )
+		if ( groups == nil ) then groups = "" end
+		local groups = string.Explode( " ", groups )
+		for k = 0, pl:GetNumBodyGroups() - 1 do
+			pl:SetBodygroup( k, tonumber( groups[ k + 1 ] ) or 0 )
+		end
+		
 		local oldhands = pl:GetHands()
 		if IsValid( oldhands ) then
 			oldhands:Remove()
@@ -892,11 +903,11 @@ function GM:PlayerSpawn( pl )
 		pl.SpeedBoostKills = 0
 		
 		
-		timer.Simple(0.2,function()
+		/*timer.Simple(0.2,function()
 			if IsValid(pl) then
 				pl:SetTeamColor()
 			end
-		end)
+		end)*/
 	end
 end
 
@@ -1981,7 +1992,21 @@ function GM:KeyPress( pl, key )
 	end
 	
 	
+end
+
+/*function GM:PlayerButtonDown( pl, btn )
+	
+	if pl:Alive() and IsValid(pl._efGrenade) and btn == pl:GetInfoNum( "_dd_grenadebutton", KEY_G ) and not pl:IsTyping() then
+	
+		local nade = pl._efGrenade
+		
+		if nade and nade.ThrowGrenade and nade.IsReady and nade:IsReady() then
+			nade:ThrowGrenade()
+		end	
+		
 	end
+	
+end*/
 
 
 function GM:PlayerReady(pl)

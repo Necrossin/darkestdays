@@ -233,6 +233,8 @@ GM.PlayerBloodMaterial = GM.PlayerBloodMaterial or CreateMaterial( "dd_player_bl
 -- just so we can use this thing
 CreateConVar( "cl_playercolor", "0.24 0.34 0.41", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The value is a Vector - so between 0-1 - not between 0-255" )
 CreateConVar( "cl_weaponcolor", "0.30 1.80 2.10", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The value is a Vector - so between 0-1 - not between 0-255" )
+CreateConVar( "cl_playerskin", "0", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The skin to use, if the model has any" )
+CreateConVar( "cl_playerbodygroups", "0", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The bodygroups to use, if the model has any" )
 
 include( 'shared.lua' )
 include( 'cl_scoreboard.lua' )
@@ -959,6 +961,16 @@ function GM:PlayerBindPress(ply, bind, pressed)
 	if string.find ( bind, "impulse 100" ) and self:GetGametype() == "ts" and ply:Team() == TEAM_THUG then
 		return true
 	end
+end
+
+function GM:PlayerButtonDown( pl, btn )
+	
+	if pl:Alive() and IsValid(pl._efGrenade) and btn == ( DD_GRENADEBUTTON or KEY_G ) and not pl:IsTyping() then
+	
+		RunConsoleCommand( "dd_thrownade" )
+		
+	end
+	
 end
 
 function GM:ForceDermaSkin()
