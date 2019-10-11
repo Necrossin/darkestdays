@@ -109,7 +109,7 @@ function ENT:OnDraw()
 	
 	if not self.Particle then
 		owner:StopParticles()
-		ParticleEffectAttach("scorn2",PATTACH_POINT_FOLLOW,owner,6)
+		ParticleEffectAttach("scorn2",PATTACH_POINT_FOLLOW,owner,owner:LookupAttachment("anim_attachment_LH"))
 		self.Particle = true
 	end
 	

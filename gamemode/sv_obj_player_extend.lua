@@ -387,7 +387,7 @@ function meta:SetVoiceSet( set )
 end
 
 
-local walltrace = {mask = MASK_SOLID_BRUSHONLY, mins = Vector(-5, -5, -5), maxs = Vector(5, 5, 15)}
+/*local walltrace = {mask = MASK_SOLID_BRUSHONLY, mins = Vector(-5, -5, -5), maxs = Vector(5, 5, 15)}
 function meta:CheckWalljump()
 	
 	if self:OnGround() then return end
@@ -544,7 +544,7 @@ function meta:GrabLedge()
 	end
 	
 	return false
-end
+end*/
 
 function meta:Roll()
 	

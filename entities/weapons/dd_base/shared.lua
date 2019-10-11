@@ -952,10 +952,11 @@ end
 
 function GenericBulletCallback(attacker, tr, dmginfo)//function GenericBulletCallback(attacker, tr, dmginfo)
 	if SERVER then
-		if attacker:GetActiveWeapon().Tracer ~= "" then			
+		if attacker:GetActiveWeapon().Tracer ~= "" and math.random(3) == 3 then			
 			local e = EffectData()
 			e:SetOrigin(tr.HitPos)
 			e:SetEntity(attacker:GetActiveWeapon())
+			e:SetAttachment(attacker:GetActiveWeapon().MuzzleAttachment or 1)
 			if attacker:GetActiveWeapon().UseCursedTracer then
 				e:SetScale(1)
 			else
@@ -1098,6 +1099,19 @@ function SWEP:ShootBullets(dmg, numbul, cone)
 		end
 	end
 	self:ShootCustomEffects()
+end
+
+function SWEP:GetTracerOrigin()
+	local owner = self:GetOwner()
+	if owner:IsValid() then
+		local vm = owner:GetViewModel()
+		if vm and vm:IsValid() then
+			local attachment = vm:GetAttachment( 1 )
+			if attachment then
+				return attachment.Pos
+			end
+		end
+	end
 end
 
 function SWEP:ShootCustomEffects()

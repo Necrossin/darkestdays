@@ -860,7 +860,6 @@ function SWEP:StartSwinging()
 			//played_anim = true
 		end
 		
-		
 		local seq2, dur = self:LookupSequence( self:GetSequenceName( seq ) )
 		
 		local rate = 0.16 / swingtime
@@ -869,7 +868,7 @@ function SWEP:StartSwinging()
 		//	self.Owner:ViewPunch( punch * ( 1/rate ) )
 		//end
 		
-		local time = dur + self.SwingTime// / rate
+		local time = dur / ( rate * 2 )   + swingtime
 		
 		self:SetAnimationTime( CurTime() + time - 0.3 )
 				
@@ -947,6 +946,9 @@ function SWEP:MeleeSwing()
 			e:SetEntity( owner )
 			e:SetRadius( self.DashBonus and 1 or 0 )
 		util.Effect( "melee_trail", e, nil, true )
+	end
+	
+	if self:IsTwoHanded() then
 		
 		local punch = Angle( 3, 0 , 0 )
 		

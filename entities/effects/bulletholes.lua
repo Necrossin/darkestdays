@@ -37,6 +37,12 @@ local HitGroupToBone = {
 	[HITGROUP_LEFTLEG] = { base = "ValveBiped.Bip01_Pelvis", pos_from = "ValveBiped.Bip01_L_Thigh"},
 }
 
+local string_Replace = string.Replace
+
+function EFFECT:GetNiceModel( str )
+	return string_Replace( str, "models/models/", "models/" ) 
+end
+
 function EFFECT:Init( data )
 
 	self.ent = data:GetEntity()
@@ -94,6 +100,8 @@ function EFFECT:Init( data )
 	if IsValid( rag ) then
 		rag:SetNoDraw( true )
 		rag:SetRenderMode( RENDERMODE_NONE )
+		
+		self.NiceModel = self:GetNiceModel( rag:GetModel() )
 
 		if HitGroupToBone[self.HitGroup] then
 			self.BoneName = HitGroupToBone[self.HitGroup].base
@@ -143,6 +151,11 @@ end
 function EFFECT:Think( )
 	
 	if IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity()) then
+		
+		if not self.NiceModel then
+			self.NiceModel = self:GetNiceModel( self.ent:GetRagdollEntity():GetModel() )
+		end
+		
 		if not self.Frozen then
 			for i = 1, self.ent:GetRagdollEntity():GetPhysicsObjectCount() do
 				local bone = self.ent:GetRagdollEntity():GetPhysicsObjectNum(i)
@@ -422,7 +435,7 @@ function EFFECT:DrawInsides( ragdoll )
 	self:SetParent()
 	self:RemoveEffects( EF_BONEMERGE )*/
 	
-	self:SetModel( ragdoll:GetModel() )
+	self:SetModel( self.NiceModel or ragdoll:GetModel() )
 	//self:SetupBones()
 
 	self:SetParent( ragdoll )
@@ -444,7 +457,7 @@ end
 
 function EFFECT:DrawRagdollAlternate( ragdoll, setup )
 	
-	self:SetModel( ragdoll:GetModel() )
+	self:SetModel( self.NiceModel or ragdoll:GetModel() )
 	
 	if setup then
 		//self:SetupBones()

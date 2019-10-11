@@ -112,4 +112,17 @@ function SWEP:EmitFireSound()
 	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(215, 220), 0.75, CHAN_WEAPON + 20)
 end
 
+function SWEP:FireBullet()
 
+	local mul = math.Clamp( self:Clip1() / self.Primary.ClipSize, 0.1, 1 )
+
+	if self.Owner:GetVelocity():Length() > 30 then
+		self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeMoving * mul )
+	else
+		if self.Owner:Crouching() then
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeCrouching * mul )
+		else
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.Cone * mul )
+		end
+	end
+end

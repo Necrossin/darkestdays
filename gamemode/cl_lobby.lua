@@ -1024,15 +1024,18 @@ function CreateLoadoutMenu(lobby)
 			
 			if SelectedText.Special then
 				draw.DrawText( SelectedText.Special or "", "Arial_Bold_Scaled_21", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(15,255,255,255) , TEXT_ALIGN_LEFT, nil)
+				surface.SetFont( "Arial_Bold_Scaled_21" )
 				local tX,tY = surface.GetTextSize(SelectedText.Special)
 				moveY = moveY + tY// + 18
 			end
 			if SelectedText.Pr then
 				draw.DrawText( SelectedText.Pr or "", "Arial_Bold_Scaled_21", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, SelectedText.PrColor or Color(131,204,255,255) , TEXT_ALIGN_LEFT, nil)
+				surface.SetFont( "Arial_Bold_Scaled_21" )
 				local tX,tY = surface.GetTextSize(SelectedText.Pr)
 				moveY = moveY + tY// + 18
 			end
 			if SelectedText.Co then
+				surface.SetFont( "Arial_Bold_Scaled_21" )
 				draw.DrawText( SelectedText.Co or "", "Arial_Bold_Scaled_21", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(230,80,80,255) , TEXT_ALIGN_LEFT, nil)//230,60,60,255
 				local tX,tY = surface.GetTextSize(SelectedText.Co)
 				moveY = moveY + tY// + 18

@@ -114,7 +114,7 @@ function SWEP:FireBullet()
 			damage = self.Primary.Damage*1.5
 		end
 		
-		self:ShootBullets( damage, self.Primary.NumShots, self.Primary.ConeMoving)
+		self:ShootBullets( damage, self.Primary.NumShots, self.Owner:IsDiving() and self.Primary.Cone or self.Primary.ConeMoving)
 	else
 		if self.Owner:Crouching() then
 			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeCrouching)

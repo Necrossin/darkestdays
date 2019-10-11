@@ -946,6 +946,9 @@ function GM:PlayerLoadout( pl )
 		if Weapons[w:GetClass()] and Weapons[w:GetClass()].OnSet then
 			Weapons[w:GetClass()].OnSet(pl)
 		end
+		if self:GetGametype() == "ts" and not w.IsMelee then
+			pl:GiveAmmo( pl:GetAmmoCount( w:GetPrimaryAmmoType() ), w:GetPrimaryAmmoType(), true ) 
+		end
 	end
 	
 	local ToGive = {}
@@ -961,10 +964,7 @@ function GM:PlayerLoadout( pl )
 		ToGive = {"firebolt","electrobolt"}
 		pl.SpellsToGive = table.Copy(ToGive)
 	end
-	
-	
 
-	
 	if THUG_MODE or self:GetGametype() == "ts" and P_Team( pl ) == TEAM_THUG then
 		pl:SetPerk("thug")
 	else
@@ -1942,57 +1942,7 @@ function GM:PlayerDeathThink( pl )
 	
 end
 
-function GM:KeyPress( pl, key )
-	
-	if key == IN_JUMP then 
-		if not pl:KeyDown( IN_DUCK ) then
-			if util.tobool( tonumber( pl:GetInfo("_dd_spacebargrab") ) ) then
-				pl:GrabLedge()
-			end
-		end
-		pl:CheckWalljump()
-	end
-	
-	if key == IN_USE then//IN_USE
-		local grab = pl:GrabLedge()
-		if not grab and util.tobool( tonumber( pl:GetInfo("_dd_usekeydive") ) ) then
-			pl:Dive()
-		end
-	end
-	
-	if key == IN_WALK then
-		pl:Dive()
-	end
-	
-	if key == IN_DUCK and pl:IsRunning() and pl:OnGround() then
-		pl:Slide()
-	end
-	
-	local wep = pl:GetActiveWeapon()
-	
-	if key == IN_ATTACK and pl:IsRunning() and !pl:OnGround() and !pl:IsWallrunning() and wep and wep:IsValid() and wep:GetClass() == "dd_fists" and pl:GetPerk( "martialarts" ) then// and pl:KeyDown( IN_SPEED ) then
-		wep:SetNextPrimaryFire(CurTime() + 0.5)
-		pl:DropKick()
-	end
-	
-	if P_Alive( pl ) then
-	
-		if key == IN_SPEED and pl:GetPerk( "ghosting" ) then
-			pl:DoGhosting()
-		end
-		
-		if key == IN_SPEED and pl:GetPerk( "dash" ) then
-			pl:DoDash()
-		end
-		
-		if key == IN_SPEED and pl:GetPerk( "crow" ) and !pl:IsCrow() then
-			pl:BecomeCrow()
-		end
-	
-	end
-	
-	
-end
+
 
 /*function GM:PlayerButtonDown( pl, btn )
 	

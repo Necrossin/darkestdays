@@ -21,11 +21,11 @@ SWEP.SlotPos = 6
 
 SWEP.HoldType = "melee2"//melee2
 
-SWEP.MeleeDamage = 42//40
+SWEP.MeleeDamage = 50//40
 SWEP.MeleeRange = 20+35//60
 //SWEP.MeleeSize = math.sqrt(SWEP.MeleeRange)*1.3//8
 
-SWEP.SwingTime = 0.2 
+SWEP.SwingTime = 0.4 
 
 /*SWEP.BlockPos = Vector(-14.391, -3.056, -0.89)
 SWEP.BlockAng = Angle(39.291, 17.312, -67.795)*/
@@ -39,7 +39,7 @@ SWEP.IdleAnim = ACT_VM_IDLE_1
 SWEP.BlockPos = Vector(-23.2, -4.5, -2.8)
 SWEP.BlockAng = Angle(68.32, -28.1, -100)
 
-SWEP.Primary.Delay = 1.25
+SWEP.Primary.Delay = 1.2
 
 SWEP.HitDecal = "Manhackcut"
 

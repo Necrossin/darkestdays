@@ -32,10 +32,12 @@ killicon.AddFont( "weapon_slam", 		"HL2MPTypeDeath", 	"*", 	Color_Icon )
 killicon.AddFont( "weapon_crowbar", 	"HL2MPTypeDeath", 	"6", 	Color_Icon )
 
 killicon.AddFont( "worldspawn", "Bison_30", "obliterated", Color(231, 231, 231, 255 ) ) 
+killicon.AddFont( "trigger_hurt", "Bison_30", "removed", Color(231, 231, 231, 255 ) ) 
 
 AddSpellIcon("projectile_bloodtrap","bloodtrap")
 
 language.Add("worldspawn","Cruel World")
+language.Add("trigger_hurt","Deadly Trigger")
 
 local Deaths = {}
 

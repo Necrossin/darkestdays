@@ -163,6 +163,169 @@ function meta:IsRunning()
 	return self:GetVelocity():Length() >= (self:GetWalkSpeed()+PLAYER_DEFAULT_RUNSPEED_BONUS-10)
 end*/
 
+local walltrace = {mask = MASK_SOLID_BRUSHONLY, mins = Vector(-5, -5, -5), maxs = Vector(5, 5, 15)}
+function meta:CheckWalljump()
+	
+	if self:OnGround() then return end
+	if self:IsSliding() then return end
+	if self:IsThug() or self:IsCrow() then return end
+	
+	//if not self._SkillWJ then return end
+	
+	self._NextWallJump = self._NextWallJump or 0
+	
+	if self._NextWallJump >= CurTime() then return end
+	if self._NextLedgeGrab and self._NextLedgeGrab >= CurTime() then return end
+	
+	if math.abs( self:GetVelocity().z ) > self:GetRunSpeed() * 2 then return end
+	
+	//local nofall = self:GetVelocity().z < self:GetVelocity().x or self:GetVelocity().z < self:GetVelocity().y
+	
+	//if !nofall then return end
+	
+	local prevvelvec = self:GetVelocity()
+	prevvelvec.z = math.Clamp(prevvelvec.z,-70,70)
+	local prevvel = prevvelvec:Length()
+	
+	if prevvel < 50 then prevvel = 50 end
+	
+	if self._WallJumpBonus and self._WallJumpBonus >= CurTime() then
+		prevvel = math.Clamp(prevvel,-550,550)
+	else
+		prevvel = math.Clamp(prevvel,-260,260)
+	end
+	
+	local forward = self:SyncAngles():Forward()
+	local pos = self:GetShootPos()
+	
+	walltrace.start = pos - vector_up * 20
+	walltrace.endpos = pos + forward * 30
+	
+	local tr
+	local mul = 2
+	local f = true
+	local l = false
+	
+	tr = util.TraceHull(walltrace)
+	
+	if not tr.Hit then
+		mul = 1
+		f = false
+		walltrace.endpos = pos + self:SyncAngles():Right() * 30
+		tr = util.TraceHull(walltrace)
+	end
+	
+	if not tr.Hit then
+		l = true
+		walltrace.endpos = pos + self:SyncAngles():Right() * -30
+		tr = util.TraceHull(walltrace)
+	end
+
+	if tr.Hit and not tr.HitSky and tr.HitNormal.z < 0.3 and tr.HitNormal.z > -0.3 then
+			
+		local add = not f and prevvelvec/1.2 or vector_origin
+		
+		self:SetLocalVelocity(vector_origin)
+		
+		if f and self:KeyDown(IN_USE) then
+			local ang = self:GetAimVector():Angle()
+			local normang = (tr.HitNormal*-1):Angle()
+			local dif = ang.y - normang.y
+			local turn = 180 - dif
+			if dif > 0 then
+				turn = dif-180
+			end
+			ang:RotateAroundAxis(ang:Up(),180)
+			self:ViewPunch(Angle(0,turn,0))
+			self:SetEyeAngles(ang)
+		end
+		
+		if not f and not l then
+			self:ViewPunch(Angle(0,0,-3))
+		end
+		
+		if not f and l then
+			self:ViewPunch(Angle(0,0,3))
+		end
+		
+		self:SetLocalVelocity(tr.HitNormal*prevvel*mul + vector_up*(prevvel/1.2) + add)
+		
+		if SERVER then
+			self:EmitSound("Flesh.ImpactSoft")
+		end
+		
+		self._NextWallJump = CurTime() + 0.2
+	end
+	
+end
+
+//anims: zombie_slump_rise_01
+
+local walltrace = {mask = MASK_SOLID, mins = Vector(-5, -5, 0), maxs = Vector(5, 5, 64)}
+function meta:GrabLedge()
+	
+	if self:IsCrow() then return end//self:IsThug() or 
+	//if not self._SkillLedgeGrab then return end
+	if self:IsSliding() then return end
+	
+	self._NextLedgeGrab = self._NextLedgeGrab or 0
+	
+	if self._NextLedgeGrab >= CurTime() then return end
+	if self._NextWallJump and self._NextWallJump >= CurTime() then return end
+	
+	local forward = self:SyncAngles():Forward()
+	local pos = self:GetPos()
+	local shootpos = self:GetShootPos()
+	
+	walltrace.start = pos + vector_up * 5
+	walltrace.endpos = pos + forward * 30 + vector_up * 5
+	walltrace.filter = player.GetAll()
+	
+	local trwall = util.TraceHull(walltrace)
+	local trspace
+	local finalpos
+	local hitwall
+	
+	//we are humping a wall, lets see if there is a ledge
+	if trwall.Hit and not trwall.HitSky and trwall.HitNormal.z < 0.3 and trwall.HitNormal.z > -0.3 then
+		hitwall = true
+		for i=1,self:OBBMaxs().z,5 do
+			if not trspace or trspace.Hit then
+				walltrace.start = shootpos + vector_up*i
+				walltrace.endpos = walltrace.start + forward * 30
+				trspace = util.TraceHull(walltrace)
+				if not trspace.Hit then 
+					finalpos = walltrace.endpos
+					break
+				end
+			end
+		end
+	end
+	
+	if finalpos then
+
+		self:SetGroundEntity(NULL)
+		self:SetLocalVelocity(vector_up*(240+math.abs(finalpos.z-pos.z)) )
+		
+		if SERVER then
+			self:EmitSound("Flesh.StepRight")
+		end
+		
+		self:ViewPunch(Angle(3,0,0))
+		
+		self._NextLedgeGrab = CurTime() + 1
+		self._NextSlide = CurTime() + 1
+		return true
+	end
+	//dont dive against walls
+	
+	if hitwall then
+		return true
+	end
+	
+	return false
+end
+
 local ViewHullMins = Vector(-8, -8, -8)
 local ViewHullMaxs = Vector(8, 8, 8)
 function meta:GetThirdPersonCrowCameraPos(origin, angles)

@@ -26,11 +26,11 @@ SWEP.IdleAnim = ACT_VM_IDLE_1
 
 SWEP.HoldType = "melee2"//melee2
 
-SWEP.MeleeDamage = 36.5//30.5
+SWEP.MeleeDamage = 40//30.5
 SWEP.MeleeRange = 20+35//60
 //SWEP.MeleeSize = math.sqrt(SWEP.MeleeRange)*1.3//9.4
 
-SWEP.SwingTime = 0.15
+SWEP.SwingTime = 0.2
 
 SWEP.BlockPos = Vector(-23.2, -4.5, -2.8)
 SWEP.BlockAng = Angle(68.32, -28.1, -100)

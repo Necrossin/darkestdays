@@ -91,12 +91,12 @@ function ENT:GrabProp()
 			ent._Telekinesis = true
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
-				if phys:GetMass() < 140 and ( ent:OBBMins():Length() + ent:OBBMaxs():Length() ) < 100 then
+				/*if phys:GetMass() < 140 and ( ent:OBBMins():Length() + ent:OBBMaxs():Length() ) < 100 then
 					ent._Mass = phys:GetMass()
 
 					phys:EnableGravity(false)
 					phys:SetMass(10)
-				end
+				end*/
 			end
 		end
 		
@@ -227,7 +227,7 @@ function ENT:Think()
 		
 		if not self.ObjectPosition or not self.EntOwner:KeyDown(IN_SPEED) then
 			local obbcenter = ent:OBBCenter()
-			local obbmaxs = ent:OBBMaxs() * 1.1
+			local obbmaxs = ent:OBBMaxs()
 			local objectpos = shootpos + self.EntOwner:GetAimVector() * math.max( 70, obbmaxs[1], obbmaxs[2], obbmaxs[3] )
 			objectpos = objectpos - obbcenter.z * ent:GetUp()
 			objectpos = objectpos - obbcenter.y * ent:GetRight()

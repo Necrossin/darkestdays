@@ -26,7 +26,7 @@ if CLIENT then
 
 end
 
-SWEP.MuzzleAttachment = "muzzle"
+SWEP.MuzzleAttachment = 1
 
 function SWEP:InitializeClientsideModels()
 	
@@ -117,12 +117,13 @@ end
 
 
 local spin = Sound( "npc/combine_gunship/engine_rotor_loop1.wav" )
+local fire = Sound( "npc/combine_gunship/gunship_fire_loop1.wav" )
 
 function SWEP:OnDeploy()
 	if SERVER then
 		self.Windup = CreateSound(self.Owner, "NPC_AttackHelicopter.ChargeGun")
 		self.Spinning = CreateSound(self.Owner, spin)
-		self.FireSound = CreateSound(self.Owner, "NPC_CombineGunship.CannonSound")//"NPC_AttackHelicopter.FireGun"
+		self.FireSound = CreateSound(self.Owner, fire)//"NPC_CombineGunship.CannonSound""NPC_AttackHelicopter.FireGun"
 	end
 end
 
@@ -241,7 +242,7 @@ function SWEP:PrimaryAttack()
 			effectdata:SetOrigin( self.VElements["rotate_main"].modelEnt:GetPos()+self.VElements["rotate_main"].modelEnt:GetAngles():Up()*4 ) 
 			effectdata:SetAngles( self.Owner:GetAimVector():Angle() )
 			effectdata:SetScale( 2 )
-			util.Effect( "MuzzleEffect", effectdata ) 
+			util.Effect( "MuzzleEffect", effectdata )
 		end
 	
 		return 
@@ -310,8 +311,7 @@ function SWEP:Think()
 			self:SetSpinning( true )		
 		else
 			if self.FireSound then
-				self.FireSound:PlayEx(1,95)
-				self.FireSound:PlayEx(1,95)
+				self.FireSound:PlayEx(1,85)
 			end
 		end
 		spinning = 5
@@ -326,7 +326,7 @@ function SWEP:Think()
 	
 	if self:IsCharging() then
 		if self.Windup then
-			self.Windup:PlayEx(1,100)
+			self.Windup:PlayEx(1,90)
 		end
 		spinning = 5
 	end
@@ -465,6 +465,7 @@ function SWEP:OnDrawViewModel()
 end
 
 SWEP.wSpinRate = 0
+SWEP.NextEffect = 0
 function SWEP:OnDrawWorldModel()
 
 	local spinning = 0
@@ -486,11 +487,14 @@ function SWEP:OnDrawWorldModel()
 		if self.WElements["rotate_main"] then
 			self.WElements["rotate_main"].angle.y = self.WElements["rotate_main"].angle.y + self.wSpinRate*2//math.Approach(self.VElements["rotate_main"].angle.y, self.BarrelAngle, FrameTime()*860)
 			if self:IsShooting() and self:Clip1() > 0 and IsValid(self.WElements["rotate_main"].modelEnt) then
-				local effectdata = EffectData() 
-				effectdata:SetOrigin( self.WElements["rotate_main"].modelEnt:GetPos()+self.WElements["rotate_main"].modelEnt:GetAngles():Up()*25 ) 
-				effectdata:SetAngles( self.Owner:GetAimVector():Angle() ) 
-				effectdata:SetScale( 2 )
-				util.Effect( "MuzzleEffect", effectdata ) 
+				if self.NextEffect and self.NextEffect < CurTime() then
+					local effectdata = EffectData() 
+					effectdata:SetOrigin( self.WElements["rotate_main"].modelEnt:GetPos()+self.WElements["rotate_main"].modelEnt:GetAngles():Up()*25 ) 
+					effectdata:SetAngles( self.Owner:GetAimVector():Angle() ) 
+					effectdata:SetScale( 2 )
+					util.Effect( "MuzzleEffect", effectdata )
+					self.NextEffect = CurTime() + 0.1
+				end
 			end
 		end
 		if self.WElements["small_gear"] then

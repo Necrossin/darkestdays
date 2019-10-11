@@ -32,10 +32,10 @@ function SWEP:GetViewModelPosition(pos, ang)
 
 		ang = Angle(ang.pitch, ang.yaw, ang.roll) -- Copies.
 		
-		local swingtime = self.SwingTime
+		local swingtime = self.SwingTime - self.SwingTime * ((self.Owner._DefaultMeleeSpeedBonus or 0))	
 		
 		local swingend = self:GetSwingEnd()
-		local delta = self.SwingTime - math.max(0, swingend - CurTime())
+		local delta = swingtime - math.max(0, swingend - CurTime())
 		local power = Lerp( delta / swingtime, 0, 1 )--CosineInterpolation(0, 1, delta / swingtime)
 
 		if power >= 0.8 then

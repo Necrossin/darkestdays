@@ -59,6 +59,9 @@ local bones = {
 	["ValveBiped.Bip01_L_Finger0"] = { scale = Vector(1.83, 1.83, 1.83), pos = Vector(1.212, 0, 0), angle = Angle(0, 0, 0) }
 }
 
+function ENT:GetNiceModel( str )
+	return string.Replace( str, "models/models/", "models/" ) 
+end
 
 function ENT:Initialize()
 
@@ -72,7 +75,10 @@ function ENT:Initialize()
 	end
 	
 	self.EntOwner._efThug = self.Entity
-	self:SetModel(self.EntOwner:GetModel())
+	self:SetModel( self:GetNiceModel( self.EntOwner:GetModel() ) )
+	for k = 0, self.EntOwner:GetNumBodyGroups() - 1 do
+		self:SetBodygroup( k, self.EntOwner:GetBodygroup( k ) or 0 )
+	end
 	self:SetSolid(SOLID_NONE)
 	self:SetMoveType(MOVETYPE_NONE)
 	self:AddEffects(EF_BONEMERGE)// + EF_BONEMERGE_FASTCULL

@@ -53,12 +53,20 @@ util.PrecacheModel( "models/props_debris/rebar001d_96.mdl" )
 //end
 
 function SWEP:PlayHitSound()
-	self:EmitSound("physics/concrete/concrete_break"..math.random(2,3)..".wav",100, math.Rand(86, 100))
+	if self.m_Broken then
+		self:EmitSound("ambient/machines/slicer"..math.random(1,4)..".wav",100, math.Rand(86, 100))
+	else
+		self:EmitSound("physics/concrete/concrete_break"..math.random(2,3)..".wav",100, math.Rand(86, 100))
+	end
 end
 
 function SWEP:PlayHitFleshSound()
 	self:EmitSound("physics/body/body_medium_break"..math.random(2, 4)..".wav", 75, math.Rand(86, 90)) 
-	self:EmitSound("physics/concrete/concrete_break"..math.random(2,3)..".wav",100, math.Rand(86, 100))
+	if self.m_Broken then
+		self:EmitSound("ambient/machines/slicer"..math.random(1,4)..".wav",100, math.Rand(86, 100))
+	else
+		self:EmitSound("physics/concrete/concrete_break"..math.random(2,3)..".wav",100, math.Rand(86, 100))
+	end
 end
 
 //Killicon
@@ -99,7 +107,7 @@ function SWEP:PostOnMeleeHit(hitent, hitflesh, tr, block)
 	if self.m_FirstHit and not self.m_Broken then
 		self.m_FirstHit = false
 		self.m_Broken = true
-		self.MeleeDamage = self.MeleeDamage / 4.6
+		self.MeleeDamage = self.MeleeDamage / 2.6
 		
 		if CLIENT then
 			/*local gibs = ents.Create("prop_dynamic_override")

@@ -36,12 +36,12 @@ SWEP.MeleeDamage = 35//27
 SWEP.MeleeRange = 20 + 25//58
 //SWEP.MeleeSize = math.sqrt(SWEP.MeleeRange)*1.3//5
 
-SWEP.SwingTime = 0.15
+SWEP.SwingTime = 0.3
 
 //SWEP.BlockPos = Vector(-14.391, -3.056, -0.89)
 //SWEP.BlockAng = Angle(39.291, 17.312, -67.795)
 
-SWEP.Primary.Delay = 0.9
+SWEP.Primary.Delay = 1.1
 
 SWEP.SwingHoldType = "melee2"
 

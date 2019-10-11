@@ -490,7 +490,7 @@ Weapons = {
 		Secondary = true,
 		AdminFree = true,
 		Mat = Material( "VGUI/gfx/VGUI/elites" ), 
-		Pr = "Can attack when sprinting\n+20% damage done when sprinting\n+50% damage done when diving\n+10 max speed on wearer",
+		Pr = "Can attack when sprinting\n+20% damage done when sprinting\n+50% damage done when diving\nIncreased accuracy when diving\n+10 max speed on wearer",
 		Co = "-15 max health on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed + 10; pl._DefaultHealth = pl._DefaultHealth - 15; end
@@ -512,7 +512,7 @@ Weapons = {
 	["dd_ump"] = {
 		Name = "UMP-45",
 		Mat = Material( "VGUI/gfx/VGUI/ump45" ),
-		Pr = "+10 max speed on wearer",Co = "-15 max health on wearer",
+		Pr = "+10 max speed on wearer\nFire rate increases as remaining\nbullets decrease",Co = "-15 max health on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed + 10; pl._DefaultHealth = pl._DefaultHealth - 15 end
 	},
@@ -551,7 +551,7 @@ Weapons = {
 		Melee = true,
 		Mat = Material( "darkestdays/icons/rebar_256x128.png", "smooth" ),
 		Pr = "+160% damage done on first hit", 
-		Co = "-35% damage done on rest\n-20 max speed on wearer", 
+		Co = "-20 max speed on wearer", 
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 20 end
 	},
@@ -653,6 +653,7 @@ Weapons = {
 	["dd_famas"] = {
 		Name = "FAMAS",
 		Mat = Material( "VGUI/gfx/VGUI/famas" ),
+		Pr = "Accuracy increases as remaining\nbullets decrease",
 		Co = "-30 max speed on wearer\n-35 max mana on wearer", 
 		Description = "",
 		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 30; pl._DefaultMana = pl._DefaultMana - 35 end

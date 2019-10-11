@@ -6,7 +6,7 @@ ENT.Base = "spell__base"
 ENT.Mana = 30
 ENT.Damage = 65
 
-ENT.FullChargeTime = 1
+ENT.FullChargeTime = 0.6
 
 ENT.CastGesture = ACT_GMOD_GESTURE_BOW
 
@@ -35,7 +35,7 @@ local math = math
 function ENT:OnInitialize()
 	if CLIENT then
 		self:SetRenderBounds(Vector(-40, -40, -18), Vector(40, 40, 90))
-		self.ChargeSound = CreateSound( self, "weapons/physcannon/energy_sing_loop4.wav" ) //ambient/fire/fire_big_loop1.wav
+		self.ChargeSound = CreateSound( self, "npc/combine_gunship/engine_rotor_loop1.wav" ) //ambient/fire/fire_big_loop1.wav
 	end
 	//requires to hold down mouse button!
 	self:SetDTBool(2,true)	
@@ -155,7 +155,7 @@ function ENT:OnThink()
 	if self:GetDTBool( 3 ) then
 		if CLIENT then
 			if self.ChargeSound then
-				self.ChargeSound:PlayEx(1, 70 + 40 * ( self:GetChargePower() or 0 ))
+				self.ChargeSound:PlayEx(1, 30 + 110 * ( self:GetChargePower() or 0 ))
 			end
 		end
 	else

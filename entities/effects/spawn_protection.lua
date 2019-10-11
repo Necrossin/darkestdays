@@ -14,8 +14,8 @@ function EFFECT:Init( data )
 	if !IsValid(self.ent) then return end
 
 	self:SetModel( self:GetNiceModel( self.ent:GetModel() ) ) 
-	self:SetParent( self.ent )
-	self:AddEffects(EF_BONEMERGE)
+	self:SetParent( self.ent._efThug or self.ent )
+	self:AddEffects( EF_BONEMERGE )
 	
 	self.DieTime = CurTime() + self.time
 	
@@ -41,7 +41,7 @@ function EFFECT:Render()
 	
 	if self.ent and self.ent:IsValid() and self.ent.Alive and self.ent:Alive() and not self.ent:IsCrow() then
 	
-		self:SetParent( self.ent )
+		self:SetParent( self.ent._efThug or self.ent )
 		self:AddEffects( EF_BONEMERGE )
 		
 		if not self.RenderCol then
@@ -52,7 +52,6 @@ function EFFECT:Render()
 			render.MaterialOverride( mat_overlay )
 			render.SetColorModulation( self.RenderCol.r / 255, self.RenderCol.g / 255, self.RenderCol.b / 255 )
 
-			//self:SetupBones()
 			self:DrawModel()
 								
 			render.SetColorModulation( 1, 1, 1 )

@@ -111,3 +111,10 @@ function SWEP:EmitFireSound()
 	self:EmitSound(self.Primary.Sound)
 	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(215, 225), 0.55, CHAN_WEAPON + 20)
 end
+
+function SWEP:GetPrimaryDelayModifier()
+	
+	local mul = math.Clamp( 1 - self:Clip1() / self.Primary.ClipSize, 0, 1 ) * 0.2
+	
+	return 1 - mul
+end
