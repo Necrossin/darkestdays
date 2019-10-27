@@ -125,6 +125,8 @@ end
 
 function SWEP:StartSwinging()
 
+	local swingtime = self.SwingTime - self.SwingTime * ((self.Owner._DefaultMeleeSpeedBonus or 0))	
+
 	if SERVER then
 		if self.Owner:GetPerk( "martialarts" ) then
 			self.CanSlice = true
@@ -145,6 +147,7 @@ function SWEP:StartSwinging()
 		else
 			seq = self:PlaySequence(self.StartSwingingSeq)
 		end
+		self.IdleAnimation = CurTime() + ( IsValid( self.Owner:GetViewModel() ) and self.Owner:GetViewModel():SequenceDuration() or 0.85 )
 		//self.IdleAnimation = CurTime() + (IsValid(self.Owner:GetViewModel()) and self.Owner:GetViewModel():SequenceDuration() or 0.85)
 	else
 		if self.StartSwingAnimation then
@@ -152,35 +155,32 @@ function SWEP:StartSwinging()
 			//self.IdleAnimation = CurTime() + self:SequenceDuration()
 		end
 	end
-	self:PlayStartSwingSound()
 	
-	if SERVER then
-		local swingtime = self.SwingTime - self.SwingTime * ((self.Owner._DefaultMeleeSpeedBonus or 0))	
-		self:SetSwingEnd(CurTime() + swingtime)
+	/*if seq and tonumber( self.Owner:GetInfo("_dd_thirdperson") ) == 0 then
 		
-		if seq and tonumber( self.Owner:GetInfo("_dd_thirdperson") ) == 0 then
-		
-			local punch
+		local punch
 			
-			if seq == "fists_right" then
-				punch = Angle( 0, 0.55, 0 )
-			end
-			
-			if seq == "fists_left" then
-				punch = Angle( 0, -0.55, 0 )
-			end
-			
-			if seq == "fists_uppercut" then
-				punch = Angle( -1.5, 0.1, 0 )
-			end
-			
-			if punch then
-				self.Owner:ViewPunchReset() 
-				self.Owner:ViewPunch( punch )
-			end
+		if seq == "fists_right" then
+			punch = Angle( 0, 0.55, 0 )
 		end
 		
-	end
+		if seq == "fists_left" then
+			punch = Angle( 0, -0.55, 0 )
+		end
+			
+		if seq == "fists_uppercut" then
+			punch = Angle( -1.5, 0.1, 0 )
+		end
+			
+		if punch then
+			//self.Owner:ViewPunchReset() 
+			//self.Owner:ViewPunch( punch )
+		end
+	end*/
+	
+	self:PlayStartSwingSound()
+	
+	self:SetSwingEnd(CurTime() + swingtime)
 end
 
 function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)

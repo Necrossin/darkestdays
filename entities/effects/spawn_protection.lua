@@ -40,6 +40,8 @@ end
 function EFFECT:Render()
 	
 	if self.ent and self.ent:IsValid() and self.ent.Alive and self.ent:Alive() and not self.ent:IsCrow() then
+		
+		if self.ent == MySelf and !GAMEMODE.ThirdPerson then return end
 	
 		self:SetParent( self.ent._efThug or self.ent )
 		self:AddEffects( EF_BONEMERGE )
