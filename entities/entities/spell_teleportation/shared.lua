@@ -208,7 +208,7 @@ function ENT:OnThink()
 						
 						--if SERVER then PrintTable( extr ) end
 						
-						if !extr.HitSky and extr2.MatType ~= 88 and extr2.HitTexture ~= "TOOLS/TOOLSNODRAW" and extr2.HitTexture ~= "PLASTER/PLASTERWALL012A" then							
+						if !extr.HitSky and extr2.MatType ~= 88 and !extr2.HitSky and extr2.HitTexture ~= "TOOLS/TOOLSNODRAW" and extr2.HitTexture ~= "PLASTER/PLASTERWALL012A" then							
 							self.CurPos = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
 							self.TPPos = pos + vector_up * 2 + vector_up * 5 * i //pos+Vector(0,0,2)+Vector(0,0,5*i)
 							self.ClearSpot = true

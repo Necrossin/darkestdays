@@ -177,7 +177,7 @@ function ENT:Move( mv )
 
 	local owner = self.EntOwner		
 		
-	if not owner:OnGround() and owner:KeyDown( IN_SPEED ) and not IsValid(owner._efSlide) and owner:IsSprinting() and owner._DefaultRunSpeedBonus and owner._DefaultRunSpeedBonus > 0 then
+	if not owner:OnGround() and owner:KeyDown( IN_SPEED ) and not IsValid(owner._efSlide) and owner:IsSprinting() and owner._DefaultRunSpeedBonus and owner._DefaultRunSpeedBonus > 0 and !owner:HasWeapon( "dd_striker" )  then
 		
 		local right = false
 		local left = false

@@ -134,7 +134,7 @@ function SWEP:CalculateHandMovement()
 				defrot = default[bone].angle
 			end
 
-			if self.SpellCastingTime and self.SpellCastingTime > 0 and action[bone] then//self:IsCasting()
+			if self:IsCasting() and action[bone] then//self:IsCasting() self.SpellCastingTime and self.SpellCastingTime > 0
 				if check then
 					rot = defrot
 					offset = defoffset

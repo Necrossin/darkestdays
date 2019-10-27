@@ -1263,10 +1263,10 @@ function SWEP:PlaySequence(seq,userandom)
 	local vm = self.Owner:GetViewModel()
 	
 	if IsValid(vm) then
-		//vm:ResetSequenceInfo()
-		local toplay = vm:LookupSequence(seq)
-		vm:ResetSequence(toplay)
-		vm:SetCycle(0)
+		local toplay = vm:LookupSequence( seq )
+		vm:SendViewModelMatchingSequence( toplay )
+		//vm:ResetSequence(toplay)
+		//vm:SetCycle(0)
 	end
 	
 	return seq
