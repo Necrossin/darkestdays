@@ -170,6 +170,7 @@ function EFFECT:Render()
 				self.Rag.HandleDraw = self
 			end
 			if self.Rag.HandleDraw and self.Rag.HandleDraw == self then
+				
 				self.Rag:DrawModel()
 			end
 		end

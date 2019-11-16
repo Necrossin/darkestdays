@@ -60,6 +60,8 @@ function GM:AddResources()
 	for _, filename in pairs(a) do
 		resource.AddSingleFile("materials/darkestdays/blood/"..string.lower(filename))
 	end
+	
+	resource.AddSingleFile("materials/darkestdays/glow.vtf")
 
 	//local a,b = file.Find("materials/effects/*.*" , "GAME") //gamemodes/darkestdays/content/
 	//for _, filename in pairs(a) do
@@ -1619,6 +1621,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 		ply:Gib( dmginfo, frozen )
 		gib = true
 	else	
+	
 		ply:CreateRagdoll()
 		
 		local slice = false
@@ -2641,9 +2644,19 @@ function GM:InitPostEntity( )
 	end
 	if e:IsValid() then
 		e:SetKeyValue("disableallshadows", "1")
+		e:Fire( "SetShadowsDisabled", "1", 0.1 )
 	end
 	
+	local props = ents.FindByClass("prop_physics*")
 	
+	for k, ent in pairs( props ) do
+		if ent and ent:IsValid() then
+			ent:SetKeyValue("disablereceiveshadows", "1")
+			ent:SetKeyValue("shadowcastdist", "0")
+		end
+	end
+	
+
 	self:LoadKOTHPoints()
 	self:SetExploitBoxes()
 	self:SetMapList()

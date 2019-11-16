@@ -230,6 +230,44 @@ GM.PlayerBloodMaterial = GM.PlayerBloodMaterial or CreateMaterial( "dd_player_bl
 	} 
 )
 
+local team_red_glow = CreateMaterial( "dd_team_red_glow", 
+	"VertexLitGeneric", 
+	{ 
+		["$envMap"] = "darkestdays/glow",
+		["$basetexture"] = "Models/shiny",
+		["$bumpmap"] = "dev/bump_normal",
+		
+		["$envMapTint"] = "[0.98 0.156 0.156]",
+		["$envMapFresnel"] = 1,
+		
+		["$additive"] = 1,
+		["$color2"] = "[0 0 0]",
+		
+		["$phong"] = 1,
+		["$phongBoost"] = 0,
+		["$phongFresnelRanges"] = "[.0045 .7 2]"
+	} 
+)
+
+local team_blue_glow = CreateMaterial( "dd_team_blue_glow", 
+	"VertexLitGeneric", 
+	{ 
+		["$envMap"] = "darkestdays/glow",
+		["$basetexture"] = "Models/shiny",
+		["$bumpmap"] = "dev/bump_normal",
+		
+		["$envMapTint"] = "[0 0.47 0.98]",
+		["$envMapFresnel"] = 1,
+		
+		["$additive"] = 1,
+		["$color2"] = "[0 0 0]",
+		
+		["$phong"] = 1,
+		["$phongBoost"] = 0,
+		["$phongFresnelRanges"] = "[.0045 .7 2]"
+	} 
+)
+
 -- just so we can use this thing
 CreateConVar( "cl_playercolor", "0.24 0.34 0.41", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The value is a Vector - so between 0-1 - not between 0-255" )
 CreateConVar( "cl_weaponcolor", "0.30 1.80 2.10", { FCVAR_ARCHIVE, FCVAR_USERINFO, FCVAR_DONTRECORD }, "The value is a Vector - so between 0-1 - not between 0-255" )
@@ -339,7 +377,7 @@ function GM:LocalPlayerFound()
 	self.CreateMove = self._CreateMove
 	self.GetMotionBlurValues = self._GetMotionBlurValues
 	self.HUDDrawTargetID = self._HUDDrawTargetID
-	--self.PrePlayerDraw = self._PrePlayerDraw
+	self.PrePlayerDraw = self._PrePlayerDraw
 	self.PostPlayerDraw = self._PostPlayerDraw
 	--self.InputMouseApply = self._InputMouseApply
 	--self.GUIMousePressed = self._GUIMousePressed
@@ -477,24 +515,38 @@ local team_circles = {
 	[ TEAM_BLUE ] = mat_circle_blue,
 }
 
+local team_outline = {
+	[ TEAM_RED ] = team_red_glow,
+	[ TEAM_BLUE ] = team_blue_glow,
+}
+
+local draw_outline = false
+function GM:_PrePlayerDraw( pl )
+
+end
+
 function GM:_PostPlayerDraw( pl )
 	
 	if DD_TEAMMATECIRCLES and pl ~= MySelf and MySelf:IsTeammate( pl ) and self:GetGametype() ~= "ffa" then
 		
-		local pos = pl:GetPos()
-		local mat = team_circles[ pl:Team() ]
+		local mat = team_outline[ pl:Team() ]
 		
-		if mat then
+		if mat and not draw_outline and not pl:IsThug() then
+			draw_outline = true
+			render_MaterialOverride( mat )
+			pl:DrawModel()
+			render_MaterialOverride()
+			draw_outline = false
+		end
+		
+		/*if mat then
 			
 			local size = 40
-			local col = col_white //team_GetColor( P_Team( pl ) )
+			local col = col_white
 			
 			local rot = math.NormalizeAngle( RealTime() * 20 )
 			
 			pos.z = pos.z + 2
-			
-			//render_SetMaterial( mat_circle_bg )
-			//render_DrawQuadEasy( pos, vector_up, size, size, col_white )
 			
 			render_SetMaterial( mat )
 			
@@ -510,7 +562,7 @@ function GM:_PostPlayerDraw( pl )
 			render_DrawQuadEasy( pos, vector_up * -1, size, size, col, rot * -1 + 180 )
 			render_DrawQuadEasy( pos, vector_up * -1, size / 1.3, size / 1.3, col, 90 - rot * -1 + 180 )
 			
-		end
+		end*/
 		
 		/*local col = team_GetColor( P_Team( pl ) )
 		

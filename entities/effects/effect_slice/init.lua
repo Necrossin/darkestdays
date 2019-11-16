@@ -142,7 +142,7 @@ function EFFECT:Init( data )
 			local rag = self.ent:GetRagdollEntity()
 			
 			rag:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
-			
+						
 			self.transform = {}
 	
 			local pos, ang = rag:GetPos(), rag:GetAngles()

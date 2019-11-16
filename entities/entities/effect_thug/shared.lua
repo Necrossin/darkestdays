@@ -79,6 +79,7 @@ function ENT:Initialize()
 	for k = 0, self.EntOwner:GetNumBodyGroups() - 1 do
 		self:SetBodygroup( k, self.EntOwner:GetBodygroup( k ) or 0 )
 	end
+	
 	self:SetSolid(SOLID_NONE)
 	self:SetMoveType(MOVETYPE_NONE)
 	self:AddEffects(EF_BONEMERGE)// + EF_BONEMERGE_FASTCULL
@@ -146,16 +147,6 @@ function ENT:Think()
 		end
 	end
 	
-	/*if IsValid(self:GetOwner()) and CLIENT then
-		for k, v in pairs( bones ) do
-			local bone = self:LookupBone(k)
-			if (!bone) then continue end
-			self:ManipulateBoneScale( bone, v.scale  )
-			self:GetOwner():ManipulateBoneAngles( bone, v.angle  )
-			self:GetOwner():ManipulateBonePosition( bone, v.pos  )
-		end
-	end*/
-	
 end
 
 function ENT:GetPlayerColor()
@@ -173,10 +164,18 @@ local function flex( ent, num, tbl )
 	--return tbl
 end
 
+local blue_mat = Material( "!dd_team_blue_glow" )
+local red_mat = Material( "!dd_team_red_glow" )
+
+local render_MaterialOverride = render.MaterialOverride
+
+local team_outline = {
+	[ TEAM_RED ] = red_mat,
+	[ TEAM_BLUE ] = blue_mat,
+}
+
 function ENT:DrawTranslucent()
-	//self:SetRenderBoundsWS(self.EntOwner:GetRenderBounds())
-	//self.EntOwner:SetRenderBounds(Vector(-180, -180, -180), Vector(180, 180, 180))
-	
+		
 	if not self.Done and IsValid( self:GetOwner() ) then
 		for k, v in pairs( bones ) do
 			local bone = self:LookupBone(k)
@@ -200,6 +199,18 @@ function ENT:DrawTranslucent()
 		self.DoneColor = true
 	end
 	self:DrawModel()
+	
+	if DD_TEAMMATECIRCLES and self:GetOwner() ~= MySelf and MySelf:IsTeammate( self:GetOwner() ) and GAMEMODE:GetGametype() ~= "ffa" then
+		
+		local mat = team_outline[ self:GetOwner():Team() ]
+		
+		if mat then
+			render_MaterialOverride( mat )
+			self:DrawModel()
+			render_MaterialOverride()
+		end
+	end
+	
 end
 end
 

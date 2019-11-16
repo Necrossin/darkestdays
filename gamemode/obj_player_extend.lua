@@ -733,6 +733,15 @@ end
 local meta = FindMetaTable( "Entity" )
 if (!meta) then return end
 
+local OldGetRagdollOwner = meta.GetRagdollOwner
+function meta:GetRagdollOwner()
+	if self.OverrideRagdollOwner then
+		return self:GetOwner()
+	else
+		return OldGetRagdollOwner( self )
+	end
+end
+
 local OldSequenceDuration = meta.SequenceDuration
 function meta:SequenceDuration(seqid)
 	return OldSequenceDuration(self, seqid) or 0
@@ -774,6 +783,7 @@ function meta:ResetBones(onlyscale)
 		end
 	end
 end
+
 
 if CLIENT then
 
