@@ -1,5 +1,10 @@
+EFFECT.BoneCountToRemove = 3
+
 local string_Replace = string.Replace
 local vector_origin = vector_origin
+
+local slicesound = Sound( "physics/gore/bodysplat2.wav" )
+local slicesound2 = Sound( "physics/gore/dismemberment.wav" )
 
 local skeleton = Model( "models/player/skeleton.mdl" )
 local skeleton_bloody = Material( "models/skeleton/skeleton_bloody" )
@@ -202,25 +207,26 @@ function EFFECT:Init( data )
 			local bone = self.ent:GetRagdollEntity():GetBoneMatrix(i)
 			if bone and emitter then
 				local pos = bone:GetTranslation()
-				local particle = emitter:Add("Decals/flesh/Blood"..math.random(1,5), pos)
-				particle:SetVelocity(VectorRand() * 46)
-				particle:SetDieTime(2)
-				particle:SetStartAlpha(0)
-				particle:SetStartSize(2)
-				particle:SetEndSize(2)
-				particle:SetRoll(180)
-				particle:SetColor(255, 0, 0)
-				particle:SetLighting(true)
-				particle:SetCollide(true)
-				particle:SetAirResistance(12)
+				local particle = emitter:Add( "Decals/flesh/Blood"..math.random(1,5), pos )
+				particle:SetVelocity( VectorRand() * 46 )
+				particle:SetDieTime( 2 )
+				particle:SetStartAlpha( 0 )
+				particle:SetStartSize( 2 )
+				particle:SetEndSize( 2 )
+				particle:SetRoll( 180 )
+				particle:SetColor( 255, 0, 0 )
+				particle:SetLighting( true )
+				particle:SetCollide( true)
+				particle:SetAirResistance( 12 )
 				particle:SetGravity( vector_up * - 400 )
-				particle:SetCollideCallback(CollideCallbackSmall)
+				particle:SetCollideCallback( CollideCallbackSmall )
 			end	
 		end
 		emitter:Finish() emitter = nil collectgarbage("step", 64)
 	end
 	
-	
+	sound.Play( slicesound, self.Origin, 75, math.random( 100, 120 ), 1 )
+	self:EmitSound( slicesound2, 100, math.random( 100, 120 ) )
 	
 	self:CreateRagdoll()
 
@@ -235,12 +241,15 @@ function EFFECT:CreateRagdoll()
 	self.FinalBones2 = {}
 	
 	self.FleshyParts = {}
+	self.FleshyPartsSimple = {}
 	
 	self.ShrinkBones = {}
 	self.ShrinkBones.Names = {}
 	
 	self.ShrinkBones.Ragdoll1 = {} // ragdoll entity
 	self.ShrinkBones.Ragdoll2 = {} // clientside ent
+	
+	self.ObsoleteBones = {}
 	
 	self.ClipPlaneData = {}
 	
@@ -352,9 +361,6 @@ function EFFECT:CreateRagdoll()
 		end
 		
 	end
-	
-
-	
 
 	local count_parent = {}
 	
@@ -374,24 +380,32 @@ function EFFECT:CreateRagdoll()
 		end
 		
 	
-		
-		count_parent[ parent ] = ( count_parent[ parent ] or 0 ) + 1
+		if !string.find( rag:GetBoneName( k ), "Finger" ) then
+			count_parent[ parent ] = ( count_parent[ parent ] or 0 ) + 1
+		end
 		
 		self.FinalBones1[ parent ][ k ] = true
 
 	end
 	
 	for k, v in pairs( count_parent ) do
-		if self.FinalBones1[ k ] and v < 2 then
+		if self.FinalBones1[ k ] and v < self.BoneCountToRemove then
 			//print( "Removing   "..k )
-			//self.FinalBones1[ k ] = nil
+			for _, argh in pairs( self.FinalBones1[ k ] ) do
+				self.ObsoleteBones[ _ ] = true
+			end
+			self.FinalBones1[ k ] = nil
 		end
 	end
 	
 	//PrintTable( self.ShrinkToTable1 )
 	
-	print"Final bones 1 ---------"
-	PrintTable( self.FinalBones1 )
+	//print"Final bones 1 ---------"
+	//for k, v in pairs( self.ShrinkToTable1 ) do
+	//	print( "Bone "..rag:GetBoneName( k ).."     to parent bone "..rag:GetBoneName( v ) )
+	//end
+	//PrintTable( self.ShrinkToTable1 )
+	//PrintTable( self.FinalBones1 )
 	
 	local count_parent = {}
 	
@@ -409,20 +423,32 @@ function EFFECT:CreateRagdoll()
 			//print(rag:GetBoneName( parent ))
 		end
 		
-		count_parent[ parent ] = ( count_parent[ parent ] or 0 ) + 1
+		if !string.find( rag:GetBoneName( k ), "Finger" ) then
+			count_parent[ parent ] = ( count_parent[ parent ] or 0 ) + 1
+		end
 		
 		self.FinalBones2[ parent ][ k ] = true
 	end
 	
 	for k, v in pairs( count_parent ) do
-		if self.FinalBones2[ k ] and v < 2 then
+		if self.FinalBones2[ k ] and v < self.BoneCountToRemove then
 			//print( "Removing   "..k )
-			//self.FinalBones2[ k ] = nil
+			for _, argh in pairs( self.FinalBones2[ k ] ) do
+				self.ObsoleteBones[ _ ] = true
+			end
+			self.FinalBones2[ k ] = nil
 		end
 	end
 		
-	print"Final bones 2 ---------"
-	PrintTable( self.FinalBones2 )
+	//print"Final bones 2 ---------"
+	//for k, v in pairs( self.ShrinkToTable2 ) do
+		//print( "Bone "..rag:GetBoneName( k ).."     to parent bone "..rag:GetBoneName( v ) )
+	//end
+	//PrintTable( self.ShrinkToTable2 )
+	//PrintTable( self.FinalBones2 )
+	
+	//print"Obsolete Bones---------"
+	//PrintTable( self.ObsoleteBones )
 	
 	self:MakeBodyParts()
 	
@@ -514,7 +540,7 @@ local function BodyPartBBP( ent, bonecount )
 			
 			end
 			
-			PrintTable( ent.BoneCountTable )
+			//PrintTable( ent.BoneCountTable )
 			
 		end
 		
@@ -522,9 +548,9 @@ local function BodyPartBBP( ent, bonecount )
 	
 end
 
-// these will act as a part that gets the clip plane treatment and stuff
-local vec_1_1 = Vector( 1.03, 1.03, 1.03 )
-local vec_1_9 = Vector( 1.9, 1.9, 1.9 )
+
+local vec_1_1 = Vector( 1.2, 1.02, 1.02 )
+local vec_1_9 = Vector( 2.4, 1.9, 1.9 )
 local function BodyPartBBP2( ent, bonecount )
 	
 	if ent.SolidBone then
@@ -545,7 +571,7 @@ local function BodyPartBBP2( ent, bonecount )
 						
 						if m_shrinkto2 and VM_GetTranslation( m_shrinkto2 ) ~= vector_origin then
 							local normal = ( VM_GetTranslation( m_shrinkto ) - VM_GetTranslation( m_shrinkto2 ) ):GetNormal()
-							VM_SetTranslation( m, VM_GetTranslation( m_shrinkto ) + normal * 5 )
+							VM_SetTranslation( m, VM_GetTranslation( m_shrinkto ) + normal * 6 )
 						else
 							VM_SetTranslation( m, VM_GetTranslation( m_shrinkto ) )
 						end
@@ -601,6 +627,9 @@ function EFFECT:MakeBodyParts()
 			part.BoneTable = v
 			if empty_1 and fleshy_bones[ rag:GetBoneName( part.ShrinkTo ) ] then
 				self.FleshyParts[ part.ShrinkTo ] = true
+				//self.FleshyPartsSimple[ part.ShrinkTo ] = true
+			else
+				self.FleshyPartsSimple[ part.ShrinkTo ] = true
 			end
 			
 			if empty_1 then
@@ -636,6 +665,9 @@ function EFFECT:MakeBodyParts()
 			
 			if empty_2 and fleshy_bones[ rag:GetBoneName( part.ShrinkTo ) ] then
 				self.FleshyParts[ part.ShrinkTo ] = true
+				//self.FleshyPartsSimple[ part.ShrinkTo ] = true
+			else
+				self.FleshyPartsSimple[ part.ShrinkTo ] = true
 			end
 			
 			if empty_2 then
@@ -652,18 +684,19 @@ function EFFECT:MakeBodyParts()
 		
 	end
 	
-	print"////////"
-	//PrintTable( self.RemoveCollisions1 )
+	//print"////////"
+	//PrintTable( self.FleshyPartsSimple )
 	
 	self.FleshyPartsReference = {}
 	
 	for k, v in pairs( self.FleshyParts ) do
-
-	
-		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_BOTH )
 		
-		if part2:IsValid() then
+		//bonemerged stuff
+		
+		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_BOTH )
 			
+		if part2:IsValid() then
+				
 			part2:SetPos( self:GetPos() )
 			part2:SetAngles( self:GetAngles() )
 			part2:SetParent( rag )
@@ -673,25 +706,22 @@ function EFFECT:MakeBodyParts()
 			part2.SolidBone = k	
 			part2.FleshBit = true
 			part2.IsThug = self.IsThug
-			
-			//print("fleshy part 1  "..rag:GetBoneName( k ))
-			
-			//part2:SetMaterial( "models/flesh" )
-			
+				
+				
 			part2.SolidBone2 = rag:GetBoneParent( k )
-			
+				
 			part2:SetNoDraw( true )
-			
+				
 			part2:AddCallback( "BuildBonePositions", BodyPartBBP2 )
-			
+				
 			self.BodyParts[ 1 ][ #self.BodyParts[ 1 ] + 1 ] = part2
 			self.FleshyPartsReference[ #self.FleshyPartsReference + 1 ] = part2
 		end
-		
-		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_BOTH )
-		
-		if part2:IsValid() then
 			
+		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_BOTH )
+			
+		if part2:IsValid() then
+				
 			part2:SetPos( self:GetPos() )
 			part2:SetAngles( self:GetAngles() )
 			part2:SetParent( self.Ragdoll )
@@ -701,21 +731,97 @@ function EFFECT:MakeBodyParts()
 			part2.SolidBone = k
 			part2.FleshBit = true
 			part2.IsThug = self.IsThug
-			
-			//print("fleshy part 2  "..rag:GetBoneName( k ))
-			//part2:SetMaterial( "models/flesh" )
-						
+							
 			part2.SolidBone2 = self.Ragdoll:GetBoneParent( k )
-			
-			
+
 			part2:SetNoDraw( true )
-			
+				
 			part2:AddCallback( "BuildBonePositions", BodyPartBBP2 )
-			
+				
 			self.BodyParts[ 2 ][ #self.BodyParts[ 2 ] + 1 ] = part2
 			self.FleshyPartsReference[ #self.FleshyPartsReference + 1 ] = part2
-		end
+		end			
 	
+	end
+	
+	
+	for k, v in pairs( self.FleshyPartsSimple ) do
+
+		local invisible = fleshy_bones[ rag:GetBoneName( k ) ]
+	
+		if k == 0 then continue end
+		if fleshy_bones[ rag:GetBoneName( k ) ] then continue end
+		if self.ObsoleteBones[ k ] then continue end
+		if string.find( rag:GetBoneName( k ), "arm" ) then continue end
+		if string.find( rag:GetBoneName( k ), "Finger" ) then continue end
+		if string.find( rag:GetBoneName( k ), "Hand" ) then continue end
+				
+		//if self.FinalBones1[ k ] or self.FinalBones2[ k ] then
+		
+			local part = ClientsideModel( "models/props_junk/garbage_bag001a.mdl", RENDERGROUP_BOTH )
+				
+			if part:IsValid() then
+					
+				part:SetPos( self:GetPos() )
+				part:SetAngles( self:GetAngles() )
+				//part:SetModelScale( math.Rand( 0.4, 0.5 ), 0 )
+				part.Scale = Vector( math.Rand( 0.2, 0.4 ), math.Rand( 0.2, 0.3 ), math.Rand( 0.3, 0.5 ) )
+				part.Scale = part.Scale * 1.2
+				part:SetParent( rag )
+				part:SetCollisionGroup( COLLISION_GROUP_NONE )
+				part:SetMoveType( MOVETYPE_NONE )
+				part.SolidBone = k	
+				part.FleshBit = true
+				part.SimpleFleshBit = true
+				part.DoBlood = true
+				if invisible then
+					part.Invisible = true
+				end
+				
+				//if not empty_1 then
+					//part.SolidBoneParent = rag:GetBoneParent( k )
+				//end
+					
+				part:SetNoDraw( true )
+					
+				self.BodyParts[ 1 ][ #self.BodyParts[ 1 ] + 1 ] = part
+				self.FleshyPartsReference[ #self.FleshyPartsReference + 1 ] = part
+			end
+		//end
+		
+		//if self.FinalBones1[ k ] or self.FinalBones2[ k ] then
+		
+			local part = ClientsideModel( "models/props_junk/garbage_bag001a.mdl", RENDERGROUP_BOTH )
+				
+			if part:IsValid() then
+										
+				part:SetPos( self:GetPos() )
+				part:SetAngles( self:GetAngles() )
+				//part:SetModelScale( math.Rand( 0.4, 0.5 ), 0 )
+				part.Scale = Vector( math.Rand( 0.2, 0.4 ), math.Rand( 0.2, 0.3 ), math.Rand( 0.3, 0.5 ) )
+				part.Scale = part.Scale * 1.2
+				part:SetParent( self.Ragdoll )
+				part:SetCollisionGroup( COLLISION_GROUP_NONE )
+				part:SetMoveType( MOVETYPE_NONE )
+				part.SolidBone = k	
+				part.FleshBit = true
+				part.SimpleFleshBit = true
+				part.InverseAngles = true
+				if invisible then
+					part.Invisible = true
+				end
+				//part.DoBlood = true
+
+				part.SolidBoneParent = rag:GetBoneParent( k )
+					
+				part:SetNoDraw( true )
+					
+				self.BodyParts[ 2 ][ #self.BodyParts[ 2 ] + 1 ] = part
+				self.FleshyPartsReference[ #self.FleshyPartsReference + 1 ] = part
+			end
+			
+		//end
+		
 	end
 	
 	for i=1, 2 do 
@@ -746,7 +852,7 @@ function EFFECT:MakeBodyParts()
 			end
 			phys:Wake()
 			phys:SetMaterial("zombieflesh")
-			phys:SetVelocity( self.Normal:GetNormal() * 200 + VectorRand() * 10 )
+			phys:SetVelocity( phys:GetVelocity() + self.Normal:GetNormal() * 200 + VectorRand() * 10 )
 		end
 	end
 	
@@ -761,47 +867,59 @@ function EFFECT:MakeBodyParts()
 			end
 			phys:Wake()
 			phys:SetMaterial("zombieflesh")
-			phys:SetVelocity( self.Normal:GetNormal() * -200 + VectorRand() * 10 )
+			phys:SetVelocity( phys:GetVelocity() + self.Normal:GetNormal() * -200 + VectorRand() * 10 )
 		end
 	end
-	
-	
 
 end
 
-function EFFECT:BuildBoneTable()
-	
-	
-	
-end
 
-function EFFECT:BuildBonePositions( ent, bonecount )
-	
-	for k, v in pairs( bones ) do
-		local bone = ent:LookupBone( k )
-		if (!bone) then continue end
+local function RagBuildBonePositions( ent, bonecount )
+
+	if ent.ThugBoneBBP then
 		
-		local m = ent:GetBoneMatrix( bone )
-		if m then
+		for bone, v in pairs( ent.ThugBoneBBP ) do
+		
+			local m = ent:GetBoneMatrix( bone )
+			if m then
+				
+				m:Translate( v.pos )
+				m:Rotate( v.angle )
+				m:Scale( v.scale )
 			
-			m:Translate( v.pos )
-			m:Rotate( v.angle )
-			m:Scale( v.scale )
+				ent:SetBoneMatrix( bone, m )
+			end
+		end	
 		
-			ent:SetBoneMatrix( bone, m )
-		end
+	else
+	
+		ent.ThugBoneBBP = {}
+	
+		for k, v in pairs( bones ) do
+			local bone = ent:LookupBone( k )
+			if (!bone) then continue end
+			
+			ent.ThugBoneBBP[ bone ] = { pos = v.pos, angle = v.angle, scale = v.scale }
+			
+			local m = ent:GetBoneMatrix( bone )
+			if m then
+				
+				m:Translate( v.pos )
+				m:Rotate( v.angle )
+				m:Scale( v.scale )
+			
+				ent:SetBoneMatrix( bone, m )
+			end
+		end	
 	end
-	
-	self.DoneThugRag1 = true
-	
 end
 
 function EFFECT:MakeBuildBonePositions()
 
 	local rag = self.ent:GetRagdollEntity()
-	if self.IsThug then
-		rag:AddCallback("BuildBonePositions", function( ent, bones ) self:BuildBonePositions( ent, bones ) end)
-		self.Ragdoll:AddCallback("BuildBonePositions", function( ent, bones ) self:BuildBonePositions( ent, bones ) end)
+	if self.IsThug and RagBuildBonePositions then
+		rag:AddCallback("BuildBonePositions", function( ent, bones ) RagBuildBonePositions( ent, bones ) end)
+		self.Ragdoll:AddCallback("BuildBonePositions", function( ent, bones ) RagBuildBonePositions( ent, bones ) end)
 	end
 
 end
@@ -809,15 +927,7 @@ end
 function EFFECT:Think( )
 	
 	if IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity()) then
-		if not self.Frozen then
-			for i = 1, self.ent:GetRagdollEntity():GetPhysicsObjectCount() do
-				local bone = self.ent:GetRagdollEntity():GetPhysicsObjectNum(i)
-				if bone and bone.IsValid and bone:IsValid() then
-					//bone:EnableMotion(false)
-				end
-			end
-			self.Frozen = true
-		end		
+			
 	else
 		if self.BodyParts then
 			if self.BodyParts[ 1 ] then
@@ -843,61 +953,9 @@ function EFFECT:Think( )
 	return IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity())
 end
 
-local meat3 = CreateMaterial( "Meat3", 
-	"UnlitGeneric", 
-	{ 
-		["$basetexture"] = "models/skeleton/skeleton_bloody", 
-		["$bumpmap"] = "models/flesh_nrm",
-
-		["$detail"] = "Models/flesh", 
-		["$detailscale"] = 1,
-		["$detailblendfactor"] = 7, 
-
-		["$phong"] = "1",
-		["$phongboost"] = "5",
-		["$phongfresnelranges"] = "[2 5 10]",
-		["$phongexponent"] = "500"
-	} )
-local meat_col = Color(135,5,5,255)
 
 function EFFECT:Render()
-	
-	/*local rag = IsValid( self.ent ) and IsValid( self.ent:GetRagdollEntity() ) and self.ent:GetRagdollEntity()
-	
-	if rag then
-		if self.IsThug and not self.DoneThugRag1 then
-			for k, v in pairs( bones ) do
-				local bone = rag:LookupBone(k)
-				if (!bone) then continue end
-				rag:ManipulateBoneScale( bone, v.scale  )
-				rag:ManipulateBoneAngles( bone, v.angle  )
-				rag:ManipulateBonePosition( bone, v.pos  )
-				end
-			self.DoneThugRag1 = true
-		end
-	end
-	
-	if self.Ragdoll and IsValid( self.Ragdoll ) then
 		
-		if self.IsThug and not self.DoneThugRag2 then
-			for k, v in pairs( bones ) do
-				local bone = self.Ragdoll:LookupBone(k)
-				if (!bone) then continue end
-				self.Ragdoll:ManipulateBoneScale( bone, v.scale  )
-				self.Ragdoll:ManipulateBoneAngles( bone, v.angle  )
-				self.Ragdoll:ManipulateBonePosition( bone, v.pos  )
-				end
-			self.DoneThugRag2 = true
-		end
-		
-	end*/
-	
-	if not self.Particle and self.Origin then
-		//ParticleEffect("dd_blood_big1", self.Origin, self.Entity:GetAngles(), self.Entity)
-		//CreateParticleSystem( self.Ragdoll, "dd_blood_gib_trail", PATTACH_ABSORIGIN_FOLLOW, 0 )
-		self.Particle = true
-	end
-	
 	if self.BodyParts then
 		
 		blood_overlay:SetFloat( "$detailscale", self.SplatterScale or 2 )
@@ -910,23 +968,82 @@ function EFFECT:Render()
 				if IsValid( v ) then
 					
 					if v.FleshBit then
-					
-						v:SetModel( zombie )
-				
-						render.ModelMaterialOverride( flesh )
-							v:DrawModel()
-						render.ModelMaterialOverride(  )
-					
-						v:SetModel( self:GetModel() )
-					
-						render.ModelMaterialOverride( flesh )
-							v:DrawModel()
-						render.ModelMaterialOverride(  )
 						
-						if not v.Particle then
-							v.Particle = CreateParticleSystem( v, "dd_blood_gib_trail", PATTACH_ABSORIGIN_FOLLOW, 0 ) 
-						end
+						local parent = IsValid( v:GetParent() ) and v:GetParent()
 					
+						if v.SimpleFleshBit and v.SolidBone and parent then
+							
+							local v_pos, v_ang
+							local m = parent:GetBoneMatrix( v.SolidBone )
+							if m then
+								v_pos, v_ang = m:GetTranslation(), m:GetAngles()
+							else
+								v_pos, v_ang = parent:GetBonePosition( v.SolidBone )
+							end
+							
+							if v_pos and v_ang then
+								
+								if v.SolidBoneParent then
+									
+									local v_pos2, v_ang2
+									local m2 = parent:GetBoneMatrix( v.SolidBoneParent )
+									if m2 then
+										v_pos2, v_ang2 = m2:GetTranslation(), m2:GetAngles()
+									else
+										v_pos2, v_ang2 = parent:GetBonePosition( v.SolidBoneParent )
+									end
+									
+									if v_ang2 then
+										v_ang = v_ang2 * 1
+									end
+									
+								end
+								
+								
+								v:SetPos( v_pos )
+								v:SetAngles( v_ang * ( v.InverseAngles and -1 or 1 ) )
+
+							end
+							
+							if not v.Particle and v.DoBlood then
+								v.Particle = CreateParticleSystem( v, "dd_blood_headshot_2", PATTACH_POINT_FOLLOW, 0 ) //"dd_blood_headshot_2"
+							end
+							
+							
+							if v.Scale then
+								local m = Matrix()
+								m:Scale( v.Scale )
+								v:EnableMatrix( "RenderMultiply", m )
+							end
+							
+							if v.Invisible then render.SetBlend( 0 ) end
+							render.ModelMaterialOverride( flesh )
+								v:DrawModel()
+							render.ModelMaterialOverride(  )
+							if v.Invisible then render.SetBlend( 1 ) end
+						
+						else
+						
+							/*v:SetModel( zombie )
+							
+							render.ModelMaterialOverride( flesh )
+								v:DrawModel()
+							render.ModelMaterialOverride(  )*/
+							
+							
+							v:SetModel( self:GetModel() )
+							
+							render.ModelMaterialOverride( flesh )
+								v:DrawModel()
+							render.ModelMaterialOverride(  )
+							
+							if not self.Particle and self.Origin then
+								ParticleEffect( "dd_blood_big_gibsplash", self.Origin, self.Normal:Angle(), self.Entity )
+								self.Particle = true
+							end
+							
+						end
+
 					else
 						
 						v:SetModel( self:GetModel() )
@@ -946,166 +1063,4 @@ function EFFECT:Render()
 		end
 		
 	end
-	
-	if self.FleshyPartsReference then
-		
-		for k, v in pairs( self.FleshyPartsReference ) do
-			
-			if IsValid( v ) then
-				
-				//v:SetModel( self:GetModel() )
-				
-				//render.ModelMaterialOverride( flesh )
-				//	v:DrawModel()
-				//render.ModelMaterialOverride(  )
-				
-				/*if v.SolidBone and self.ClipPlaneData and self.ClipPlaneData[ v.SolidBone ] then
-				
-					local tbl = self.ClipPlaneData[ v.SolidBone ]
-					
-					local v_pos, v_ang
-					local m = v:GetBoneMatrix( v.SolidBone )
-					if m then
-						v_pos, v_ang = m:GetTranslation(), m:GetAngles()
-					else
-						v_pos, v_ang = v:GetBonePosition( v.SolidBone )
-					end
-					
-					if v_pos and v_ang then
-					
-						local pos, ang = LocalToWorld( tbl.SavePos, tbl.SaveAng, v_pos, v_ang )
-						
-						if pos and ang then
-							local normal = ang:Forward() * -1
-							
-							if tbl.InverseNormal then normal = normal * -1 end
-							
-							local distance = normal:Dot( pos )
-							
-							
-							if not v.MeatAng and not v.MeatPos then
-					
-								local meat_ang = ( normal * -1 ):Angle()
-								meat_ang:RotateAroundAxis( meat_ang:Right(), -90 )
-							
-								local mpos, mang = WorldToLocal( pos, meat_ang, v_pos, v_ang)
-								
-								v.MeatAng = mang
-								v.MeatPos = mpos
-							end
-							
-							local meat_pos, meat_ang = LocalToWorld( v.MeatPos, v.MeatAng, v_pos, v_ang )
-							
-							//render.ClearStencil()
-							//render.SetStencilEnable( true )
-					
-							render.EnableClipping( true )
-							render.PushCustomClipPlane( normal, distance )
-							
-							//render.SetStencilPassOperation( STENCILOPERATION_REPLACE )
-							//render.SetStencilFailOperation( STENCILOPERATION_REPLACE )
-							//render.SetStencilZFailOperation( STENCILOPERATION_REPLACE ) -- STENCILOPERATION_KEEP
-							//render.SetStencilCompareFunction( STENCILCOMPARISONFUNCTION_ALWAYS )
-							//render.SetStencilReferenceValue( 1 )
-						
-							//render.CullMode( MATERIAL_CULLMODE_CW )
-							//render.ModelMaterialOverride( flesh )
-							//	v:DrawModel()
-							//render.ModelMaterialOverride(  )
-							//render.CullMode( MATERIAL_CULLMODE_CCW )
-							
-						
-							//render.SetStencilReferenceValue( 2 )
-							//render.SetStencilFailOperation( STENCILOPERATION_REPLACE )
-							//render.SetStencilZFailOperation( STENCILOPERATION_KEEP )
-						
-							v:SetModel( zombie )
-						
-							//render.ModelMaterialOverride( flesh )
-								v:DrawModel()
-							//render.ModelMaterialOverride(  )
-							
-							render.PopCustomClipPlane()
-							render.EnableClipping( false )
-							
-							//render.SetStencilEnable( false )
-							
-							render.SetStencilEnable( true )
-							render.SetStencilCompareFunction( STENCILCOMPARISONFUNCTION_EQUAL )
-							render.SetStencilPassOperation( STENCILOPERATION_REPLACE )
-							render.SetStencilFailOperation( STENCILOPERATION_REPLACE )
-							render.SetStencilZFailOperation( STENCILOPERATION_REPLACE )
-							
-							render.SetStencilReferenceValue( 1 )
-							
-							cam.Start3D2D( meat_pos, meat_ang, 1 )
-								surface.SetMaterial( meat3 )
-								surface.SetDrawColor( meat_col )
-								surface.DrawTexturedRectRotated( 0, 0, 80, 80, 0 ) 
-							cam.End3D2D()
-							
-							render.SetStencilEnable( false )
-							
-						end
-					
-					end
-				
-				end*/
-				
-				
-				/*v:SetModel( self:GetModel() )
-				
-				render.ModelMaterialOverride( flesh )
-					v:DrawModel()
-				render.ModelMaterialOverride(  )
-				
-				v:SetModel( zombie )
-				
-				render.ModelMaterialOverride( flesh )
-					v:DrawModel()
-				render.ModelMaterialOverride(  )*/
-				
-				
-				//v:SetModel( self:GetModel() )
-				
-				//if v.SavePos then
-					
-				
-					/*local pos = v:LocalToWorld( v.SavePos )
-				
-					local normal1 = v:LocalToWorld( v.NormalPos1 )
-					local normal2 = v:LocalToWorld( v.NormalPos2 )
-					
-					local normal = ( normal2 - normal1 ):GetNormalized()
-					
-					if v.InverseNormal then
-						normal = normal * -1
-					end
-					
-					local distance = normal:Dot( pos )
-					
-					render.EnableClipping( true )
-					render.PushCustomClipPlane( normal, distance )*/
-					
-					//render.ModelMaterialOverride( flesh )
-					//v:DrawModel()
-					//render.ModelMaterialOverride(  )
-					
-					//render.PopCustomClipPlane()
-					//render.EnableClipping( false )
-				
-				//end
-				
-				/*v:SetModel( zombie )
-				
-				render.ModelMaterialOverride( flesh )
-				v:DrawModel()
-				render.ModelMaterialOverride(  )*/
-
-			end
-			
-		end
-		
-	end
-
 end

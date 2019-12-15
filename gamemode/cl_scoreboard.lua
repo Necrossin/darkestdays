@@ -72,11 +72,11 @@ local PLAYER_LINE =
 			if MySelf:IsAdmin() and ADMIN_MENU then
 
 					local AdminMenu = DermaMenu()
-					//AdminMenu:AddOption("Take screenshot", function() RunConsoleCommand("scanplayer", tostring(self.Player:EntIndex())) end )
 					AdminMenu:AddOption("Slay", function() RunConsoleCommand("admin_slay", tostring(self.Player:EntIndex())) end )
 					AdminMenu:AddOption("Kick", function() CreateReasonForm( "admin_kick", self.Player:EntIndex() ) end )
 					AdminMenu:AddOption("Mute/Unmute", function() RunConsoleCommand("admin_mute", tostring(self.Player:EntIndex())) end )
 					AdminMenu:AddOption("Gag/Ungag", function() RunConsoleCommand("admin_gag", tostring(self.Player:EntIndex())) end )
+					AdminMenu:AddOption("Bring", function() RunConsoleCommand("admin_bring", tostring(self.Player:EntIndex())) end )
 					AdminMenu:AddOption("Block/Enable spawning", function() RunConsoleCommand("admin_delayrespawn", tostring(self.Player:EntIndex())) end )
 					AdminMenu:Open()
 				
@@ -149,7 +149,12 @@ local PLAYER_LINE =
 		end
 		
 		if self.Name then
-			self.Name.Color = team.GetColor(self.Player:Team() )//:SetTextColor( team.GetColor(self.Player:Team() ))
+			self.Name.Color = team.GetColor(self.Player:Team() )
+			
+			if self.Name.Text and ( self.Name.Text == " unconnected" or self.Name.Text != " "..self.Player:Nick() ) then
+				self.Name.Text = " "..self.Player:Nick() 
+			end
+			
 		end
 
 		if ( self.NumKills == nil || self.NumKills != self.Player:Frags() ) then

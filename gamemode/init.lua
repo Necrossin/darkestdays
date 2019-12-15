@@ -411,6 +411,25 @@ local function AdminGag(p,c,a)
 end
 concommand.Add("admin_gag",AdminGag)
 
+local function AdminBring(p,c,a)
+	if !ADMIN_MENU then return end
+	if !p:IsAdmin() then return end
+	if not a then return end
+	
+	local id = a[1]
+	if not id then return end
+	
+	local target = player.GetByID( tonumber( id ) )
+	
+	if target and IsValid(target) then
+		target:SetPos( p:GetPos() )
+		target:SetAngles( p:GetAngles() )
+		target:ChatPrint( "You have been brought by admin "..p:Name() )
+	end
+	
+end
+concommand.Add("admin_bring",AdminBring)
+
 local function AdminTest(p,c,a)
 	if !ADMIN_MENU then return end
 	if !p:IsAdmin() then return end
@@ -1686,7 +1705,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 			e:SetNormal( ang )
 			e:SetRadius( 1 )
 			
-			util.Effect("effect_slice",e,true,true)
+			util.Effect("effect_slice2",e,true,true)
 			
 			slice = true
 			
