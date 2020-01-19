@@ -52,7 +52,7 @@ end
 function ENT:CreateTrap(pos)
 	
 	for k,v in pairs(ents.FindByClass("prop_physics*")) do
-		if v and IsValid(v) and v:GetPos():Distance(pos) <= 260 and TrueVisible(pos, v:NearestPoint(pos)) then
+		if v and IsValid(v) and v:GetPos():DistToSqr(pos) <= 129600 and TrueVisible(pos, v:NearestPoint(pos)) then
 			local phys = v:GetPhysicsObject()
 			if IsValid(phys) then
 				v:SetPhysicsAttacker(self.EntOwner)

@@ -1037,9 +1037,9 @@ function SWEP:MeleeSwing()
 			
 			if block == false then
 				if hitflesh then
-					if tr_decal.Hit then
-						util.Decal(self.BloodDecal, tr_decal.HitPos + tr_decal.HitNormal, tr_decal.HitPos - tr_decal.HitNormal)
-					end
+					//if tr_decal.Hit then
+						//util.Decal(self.BloodDecal, tr_decal.HitPos + tr_decal.HitNormal, tr_decal.HitPos - tr_decal.HitNormal)
+					//end
 					
 					--util.Decal("Blood", tr_decal.HitPos + tr_decal.HitNormal*10, tr_decal.HitPos - tr_decal.HitNormal*10)
 					--util.Decal("Blood", tr_decal.HitPos + tr_decal.HitNormal*10, tr_decal.HitPos - tr_decal.HitNormal*10)
@@ -1596,14 +1596,6 @@ local blood_mat = Material( "models/flesh" )
 		if self.Owner:IsCrow() then return end
 	
 		if (self.ShowWorldModel == nil or self.ShowWorldModel) then
-			if wtf and not self.tex then
-				local ind = math.random( 1, 10 )
-				self.tex = wtf_tbl[ ind ]
-			end
-			if self.tex and not self.applytex then
-				self:SetMaterial( self.tex:GetName() )
-				self.applytex = true
-			end
 			self:DrawModel()
 		end
 		
@@ -1634,7 +1626,9 @@ local blood_mat = Material( "models/flesh" )
 			bone_ent = self
 		end
 		
-		for k, name in ipairs( self.wRenderOrder ) do
+		for i = 1, #self.wRenderOrder do
+			
+			local name = self.wRenderOrder[ i ]
 		
 			local v = self.WElements[name]
 			if (!v) then self.wRenderOrder = nil break end

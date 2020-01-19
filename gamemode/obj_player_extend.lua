@@ -601,8 +601,10 @@ function meta:IsParrying()
 	return parry
 end
 
+local meta_ent = FindMetaTable( "Entity" )
+local P_EyeAngles = meta_ent.EyeAngles
 function meta:SyncAngles()
-	local ang = self:EyeAngles()
+	local ang = P_EyeAngles( self )//self:EyeAngles()
 	ang.pitch = 0
 	ang.roll = 0
 	return ang

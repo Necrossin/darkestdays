@@ -946,7 +946,7 @@ function SWEP:DoImpactEffect( tr, dmg )
 		end
 	end
 	
-	return false
+	return tr.MatType == MAT_FLESH
 	
 end
 
@@ -1010,9 +1010,9 @@ function GenericBulletCallback(attacker, tr, dmginfo)//function GenericBulletCal
 					end
 					
 				end
-				util.Decal("Blood", tr.HitPos + tr.HitNormal*10, tr.HitPos - tr.HitNormal*10)
-				util.Decal("Blood", tr.HitPos + tr.HitNormal*10, tr.HitPos - tr.HitNormal*10)
-				util.Decal("Blood", tr.HitPos-vector_up*3 + tr.HitNormal*10, tr.HitPos-vector_up*3 - tr.HitNormal*10)
+				//util.Decal("Blood", tr.HitPos + tr.HitNormal*10, tr.HitPos - tr.HitNormal*10)
+				//util.Decal("Blood", tr.HitPos + tr.HitNormal*10, tr.HitPos - tr.HitNormal*10)
+				//util.Decal("Blood", tr.HitPos-vector_up*3 + tr.HitNormal*10, tr.HitPos-vector_up*3 - tr.HitNormal*10)
 				if CLIENT then
 					if tr.HitGroup == HITGROUP_HEAD then
 						local e = EffectData()

@@ -364,6 +364,8 @@ GM.PrePlayerDraw = GM.Think
 GM.PostPlayerDraw = GM.Think
 GM.InputMouseApply = GM.Think
 GM.GUIMousePressed = GM.Think
+GM.PreDrawViewModel = GM.Think
+GM.PostDrawViewModel = GM.Think
 
 function GM:LocalPlayerFound()
 	
@@ -379,6 +381,9 @@ function GM:LocalPlayerFound()
 	self.HUDDrawTargetID = self._HUDDrawTargetID
 	self.PrePlayerDraw = self._PrePlayerDraw
 	self.PostPlayerDraw = self._PostPlayerDraw
+	self.PreDrawViewModel = self._PreDrawViewModel
+	self.PostDrawViewModel = self._PostDrawViewModel
+	
 	--self.InputMouseApply = self._InputMouseApply
 	--self.GUIMousePressed = self._GUIMousePressed
 	--self.HUDWeaponPickedUp = self._HUDWeaponPickedUp
@@ -706,7 +711,7 @@ wtf_tbl = {
 	Material( "models/monk/grigori_head" ),
 }
 
-function GM:PreDrawViewModel( ViewModel, Player, Weapon )
+function GM:_PreDrawViewModel( ViewModel, Player, Weapon )
 
 	if ( !IsValid( Weapon ) ) then return false end	
 
@@ -718,7 +723,7 @@ end
 
 local blood_mat = Material( "models/flesh" )
 local parry_mat = Material( "models/spawn_effect2" )
-function GM:PostDrawViewModel( ViewModel, Player, Weapon )
+function GM:_PostDrawViewModel( ViewModel, Player, Weapon )
 	
 	if ( !IsValid( Weapon ) ) then return false end
 	
@@ -1010,9 +1015,84 @@ function GM:PlayerBindPress(ply, bind, pressed)
 			return true
 		end
 	end
-	if string.find ( bind, "impulse 100" ) and self:GetGametype() == "ts" and ply:Team() == TEAM_THUG then
+	if string.find ( bind, "impulse 100" ) then
+		if self:GetGametype() == "ts" and ply:Team() == TEAM_THUG then
+			
+		else
+			if ply:Alive() or P_Team( ply ) ~= TEAM_SPECTATOR then
+				self:FakeFlashlight()
+			end
+		end
 		return true
 	end
+end
+
+
+function GM:FakeFlashlight()
+		
+	MySelf.NextFlashlight = MySelf.NextFlashlight or 0
+	MySelf.FlashlightState = MySelf.FlashlightState or false
+	
+	if !IsValid( self._FakeFlashlight ) then
+		self._FakeFlashlight = ProjectedTexture()
+		
+		self._FakeFlashlight:SetTexture( "effects/flashlight001" )
+		self._FakeFlashlight:SetColor( color_white )
+		self._FakeFlashlight:SetEnableShadows( false ) 
+		self._FakeFlashlight:SetFOV( 55 )
+		self._FakeFlashlight:SetNearZ( 0 ) 
+		self._FakeFlashlight:SetFarZ( 750 ) 
+		self._FakeFlashlight:SetLinearAttenuation( 100 ) 
+		self._FakeFlashlight:SetConstantAttenuation( 0 ) 
+		self._FakeFlashlight:SetQuadraticAttenuation( 0 ) 
+	end
+	
+	if MySelf.NextFlashlight > CurTime() then return end
+	
+	MySelf.FlashlightState = !MySelf.FlashlightState
+	
+	if MySelf.FlashlightState then
+		self._FakeFlashlight:SetPos( EyePos() )
+		self._FakeFlashlight:SetAngles( EyeAngles() )
+		self._FakeFlashlight:SetNearZ( 4 )
+	else
+		self._FakeFlashlight:SetNearZ( 0 )
+	end
+	
+	MySelf:EmitSound( "buttons/lightswitch2.wav", 75, MySelf.FlashlightState and 100 or 80 )
+	
+	self._FakeFlashlight:Update()
+	
+	MySelf.NextFlashlight = CurTime() + 0.4
+	
+end
+
+local flashlight_offset = Vector( 0, 0, -5 )
+
+function GM:UpdateFakeFlashlight()
+	
+	if IsValid( self._FakeFlashlight ) then
+		
+		if MySelf.FlashlightState then
+		
+			local ang = EyeAngles()
+			local offset = ang:Forward() * flashlight_offset.x + ang:Right() * flashlight_offset.y + ang:Up() * flashlight_offset.z
+		
+			self._FakeFlashlight:SetPos( EyePos() + offset )
+			self._FakeFlashlight:SetAngles( ang )
+			self._FakeFlashlight:Update()
+
+			if !MySelf:Alive() or P_Team( MySelf ) == TEAM_SPECTATOR or self:GetGametype() == "ts" and P_Team( MySelf ) == TEAM_THUG then
+				MySelf.FlashlightState = false
+				self._FakeFlashlight:SetNearZ( 0 )
+				self._FakeFlashlight:Update()
+			end
+			
+		end
+		
+	end
+	
+	
 end
 
 function GM:PlayerButtonDown( pl, btn )

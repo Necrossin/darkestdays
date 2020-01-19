@@ -463,6 +463,8 @@ end
 
 function GM:_HUDPaint()
 	
+	self:UpdateFakeFlashlight()
+	
 	if not DD_HUD then return end
 	
 	hook.Run( "HUDDrawTargetID" )

@@ -104,7 +104,7 @@ if SERVER then
 		
 		local hitpos = data.HitPos
 		local hitnormal = data.HitNormal
-		if hitpos and hitnormal then
+		if hitpos and hitnormal and ent == game.GetWorld() then
 			util.Decal("PaintSplatBlue", hitpos + hitnormal, hitpos - hitnormal)//"GlassBreak"
 		end
 		

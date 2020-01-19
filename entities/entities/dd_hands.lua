@@ -128,11 +128,60 @@ local function BetterBonemerge( ent, bonecount )
 				end
 			end			
 		end
+		
+		
+		if not ent.CachedBones then
+			
+			ent.CachedBones = {}
+			
+			for i=0, bonecount do
+
+				if not ent.BoneTable then
+					ent.BoneTable = {}
+				end
+				
+				if not ent.BoneTable[i] then
+					ent.BoneTable[i] = {}
+				end
+				
+				local name
+				local bonetable = ent.BoneTable
+				
+				if bonetable[ i ] and bonetable[ i ].bone_name then
+					name = bonetable[ i ].bone_name
+				else
+					name = ent:GetBoneName( i )   
+					bonetable[ i ].bone_name = name
+				end
+
+				if not name then continue end
+
+				local bone = i
+				local bone_pl
+				
+				if bonetable[ i ] and bonetable[ i ].pl_bone then
+					bone_pl = bonetable[ i ].pl_bone
+				else
+					bone_pl = pl:LookupBone( name )  
+					bonetable[ i ].pl_bone = bone_pl
+				end
+				
+				if viewmodel_bones[name] then continue end
+                if ent.ArmBones[name] then continue end
+				
+				ent.CachedBones[ #ent.CachedBones + 1 ] = i
+
+			end
+			
+			//PrintTable( ent.CachedBones )
+
+		end
         
+	
 		
-        for i=0, bonecount do
+       // for i=0, bonecount do
 		
-			if not ent.BoneTable then
+			/*if not ent.BoneTable then
 				ent.BoneTable = {}
 			end
 			
@@ -160,14 +209,41 @@ local function BetterBonemerge( ent, bonecount )
 			else
 				bone_pl = pl:LookupBone( name )  
 				bonetable[ i ].pl_bone = bone_pl
+			end*/
+		
+		local cached = ent.CachedBones
+			
+		for k=1, #cached do
+		
+			local i = cached[ k ]
+			
+			local name
+			local bonetable = ent.BoneTable
+			
+			// just in case
+			if bonetable[ i ] and bonetable[ i ].bone_name then
+				name = bonetable[ i ].bone_name
+			else
+				name = ent:GetBoneName( i )   
+				bonetable[ i ].bone_name = name
+			end
+			
+			local bone = i
+            local bone_pl
+			
+			if bonetable[ i ] and bonetable[ i ].pl_bone then
+				bone_pl = bonetable[ i ].pl_bone
+			else
+				bone_pl = pl:LookupBone( name )  
+				bonetable[ i ].pl_bone = bone_pl
 			end
 			
 			
             if bone then
                 local m = E_GetBoneMatrix( ent, bone )
 
-                if viewmodel_bones[name] then continue end
-                if ent.ArmBones[name] then continue end
+                //if viewmodel_bones[name] then continue end
+                //if ent.ArmBones[name] then continue end
 
                 if bone_pl then
                     local pos, ang = E_GetBonePosition( pl, bone_pl ) --bone matrix doesnt seem to work when I try to get player bones in first person
@@ -278,7 +354,7 @@ function ENT:Draw()
             self.AppliedBonemerge = true
 		end
 	end
-
+	
 	if self.AppliedBonemerge and #self:GetCallbacks( "BuildBonePositions" ) <= 0 then
 		self.AppliedBonemerge = false
 	end

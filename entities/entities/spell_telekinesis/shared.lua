@@ -3,7 +3,7 @@ ENT.Type = "anim"
 
 ENT.Base = "spell__base"
 
-ENT.Mana = 3
+ENT.Mana = 2
 
 if SERVER then
 	AddCSLuaFile("shared.lua")
@@ -54,7 +54,7 @@ function ENT:CanCast()
 	local result = false
 	
 	if self.EntOwner:CanCast(self) then
-		if !self:ValidEnt() and self.EntOwner:CanCast(self,15) or self:ValidEnt() then
+		if !self:ValidEnt() and self.EntOwner:CanCast(self,30) or self:ValidEnt() then
 			result = true
 		end
 	end
@@ -77,7 +77,7 @@ function ENT:GrabProp()
 	trace = util.TraceHull(trace)
 	
 	
-	if ValidEntity(trace.Entity) and (string.sub(trace.Entity:GetClass(), 1, 12) == "prop_physics" or trace.Entity:GetClass() == "func_physbox" or trace.Entity:GetClass() == "npc_grenade_frag" or trace.Entity:GetClass() == "projectile_meatbomb") and not trace.Entity._Telekinesis and trace.Entity:GetPhysicsObject():IsValid() then// and trace.Entity:GetPhysicsObject():IsMoveable() then
+	if ValidEntity(trace.Entity) and (string.sub(trace.Entity:GetClass(), 1, 12) == "prop_physics" or trace.Entity:GetClass() == "func_physbox" or trace.Entity:GetClass() == "npc_grenade_frag" or trace.Entity:GetClass() == "projectile_meatbomb" or trace.Entity:GetClass() == "grenade_helicopter" ) and not trace.Entity._Telekinesis and trace.Entity:GetPhysicsObject():IsValid() then// and trace.Entity:GetPhysicsObject():IsMoveable() then
 		
 		if !trace.Entity:GetPhysicsObject():IsMoveable() then
 			trace.Entity:GetPhysicsObject():EnableMotion( true )
@@ -91,6 +91,7 @@ function ENT:GrabProp()
 			ent._Telekinesis = true
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
+				phys:AddGameFlag( FVPHYSICS_NO_IMPACT_DMG )
 				/*if phys:GetMass() < 140 and ( ent:OBBMins():Length() + ent:OBBMaxs():Length() ) < 100 then
 					ent._Mass = phys:GetMass()
 
@@ -112,6 +113,7 @@ function ENT:DropProp(throw)
 		ent._Telekinesis = nil
 		local phys = ent:GetPhysicsObject()
 		if phys:IsValid() then
+			phys:ClearGameFlag( FVPHYSICS_NO_IMPACT_DMG )
 			if ent._Mass then
 				phys:SetMass(ent._Mass)
 				ent._Mass = nil
@@ -120,7 +122,13 @@ function ENT:DropProp(throw)
 			
 			if throw and ValidEntity(self.EntOwner) then
 				if SERVER then 
-					self:UseMana(math.min(self.EntOwner:GetMaxMana()/1.6,self.EntOwner:GetMana()))
+					
+					phys:AddGameFlag( FVPHYSICS_WAS_THROWN  )
+					
+					local phys_mul = math.Clamp( phys:GetMass() / 300, 0.3, 1 )
+					
+					self:UseMana( math.min( self.EntOwner:GetMaxMana() * 0.62 * phys_mul , self.EntOwner:GetMana() ) )
+
 					phys:SetVelocity(self.EntOwner:GetAimVector()*1500) 
 					ent:SetPhysicsAttacker(self.EntOwner)
 					ent._Telekinetic = CurTime()+4
@@ -131,7 +139,7 @@ function ENT:DropProp(throw)
 				end
 			end
 			if throw then
-				self.EntOwner._efCantCast = CurTime() + 2
+				self.EntOwner._efCantCast = CurTime() + 1
 			else
 				self.EntOwner._efCantCast = CurTime() + 0.2
 			end
@@ -161,7 +169,7 @@ function ENT:Think()
 	end	
 	
 	if self:GetDTFloat(1) > CurTime() and self.EntOwner:CanCast(self) then
-		if !IsValid(self:GetDTEntity(1)) and self.EntOwner:CanCast(self,15) then//!self:ValidEnt()
+		if !IsValid(self:GetDTEntity(1)) and self.EntOwner:CanCast(self,30) then//!self:ValidEnt()
 			self:GrabProp()
 		end
 	else
@@ -185,7 +193,7 @@ function ENT:Think()
 			self:DropProp(false)
 		end
 		
-		if self.EntOwner:CanCast(self,10) then 
+		if self.EntOwner:CanCast(self,30) then 
 			if self.NextTick < ct then
 				if SERVER then self:UseDefaultMana() end	
 				self.NextTick = CurTime() + 0.4

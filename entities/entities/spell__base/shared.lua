@@ -82,7 +82,13 @@ end
 
 if CLIENT then
 function ENT:Draw()
-	if IsValid(self:GetOwner()) and self:GetOwner():IsThug() then return end
+	if IsValid(self:GetOwner()) and self:GetOwner():IsThug() then 
+		if self.Particle then
+			self.Particle = nil
+			self:GetOwner():StopParticles()
+		end
+		return 
+	end
 	
 	if self:GetOwner():IsGhosting() then
 		if self.Particle then

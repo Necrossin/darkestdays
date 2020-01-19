@@ -471,7 +471,7 @@ function SWEP:ViewModelDrawn()
 
 	SWEP.wRenderOrder = nil
 	function SWEP:DrawWorldModel()
-		
+				
 		if self.Owner and self.Owner:IsGhosting() then return end
 		//if self.Owner._efGhosting == true then return end
 		if self.Owner:IsCrow() then return end
@@ -480,14 +480,6 @@ function SWEP:ViewModelDrawn()
 		
 		if !switchworldwodel then
 			if(self.ShowWorldModel == nil or self.ShowWorldModel) then
-				if wtf and not self.tex then
-					local ind = math.random( 1, 10 )
-					self.tex = wtf_tbl[ ind ]
-				end
-				if self.tex and not self.applytex then
-					self:SetMaterial( self.tex:GetName() )
-					self.applytex = true
-				end
 				self:DrawModel()
 			end
 		end
@@ -527,7 +519,9 @@ function SWEP:ViewModelDrawn()
 			bone_ent = self
 		end
 		
-		for k, name in ipairs( self.wRenderOrder ) do
+		for i = 1, #self.wRenderOrder do
+			
+			local name = self.wRenderOrder[ i ]
 		
 			local v = self.WElements[name]
 			if (!v) then self.wRenderOrder = nil break end

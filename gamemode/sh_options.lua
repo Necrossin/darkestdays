@@ -680,7 +680,7 @@ Spells = {
 	["winterblast"] = {Name = "Winter Blast",Mat = Material( "darkestdays/hud/winterblast.png" ), Pr = "- Slows down victim\n- Frozen enemies will take more damage\n- Can charge cyclone traps", Co = "- Frozen enemies will not drop orbs", Description = ""},
 	["toxicbreeze"] = {Name = "Toxic Breeze",Mat = Material( "darkestdays/hud/toxicbreeze.png" ), Pr = "- Creates a cloud of toxic gas\n- Gas rapidly damages anyone within\nthe cloud", Co = "- Owner is not immune to the gas", Description = ""},
 	//["ghosting"] = {Name = "Ghosting",Mat = Material( "darkestdays/hud/ghosting.png" ), Pr = "- Grants temporary invisibility\n- Works as long as you hold RMB", Co = "", Description = ""},
-	["telekinesis"] = {Name = "Telekinesis",Mat = Material( "darkestdays/hud/telekinesis.png" ), Pr = "- Pickup and throw objects", Co = "- Drains mana over time",Description = ""},
+	["telekinesis"] = {Name = "Telekinesis",Mat = Material( "darkestdays/hud/telekinesis.png" ), Pr = "- Pickup and throw objects\n- Smaller objects consume less mana", Co = "- Requires at least 30 mana\n- Drains mana over time",Description = ""},
 	["bloodtrap"] = {Name = "Blood Trap",Mat = Material( "darkestdays/hud/bloodtrap.png" ), Pr = "- Creates a nasty trap on ceilings", Co = "- Requires low ceilings\n- Owner is not immune to the trap", Description = ""},
 	["firebolt2"] = {Name = "Flame Stream",Mat = Material( "darkestdays/hud/firebolt2.png" ), Pr = "- Portable flamethrower\n- Can ignite cyclone traps", Co = "- High usage of mana", Description = ""},
 	["scorn"] = {Name = "Scorn",Mat = Material( "darkestdays/hud/scorn.png" ), Pr = "- Creates a ball of dark energy\n- Ball will bounce off walls\n - Accumulates damage via bouncing\n- Can penetrate 1 target", Co = "",Description = ""},

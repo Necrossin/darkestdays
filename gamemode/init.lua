@@ -1080,7 +1080,7 @@ function GM:PlayerSwitchFlashlight( ply, SwitchOn )
 		return false
 	end*/
 
-	return true
+	return false
 end
 
 function GM:PlayerDisconnected( pl )
