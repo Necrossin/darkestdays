@@ -134,7 +134,7 @@ end
 util.PrecacheModel( "models/props/CS_militia/axe.mdl" )
 util.PrecacheModel( "models/props_junk/PopCan01a.mdl" )
 
-function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
+/*function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
 	local health_mul = math.Clamp( self.Owner:Health() / self.Owner:GetMaxHealth(), 0, 1 )
 	if not block and hitent:IsValid() and hitent:IsPlayer() and not self.m_ChangingDamage and health_mul <= 0.5 then
 		self.m_ChangingDamage = true
@@ -148,4 +148,4 @@ function SWEP:PostOnMeleeHit(hitent, hitflesh, tr, block)
 
 		self.MeleeDamage = self.MeleeDamage / 1.35
 	end
-end
+end*/

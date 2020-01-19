@@ -559,7 +559,7 @@ Weapons = {
 		Name = "Axe",
 		Melee = true,
 		Mat = Material( "darkestdays/icons/axe_256x128.png", "smooth" ),
-		Pr = "+35% extra damage when owner is\nbelow 50% of max health",
+		//Pr = "+35% extra damage when owner is\nbelow 50% of max health",
 		Description = "Perfect for cutting zombies."
 	},
 	["dd_fists"] = {
