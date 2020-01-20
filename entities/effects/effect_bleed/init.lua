@@ -51,26 +51,27 @@ function EFFECT:Init(data)
 end
 
 function EFFECT:Think()
-	if !IsValid(self.Rag) then
+	local rag = self.Rag
+	if !( rag and rag:IsValid() ) then
 		--self.Emitter:Finish()
 		return false
 	else
-		self.Entity:SetPos(self.Rag:GetPos())
+		self.Entity:SetPos( rag:GetPos() )
 		
-		if IsValid(self.Rag) and not self.ChangedMass then
-			for i = 0, self.Rag:GetPhysicsObjectCount() do
-				local phys = self.Rag:GetPhysicsObjectNum(i)
+		if rag and rag:IsValid() and not self.ChangedMass then
+			for i = 0, rag:GetPhysicsObjectCount() do
+				local phys = rag:GetPhysicsObjectNum(i)
 				if phys and phys:IsValid() then
-					phys:SetMass(phys:GetMass()*4)
+					phys:SetMass( phys:GetMass()*4 )
 					phys:Wake()
 				end
 			end
 			self.ChangedMass = true
 		end
 		
-		if ValidEntity(self.Rag) and self.StopTime >= CurTime() then
-			for i = 0, self.Rag:GetPhysicsObjectCount() do
-				local phys = self.Rag:GetPhysicsObjectNum(i)
+		if rag and rag:IsValid() and self.StopTime >= CurTime() then
+			for i = 0, rag:GetPhysicsObjectCount() do
+				local phys = rag:GetPhysicsObjectNum(i)
 				if phys and phys:IsValid() then
 					phys:Wake()
 					phys:AddVelocity( VectorRand()*math.random(-46,46) )
@@ -129,7 +130,9 @@ local bones = {
 
 function EFFECT:Render()
 	
-	if IsValid( self.Rag ) then
+	local rag = self.Rag
+	
+	if rag and rag:IsValid() then
 		
 		/*if self.Rag:GetPhysicsObjectNum(1) and self.Rag:GetPhysicsObjectNum(1):GetVelocity():Length() > 20 and self.StopTime2 >= CurTime() then
 			local emitter = ParticleEmitter(self.Rag:GetPos())	
@@ -158,20 +161,19 @@ function EFFECT:Render()
 		if self.IsThug then
 			if not self.DoneThug then
 				for k, v in pairs( bones ) do
-					local bone = self.Rag:LookupBone(k)
+					local bone = rag:LookupBone(k)
 					if (!bone) then continue end
-					self.Rag:ManipulateBoneScale( bone, v.scale  )
-					self.Rag:ManipulateBoneAngles( bone, v.angle  )
-					self.Rag:ManipulateBonePosition( bone, v.pos  )
+					rag:ManipulateBoneScale( bone, v.scale  )
+					rag:ManipulateBoneAngles( bone, v.angle  )
+					rag:ManipulateBonePosition( bone, v.pos  )
 				end
 				self.DoneThug = true
 			end
-			if not self.Rag.HandleDraw then
-				self.Rag.HandleDraw = self
+			if not rag.HandleDraw then
+				rag.HandleDraw = self
 			end
-			if self.Rag.HandleDraw and self.Rag.HandleDraw == self then
-				
-				self.Rag:DrawModel()
+			if rag.HandleDraw and rag.HandleDraw == self then
+				rag:DrawModel()
 			end
 		end
 		

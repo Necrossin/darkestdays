@@ -150,15 +150,19 @@ function EFFECT:Init( data )
 end
 function EFFECT:Think( )
 	
-	if IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity()) then
+	local ent = self.ent
+	local rag = ent and ent:IsValid() and ent:GetRagdollEntity()
+	local dummy = self.Dummy
+	
+	if rag and rag:IsValid() then
 		
 		if not self.NiceModel then
-			self.NiceModel = self:GetNiceModel( self.ent:GetRagdollEntity():GetModel() )
+			self.NiceModel = self:GetNiceModel( rag:GetModel() )
 		end
 		
 		if not self.Frozen then
-			for i = 1, self.ent:GetRagdollEntity():GetPhysicsObjectCount() do
-				local bone = self.ent:GetRagdollEntity():GetPhysicsObjectNum(i)
+			for i = 1, rag:GetPhysicsObjectCount() do
+				local bone = rag:GetPhysicsObjectNum(i)
 				if bone and bone.IsValid and bone:IsValid() then
 					//bone:EnableMotion(false)
 				end
@@ -172,17 +176,17 @@ function EFFECT:Think( )
 		//SafeRemoveEntity(self.Dummy)
 	end
 	
-	if self.Dummy and self.Dummy:IsValid() then
+	if dummy and dummy:IsValid() then
 		if self.DieTime and self.DieTime < CurTime() then
-			self.Dummy:StopParticleEmission() 
+			dummy:StopParticleEmission() 
 		end
 	end
 	
-	if IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity()) then
+	if ent and ent:IsValid() and rag and rag:IsValid() then
 		return true
 	else
-		if self.Dummy and self.Dummy:IsValid() then
-			SafeRemoveEntity( self.Dummy )
+		if dummy and dummy:IsValid() then
+			dummy:Remove()
 		end
 		return false
 	end

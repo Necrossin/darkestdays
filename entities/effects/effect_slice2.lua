@@ -257,6 +257,8 @@ function EFFECT:CreateRagdoll()
 	
 	self.Ragdoll = rag:BecomeRagdollOnClient()
 	self.Ragdoll:SetOwner( self.ent )
+	self.Ragdoll:SetPos( rag:GetPos() )
+	self.Ragdoll:SetAngles( rag:GetAngles() )
 	self.Ragdoll.RenderOverride = function( s ) end
 	rag:SetNoDraw( true )
 	self.Ragdoll.OverrideRagdollOwner = true
@@ -398,15 +400,6 @@ function EFFECT:CreateRagdoll()
 		end
 	end
 	
-	//PrintTable( self.ShrinkToTable1 )
-	
-	//print"Final bones 1 ---------"
-	//for k, v in pairs( self.ShrinkToTable1 ) do
-	//	print( "Bone "..rag:GetBoneName( k ).."     to parent bone "..rag:GetBoneName( v ) )
-	//end
-	//PrintTable( self.ShrinkToTable1 )
-	//PrintTable( self.FinalBones1 )
-	
 	local count_parent = {}
 	
 	for k, v in pairs ( self.ShrinkBones.Ragdoll2 ) do
@@ -439,17 +432,7 @@ function EFFECT:CreateRagdoll()
 			self.FinalBones2[ k ] = nil
 		end
 	end
-		
-	//print"Final bones 2 ---------"
-	//for k, v in pairs( self.ShrinkToTable2 ) do
-		//print( "Bone "..rag:GetBoneName( k ).."     to parent bone "..rag:GetBoneName( v ) )
-	//end
-	//PrintTable( self.ShrinkToTable2 )
-	//PrintTable( self.FinalBones2 )
-	
-	//print"Obsolete Bones---------"
-	//PrintTable( self.ObsoleteBones )
-	
+
 	self:MakeBodyParts()
 	
 	self:MakeBuildBonePositions()
@@ -926,31 +909,41 @@ end
 
 function EFFECT:Think( )
 	
-	if IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity()) then
-			
+	local ent = self.ent
+	local rag = ent and ent:IsValid() and ent:GetRagdollEntity()
+	local fake_rag = self.Ragdoll
+	
+	if rag and rag:IsValid() then
+
 	else
-		if self.BodyParts then
-			if self.BodyParts[ 1 ] then
-				for k, v in pairs( self.BodyParts[ 1 ] ) do
-					if IsValid( v ) then
-						SafeRemoveEntity( v )
+		local bodyparts = self.BodyParts
+		if bodyparts then
+			if bodyparts[ 1 ] then
+				for k, v in pairs( bodyparts[ 1 ] ) do
+					local gib = v
+					if gib and gib:IsValid() then
+						gib:Remove()
 					end
 				end
 			end
-			if self.BodyParts[ 2 ] then
-				for k, v in pairs( self.BodyParts[ 2 ] ) do
-					if IsValid( v ) then
-						SafeRemoveEntity( v )
+			if bodyparts[ 2 ] then
+				for k, v in pairs( bodyparts[ 2 ] ) do
+					local gib = v
+					if gib and gib:IsValid() then
+						gib:Remove()
 					end
 				end
 			end
 		end
-		if IsValid( self.Ragdoll ) then
-			SafeRemoveEntity( self.Ragdoll )
+		
+		if fake_rag and fake_rag:IsValid() then
+			fake_rag:Remove()
+			return false
+			//SafeRemoveEntity( self.Ragdoll )
 		end
 	end
 
-	return IsValid(self.ent) and IsValid(self.ent:GetRagdollEntity())
+	return ent and ent:IsValid() and rag and rag:IsValid()
 end
 
 
