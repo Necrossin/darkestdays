@@ -828,7 +828,7 @@ function EFFECT:MakeBodyParts()
 		local phys = rag:GetPhysicsObjectNum(i)
 		if IsValid( phys ) then
 			if self.RemoveCollisions1[ rag:TranslatePhysBoneToBone(i) ] and not self.ShrinkBones.Ragdoll1[ rag:TranslatePhysBoneToBone(i) ] or not self.ShrinkBones.Ragdoll1[ rag:TranslatePhysBoneToBone(i) ] and not self.FinalBones1[ rag:TranslatePhysBoneToBone(i) ] then
-				phys:EnableGravity( 5 )
+				phys:EnableGravity( 15 )
 				phys:EnableCollisions( false )
 			else
 				phys:SetMass( phys:GetMass() * 25 )
@@ -843,7 +843,7 @@ function EFFECT:MakeBodyParts()
 		local phys = self.Ragdoll:GetPhysicsObjectNum(i)
 		if IsValid( phys ) then
 			if self.RemoveCollisions2[ rag:TranslatePhysBoneToBone(i) ] and not self.ShrinkBones.Ragdoll2[ rag:TranslatePhysBoneToBone(i) ] or not self.ShrinkBones.Ragdoll2[ self.Ragdoll:TranslatePhysBoneToBone(i) ] and not self.FinalBones2[ self.Ragdoll:TranslatePhysBoneToBone(i) ]  then
-				phys:SetMass( 5 )
+				phys:SetMass( 15 )
 				phys:EnableCollisions( false )
 			else
 				phys:SetMass( phys:GetMass() * 25 )
@@ -937,8 +937,8 @@ function EFFECT:Think( )
 		end
 		
 		if not self.ForceRemoveRag then
-			timer.Simple( 0, function() 
-				if fake_rag and fake_rag:IsValid() then
+			timer.Simple( 3, function() 
+				if fake_rag and fake_rag:IsValid() and fake_rag ~= NULL then
 					fake_rag:Remove()
 				end
 			end )
