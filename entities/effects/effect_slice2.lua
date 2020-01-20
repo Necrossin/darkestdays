@@ -956,6 +956,13 @@ end
 
 function EFFECT:Render()
 		
+	if self.ent and self.ent:IsValid() and self.ent:GetRagdollEntity() and self.ent:GetRagdollEntity():IsValid() then
+		if not self.ChangedOverride then
+			self.ent:GetRagdollEntity().RenderOverride = function( s ) end
+			self.ChangedOverride = true
+		end
+	end
+	
 	if self.BodyParts then
 		
 		blood_overlay:SetFloat( "$detailscale", self.SplatterScale or 2 )
