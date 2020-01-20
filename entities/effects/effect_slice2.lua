@@ -936,11 +936,18 @@ function EFFECT:Think( )
 			end
 		end
 		
-		if fake_rag and fake_rag:IsValid() then
+		if not self.ForceRemoveRag then
+			timer.Simple( 0, function() 
+				if fake_rag and fake_rag:IsValid() then
+					fake_rag:Remove()
+				end
+			end )
+			self.ForceRemoveRag = true
+		end
+		/*if fake_rag and fake_rag:IsValid() then
 			fake_rag:Remove()
 			return false
-			//SafeRemoveEntity( self.Ragdoll )
-		end
+		end*/
 	end
 
 	return ent and ent:IsValid() and rag and rag:IsValid()
