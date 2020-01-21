@@ -823,7 +823,9 @@ function EFFECT:MakeBodyParts()
 			end
 		end
 	end
-		
+	
+	local has_collisions = false
+	
 	for i = 0, rag:GetPhysicsObjectCount() - 1 do
 		local phys = rag:GetPhysicsObjectNum(i)
 		if IsValid( phys ) then
@@ -836,8 +838,25 @@ function EFFECT:MakeBodyParts()
 			phys:Wake()
 			phys:SetMaterial("zombieflesh")
 			phys:SetVelocity( phys:GetVelocity() + self.Normal:GetNormal() * 200 + VectorRand() * 10 )
+			
+			if phys:IsCollisionEnabled() then
+				has_collisions = true
+			end			
 		end
 	end
+	
+	// collision safety check for ragdoll entity
+	if not has_collisions then
+		print( tostring( rag ).." has no collisions! Restoring them to avoid out-of-bounds crash!" )
+		for i = 0, rag:GetPhysicsObjectCount() - 1 do
+			local phys = rag:GetPhysicsObjectNum(i)
+			if IsValid( phys ) then
+				phys:EnableCollisions( true )
+			end
+		end
+	end
+	
+	has_collisions = false
 	
 	for i = 0, self.Ragdoll:GetPhysicsObjectCount() - 1 do
 		local phys = self.Ragdoll:GetPhysicsObjectNum(i)
@@ -851,6 +870,22 @@ function EFFECT:MakeBodyParts()
 			phys:Wake()
 			phys:SetMaterial("zombieflesh")
 			phys:SetVelocity( phys:GetVelocity() + self.Normal:GetNormal() * -200 + VectorRand() * 10 )
+			
+			if phys:IsCollisionEnabled() then
+				has_collisions = true
+			end	
+			
+		end
+	end
+	
+	// collision safety check for fake ragdoll
+	if not has_collisions then
+		print( tostring( self.Ragdoll ).." has no collisions! Restoring them to avoid out-of-bounds crash!" )
+		for i = 0, self.Ragdoll:GetPhysicsObjectCount() - 1 do
+			local phys = self.Ragdoll:GetPhysicsObjectNum(i)
+			if IsValid( phys ) then
+				phys:EnableCollisions( true )
+			end
 		end
 	end
 
@@ -912,6 +947,27 @@ function EFFECT:Think( )
 	local ent = self.ent
 	local rag = ent and ent:IsValid() and ent:GetRagdollEntity()
 	local fake_rag = self.Ragdoll
+	
+	// freeze ragdolls in place if they somehow got outside of the map
+	if fake_rag and fake_rag:IsValid() and not fake_rag.CrashPrevention and fake_rag:GetPos().z < -12000 then
+		fake_rag.CrashPrevention = true
+		for i = 0, fake_rag:GetPhysicsObjectCount() - 1 do
+			local phys = fake_rag:GetPhysicsObjectNum( i )
+			if IsValid( phys ) then
+				phys:EnableMotion( false )
+			end
+		end
+	end
+	
+	if rag and rag:IsValid() and not rag.CrashPrevention and rag:GetPos().z < -12000 then
+		rag.CrashPrevention = true
+		for i = 0, rag:GetPhysicsObjectCount() - 1 do
+			local phys = rag:GetPhysicsObjectNum( i )
+			if IsValid( phys ) then
+				phys:EnableMotion( false )
+			end
+		end
+	end
 	
 	if rag and rag:IsValid() then
 
