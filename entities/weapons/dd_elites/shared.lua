@@ -101,9 +101,20 @@ function SWEP:SendWeaponAnimation()
 	vm:SendViewModelMatchingSequence( self:Clip1() % 2 == 0 and 5 or 2 )
 end
 
+local cone_skill = SKILL_BULLET_STEADYAIM_BONUS
 function SWEP:FireBullet()
 
-	if self.Owner:GetVelocity():Length() > 30 then
+	local cone_mul = 1
+	
+	if self.Owner._SkillSteadyAim then
+		cone_mul = cone_skill * 1
+	end
+	
+	local primary = self.Primary.Cone * cone_mul
+	local moving = self.Primary.ConeMoving * cone_mul
+	local crouching = self.Primary.ConeCrouching * cone_mul
+
+	if self.Owner:GetVelocity():LengthSqr() > 900 then
 		local damage = self.Primary.Damage
 		
 		if self.Owner:IsSprinting() then
@@ -114,12 +125,12 @@ function SWEP:FireBullet()
 			damage = self.Primary.Damage*1.5
 		end
 		
-		self:ShootBullets( damage, self.Primary.NumShots, self.Owner:IsDiving() and self.Primary.Cone or self.Primary.ConeMoving)
+		self:ShootBullets( damage, self.Primary.NumShots, self.Owner:IsDiving() and crouching or moving)
 	else
 		if self.Owner:Crouching() then
-			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeCrouching)
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, crouching)
 		else
-			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.Cone)
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, primary)
 		end
 	end
 end

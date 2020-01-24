@@ -146,6 +146,22 @@ function SWEP:InitializeClientsideModels()
 		["blade+"] = { type = "Model", model = "models/props_canal/boat001b.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "handle", pos = Vector(-26.215999603271, 0, 0.21099999547005), angle = Angle(0.21099999547005, 180, -180), size = Vector(0.20000000298023, 0.032000001519918, 0.0099999997764826), color = Color(255, 255, 255, 255), surpresslightning = false, material = "models/props_combine/metal_combinebridge001", skin = 0, bodygroup = {} },
 		["cast"] = { type = "Model", model = "models/props_junk/PopCan01a.mdl", bone = "ValveBiped.Anim_Attachment_LH", rel = "", pos = Vector(0, 0, 0), angle = Angle(0, 0, 0), size = Vector(0.5, 0.5, 0.5), color = Color(255, 255, 255, 0), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
 	}
+
+end
+
+local speed_sound = Sound( "npc/headcrab_poison/ph_warning2.wav" )
+
+function SWEP:OnKill( attacker, pl, dmginfo )
+	self.SpeedStacks = self.SpeedStacks or 0
 	
+	if self.SpeedStacks < 4 then
+		self.SpeedStacks = self.SpeedStacks + 1
+		
+		local speed = attacker._DefaultSpeed
+		local bonus = 10 * self.SpeedStacks
+		attacker:SetTotalSpeed( speed + bonus, speed + attacker._DefaultRunSpeedBonus + bonus )
+		
+		attacker:EmitSound( speed_sound , 75, 90 + bonus)
+	end
 	
 end

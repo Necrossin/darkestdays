@@ -54,10 +54,10 @@ if SERVER then
 			if ent:IsCarryingFlag() then return end
 			if ent:IsThug() then return end
 			if GAMEMODE:GetGametype() == "ffa" and ent:IsThug() then return end
-						
+			
 			if ent:GetPerk("hpregen") then return end
 			
-			
+			//ent:RestoreAmmo( true )
 			ent:RestoreSomeHealth( 15 )
 			ent:RestoreSomeMana( 15 )
 			

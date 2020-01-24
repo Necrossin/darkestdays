@@ -98,9 +98,9 @@ SWEP.SprintAng = Angle(-7.035, 53.466, -24.623)
 sound.Add( {
 	name = "Weapon_Shotgun.DoubleDD",
 	channel = CHAN_WEAPON,
-	volume = 1.0,
-	level = 80,
-	pitch = 110,
+	volume = 0.4,
+	level = 75,
+	pitch = 120,
 	sound = "weapons/shotgun/shotgun_dbl_fire.wav"
 } )
 

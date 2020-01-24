@@ -126,3 +126,9 @@ function SWEP:InitializeClientsideModels()
 	
 	
 end
+
+function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
+	if not block and hitent:IsValid() and hitent:IsPlayer() and SERVER then
+		self.Owner:RestoreSomeMana( 10 )
+	end
+end

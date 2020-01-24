@@ -173,15 +173,26 @@ function SWEP:EmitFireSound()
 	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
 end
 
+local cone_skill = SKILL_BULLET_STEADYAIM_BONUS
 function SWEP:FireBullet()
 
-	if self.Owner:GetVelocity():Length() > 30 then		
-		self:ShootBullets( self.Primary.Damage, self.Primary.NumShots, self.Owner:IsDiving() and self.Primary.ConeCrouching or self.Primary.ConeMoving)
+	local cone_mul = 1
+	
+	if self.Owner._SkillSteadyAim then
+		cone_mul = cone_skill * 1
+	end
+	
+	local primary = self.Primary.Cone * cone_mul
+	local moving = self.Primary.ConeMoving * cone_mul
+	local crouching = self.Primary.ConeCrouching * cone_mul
+
+	if self.Owner:GetVelocity():LengthSqr() > 900 then		
+		self:ShootBullets( self.Primary.Damage, self.Primary.NumShots, self.Owner:IsDiving() and crouching or moving)
 	else
 		if self.Owner:Crouching() then
-			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.ConeCrouching)
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, crouching)
 		else
-			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self.Primary.Cone)
+			self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, primary)
 		end
 	end
 end

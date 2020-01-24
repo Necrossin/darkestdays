@@ -45,7 +45,7 @@ function ENT:Initialize()
 		
 		self._OldSpeed = self.EntOwner._DefaultSpeed
 		--GAMEMODE:SetPlayerSpeed( self.EntOwner, 70, 70 )
-		self.EntOwner:SetTotalSpeed(70)
+		//self.EntOwner:SetTotalSpeed(70)
 		self.FlySound = CreateSound( self.EntOwner, "NPC_Crow.Flap" )
 		
 		self:EmitSound("npc/crow/die"..math.random(1,2)..".wav",120,math.random(80,100))
@@ -68,7 +68,7 @@ function ENT:OnRemove()
 		if SERVER then
 			self.EntOwner:SetModel(self._OldModel)
 			--GAMEMODE:SetPlayerSpeed( self.EntOwner, self._OldSpeed, self._OldSpeed )
-			self.EntOwner:SetTotalSpeed(self._OldSpeed,self._OldSpeed+(self.EntOwner._DefaultRunSpeedBonus or PLAYER_DEFAULT_RUNSPEED_BONUS))
+			//self.EntOwner:SetTotalSpeed(self._OldSpeed,self._OldSpeed+(self.EntOwner._DefaultRunSpeedBonus or PLAYER_DEFAULT_RUNSPEED_BONUS))
 			if self.FlySound then
 				self.FlySound:Stop()
 			end
@@ -193,7 +193,10 @@ function ENT:Move( mv )
 	local vel = Vector(0,0,0)
 	local push = false
 	local flying = false
-		
+	
+	mv:SetMaxSpeed( 70 )
+	mv:SetMaxClientSpeed( 70 )
+	
 	if self.EntOwner:OnGround() then
 		if self.EntOwner:KeyDown(IN_JUMP) then
 			mv:SetVelocity( vector_up * 190 )

@@ -154,3 +154,11 @@ function SWEP:InitializeClientsideModels()
 	//self:InitializeClientsideModels_Additional()
 	
 end
+
+function SWEP:OnKill( attacker, pl, dmginfo )
+	if IsValid( attacker._efSpeedBoost ) then
+		attacker._efSpeedBoost.DieTime = CurTime() + 10
+	else
+		attacker:SetEffect( "speedboost" )
+	end
+end

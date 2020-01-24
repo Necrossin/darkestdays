@@ -98,6 +98,7 @@ SKILL_MAGIC_CHANNELING_PER_LEVEL = 0.03//0.024
 SKILL_BULLET_FALLOFF_PER_LEVEL = 1.2//0.03
 SKILL_BULLET_CONSUME_PER_LEVEL = 0.0135
 SKILL_BULLET_SCAVENGER_PER_LEVEL = 0.046
+SKILL_BULLET_STEADYAIM_BONUS = 0.8
 
 //Fast reload
 FAST_RELOAD_MIN = 0.32 //min/max fraction of actual reload time
@@ -308,7 +309,7 @@ Skills["agility"] = {
 	
 	[1] = "gmbasic",
 	[5] = "fastreload",
-	[10] = "scavenger",
+	[10] = "steadyaim",
 	[15] = "grenade",
 
 	//[5] = "walljumpslide",
@@ -326,7 +327,8 @@ Abilities = {
 	//Gun Mastery
 	["gmbasic"] = {Name = "Unlock Gun Mastery", Pr = "- Grants chance not to consume ammo\n- Increased bullet damage for\nsmgs/rifles/pistols/shotguns", Co = "",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
 	["fastreload"] = {Name = "Fast Reload", Pr = "- 70% faster reload speed", Co = "- Only works with pistols/smgs/rifles",Description = "",OnSet = function(pl) pl._SkillFastReload = true; if SERVER then pl:SendLua("LocalPlayer()._FastReload = true") end end, OnReset = function(pl) pl._SkillFastReload = false; pl:SendLua("LocalPlayer()._FastReload = nil") end},
-	["scavenger"] = {Name = "Scavenger", Pr = "- Restore small amount of ammo on kill",Description = "",OnSet = function(pl) pl._SkillScavenger = true end, OnReset = function(pl) pl._SkillScavenger = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of clip on kill", p*SKILL_BULLET_SCAVENGER_PER_LEVEL*100) end},
+	["steadyaim"] = {Name = "Steady Aim", Pr = "- No accuracy penalty when moving\n- Guns are 20% more accurate",Description = "",OnSet = function(pl) pl._SkillSteadyAim = true; if SERVER then pl:SendLua("LocalPlayer()._SkillSteadyAim = true") end end, OnReset = function(pl) pl._SkillSteadyAim = false; pl:SendLua("LocalPlayer()._SkillSteadyAim = nil") end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of clip on kill", p*SKILL_BULLET_SCAVENGER_PER_LEVEL*100) end},
+	//["scavenger"] = {Name = "Scavenger", Pr = "- Restore small amount of ammo on kill",Description = "",OnSet = function(pl) pl._SkillScavenger = true end, OnReset = function(pl) pl._SkillScavenger = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of clip on kill", p*SKILL_BULLET_SCAVENGER_PER_LEVEL*100) end},
 	["grenade"] = {Name = "Grenade", Mat = Material( "darkestdays/hud/grenade.png" ), Pr = "- Throw a grenade by pressing 'G'\n- Grenade recharges after 12 seconds", Co = "", Description = "",OnSet = function(pl) if SERVER then pl:SetEffect("grenade") end end},
 	
 	
@@ -419,7 +421,7 @@ CaliberAmmo = {
 	[CAL_7_62] = 90,
 	[CAL_9] = 150,
 	[CAL_11_43] = 90,
-	[CAL_11_20] = 30,
+	[CAL_11_20] = 18,
 	[CAL_12_GAUGE] = 20,
 	
 }
@@ -527,14 +529,15 @@ Weapons = {
 	["dd_spas12"] = {
 		Name = "Boomstick", 
 		Mat = Material( "darkestdays/icons/boomstick_256x128.png", "smooth" ), 
-		Co = "-30% clip size\n-35 max speed on wearer", 
+		Co = "-30% clip size", 
 		Description = "SPAS-12, that acts like\na double-barrele dshotgun,\nfor whatever reason.",
-		OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 35; end
+		//OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 35; end
 	},
 	["dd_dsword"] = {
 		Name = "Damascus Sword",
 		Melee = true,
 		Mat = Material( "darkestdays/icons/dsword_256x128.png", "smooth" ), 
+		Pr = "Restores 10 mana on successful hit",
 		Co = "-15 max mana on wearer",
 		Special = "\"Sword goes in - guts come out\"",
 		OnSet = function(pl) pl._DefaultMana = pl._DefaultMana - 15 end
@@ -600,17 +603,17 @@ Weapons = {
 		Name = "Highlander",
 		Mat = Material( "darkestdays/icons/highlander_256x128.png", "smooth" ), 
 		Melee = true,
-		Pr = "Temporary speed boost on kill", 
-		Co = "-30 max health on wearer\n-20 max speed on wearer",
+		Pr = "Kills grant movement speed stacks\n+10 speed per stack\nStacks go up to 4 max", 
+		Co = "-30 max health on wearer\n-10 max speed on wearer",
 		Description = "",
 		Special = "\"Don't you guys have swords?\"",
-		OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 30; pl._DefaultSpeed = pl._DefaultSpeed - 20 end
+		OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 30; pl._DefaultSpeed = pl._DefaultSpeed - 10 end
 	},
 	["dd_katana"] = {
 		Name = "Katana", 
 		Mat = Material( "darkestdays/icons/katana_256x128.png", "smooth" ), 
 		Melee = true,
-		Pr = "+15 max speed on wearer", 
+		Pr = "Temporary speed boost on kill\n+15 max speed on wearer", 
 		Co = "-20 max health on wearer",
 		Description = "",
 		OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 20; pl._DefaultSpeed = pl._DefaultSpeed + 15 end
@@ -697,7 +700,7 @@ Spells = {
 Perks = {
 	["hpregen"] = {Name = "Health Regeneration",Pr = "Ability to slowly regenerate\nyour health\n+15 health on wearer", Co = "-25 max speed\n-50% healing from health orbs", Description = "Regeneration rate is increased while\nstanding still.", OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth + 15; pl._DefaultSpeed = pl._DefaultSpeed - 25;  end},
 	//["bff"] = {Name = "BFF", Pr = "Killing an enemy restores some\nhealth for nearby allies", Co = "-50% health gained from orbs\n-15 max speed",OnSet = function(pl) pl._DefaultSpeed = pl._DefaultSpeed - 15 end},
-	["thug"] = {Name = "Thug",AdminFree = true,Special = "Class mod: Overrides skill trees/loadout\nGains changes from builds", Pr = "Become the mighty thug!\n200% max health\nDeal 3x fall damage to anything\nyou land on", Co = "-20 max speed\nLimited parkour\nCan not carry flag\n-50% healing from health orbs", Description = "Hold RMB for a charge attack!\nPress jump button to launch\nyourself upwards when charging!", OnSet = function(pl) pl:SetEffect("thug") end},
+	["thug"] = {Name = "Thug",AdminFree = true,Special = "Class mod: Overrides skill trees/loadout\nGains changes from builds", Pr = "Become the mighty thug!\nDeal 3x fall damage to anything\nyou land on", Co = "-20 max speed\nLimited parkour\nCan not carry flag\n-50% healing from health orbs", Description = "Hold RMB for a charge attack!\nPress jump button to launch\nyourself upwards when charging!", OnSet = function(pl) pl:SetEffect("thug") end},
 	//["fireandfury"] = {Name = "Fire and Fury", PrColor = Color(235,93,0,255), Pr = "+5%(+15%) fire damage done\n(+20%) damage resistance\n20% chance to light yourself on fire\nwhen dealing fire damage", Co = "+10% bullet damage taken\n+120% cold damage taken", Description = "Values in (brackets) when owner is\non fire"},
 	//["berserker"] = {Name = "Berserker", Pr = "+10% magic damage resistance\n+3% more melee damage", Co = "-20 max mana\n-25% bullet damage done", Description = "",OnSet = function(pl) pl._DefaultMResBonus = pl._DefaultMResBonus + 10; pl._DefaultMeleeBonus = pl._DefaultMeleeBonus + 3; pl._DefaultMana = pl._DefaultMana - 20 end},
 	//["houdini"] = {Name = "Houdini", Pr = "+66% Ghosting duration\nNo speed reduction while Ghosting\n+15 max speed", Co = "-20 max health", Description = "",OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 20; pl._DefaultSpeed = pl._DefaultSpeed + 15; end},

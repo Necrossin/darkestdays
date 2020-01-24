@@ -73,6 +73,9 @@ if SERVER then
 				e:SetEntity(ent)
 				e:SetScale(2)
 				util.Effect("orb_pickup",e,nil,true)
+				
+				//ent:RestoreAmmo( true )
+				
 				self:Remove()
 			end
 		end

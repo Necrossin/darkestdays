@@ -102,7 +102,7 @@ SWEP.Primary.Damage			= CaliberDamage[SWEP.Caliber]
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.ClipSize		= 50
 SWEP.Primary.Delay			= 0.06
-SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber]
+SWEP.Primary.DefaultClip	= CaliberAmmo[SWEP.Caliber] * 2
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 

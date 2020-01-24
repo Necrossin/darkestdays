@@ -1267,7 +1267,7 @@ local function AddNightFog()
 
 	render_FogMode( 1 ) 
 	render_FogStart( 0 )
-	render_FogEnd( 650  )
+	render_FogEnd( 850  )
 	render_FogMaxDensity( 1 )
 
 	
@@ -1281,7 +1281,7 @@ local function AddNightFogSkybox(skyboxscale)
 
 	render_FogMode( 1 ) 
 	render_FogStart( 0*skyboxscale )
-	render_FogEnd( 650*skyboxscale  )
+	render_FogEnd( 850*skyboxscale  )
 	render_FogMaxDensity( 1 )
 
 	

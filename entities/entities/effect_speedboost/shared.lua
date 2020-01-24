@@ -11,7 +11,7 @@ end
 
 util.PrecacheSound("ambient/energy/electric_loop.wav")
 
-ENT.SpeedBonus = 55
+ENT.SpeedBonus = 45
 
 function ENT:Initialize()
 

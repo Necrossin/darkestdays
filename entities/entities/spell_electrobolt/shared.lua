@@ -29,6 +29,7 @@ PrecacheParticleSystem( "electrocuted" )
 
 
 util.PrecacheSound("ambient/levels/labs/electric_explosion1.wav")
+util.PrecacheSound( "npc/vort/attack_shoot.wav" )
 local util = util
 
 local endMdl = Model("models/props_junk/PopCan01a.mdl")
@@ -83,7 +84,7 @@ function ENT:Cast()
 	if SERVER then
 		self:UseDefaultMana()
 		
-		WorldSound("ambient/levels/labs/electric_explosion1.wav",self:GetDTVector(0),90,math.random(95,130))
+		WorldSound("npc/vort/attack_shoot.wav",self:GetDTVector(0),90,math.random(110,130))
 		
 		local e = EffectData()
 			e:SetOrigin(trace.HitPos)

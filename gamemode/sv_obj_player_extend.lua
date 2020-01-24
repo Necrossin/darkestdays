@@ -249,7 +249,7 @@ function meta:RestoreAmmo(reward)
 				if defclip and defam then
 					local curammo = wep:Clip1() + self:GetAmmoCount(wep.Primary.Ammo)
 					local defammo = defam
-					am = math.Clamp(math.ceil(defclip*(self._DefaultBulletScavegerBonus or AMMO_RESTORE)) or 1,0,(defammo-curammo))
+					am = math.Clamp( math.max( math.ceil( defclip * (self._DefaultBulletScavegerBonus or AMMO_RESTORE ) ), 1 ) or 1,0,(defammo-curammo))
 				end
 			end
 			

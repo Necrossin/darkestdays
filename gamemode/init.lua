@@ -1866,12 +1866,16 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 			//end
 		else
 			
-			if dmginfo:GetInflictor() and dmginfo:GetInflictor():GetClass() == "dd_eyelander" then
+			/*if dmginfo:GetInflictor() and dmginfo:GetInflictor():GetClass() == "dd_katana" then
 				if ValidEntity(attacker._efSpeedBoost) then
 					attacker._efSpeedBoost.DieTime = CurTime() + 10
 				else
 					attacker:SetEffect("speedboost")
 				end
+			end*/
+			
+			if dmginfo:GetInflictor() and dmginfo:GetInflictor().OnKill then
+				dmginfo:GetInflictor():OnKill( attacker, ply, dmginfo )
 			end
 			
 			if attacker:GetPerk("bff") then
@@ -1905,11 +1909,11 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 			end
 			//attacker:RefillMana(15)
 			
-			if attacker._SkillScavenger then
+			//if attacker._SkillScavenger then
 				attacker:RestoreAmmo(true)
-			end
+			//end
 			
-			if math.random(1,13) == 1 then
+			if math.random(13) == 1 then
 				attacker:OnKillSpeech()
 			end	
 			attacker:OnKillAnimation()

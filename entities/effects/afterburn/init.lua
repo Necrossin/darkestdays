@@ -12,15 +12,21 @@ end
 
 function EFFECT:Think()
 	
-	if ValidEntity(self.ent) then
+	if IsValid(self.ent) then
 		self.Entity:SetRenderBounds(Vector(-128, -128, -128), Vector(128, 128, 128))
 		self.Entity:SetPos(self.ent:GetPos())
+		
+		if self.ent.Gibbed then
+			self.ent:StopParticleEmission("burningplayer")
+			return false
+		end
+		
 	end
 	
 	
 	
 	if CurTime() > self.DieTime then
-		if ValidEntity(self.ent) then
+		if IsValid(self.ent) then
 			self.ent:StopParticleEmission("burningplayer")
 		end
 		//if self.Emitter then
