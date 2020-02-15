@@ -77,6 +77,11 @@ cvars.AddChangeCallback("_dd_crosshairT", function(cvar, oldvalue, newvalue)
 	DD_CROSSHAIR_THICKNESS = math.Clamp( tonumber( newvalue ), 2, 10 )
 end)
 
+DD_CROSSHAIR_MELEE = CreateClientConVar("_dd_crosshairM", 7, true, true):GetInt()
+cvars.AddChangeCallback("_dd_crosshairM", function(cvar, oldvalue, newvalue)
+	DD_CROSSHAIR_MELEE = math.Clamp( tonumber( newvalue ), 2, 24 )
+end)
+
 DD_THIRDPERSON_X = CreateClientConVar("_dd_thirdpersonX", 50, true, true):GetInt()
 cvars.AddChangeCallback("_dd_thirdpersonX", function(cvar, oldvalue, newvalue)
 	DD_THIRDPERSON_X = tonumber( newvalue )
@@ -194,7 +199,7 @@ function CustomizationMenu()
 	UpdateModelPanel()
 end
 
-RenderOrder = nil
+local RenderOrder = nil
 
 local function GetBoneOrientation( basetab, tab, ent, bone_override )
 		
@@ -872,6 +877,7 @@ end
 
 //Options!------------------------------------------------------------------
 local matLine = Material("VGUI/gradient-r")
+local matCircle = Material("sgm/playercircle")
 function OptionsMenu()
 
 	local w,h = ScrW(),ScrH()
@@ -1025,8 +1031,10 @@ function OptionsMenu()
 		local crs_thickness = DD_CROSSHAIR_THICKNESS or 2
 		local crs_gap = DD_CROSSHAIR_GAP or 6
 		
+		local melee_size = DD_CROSSHAIR_MELEE or 7
+		
 		local x = CrosshairPr:GetWide()/2
-		local y = CrosshairPr:GetTall()/2
+		local y = CrosshairPr:GetTall()/4
 	
 		local col = CrosshairMix:GetColor()
 		col.a = col.a / 2
@@ -1045,6 +1053,14 @@ function OptionsMenu()
 		
 		surface.DrawTexturedRectRotated( x, y - crs_gap / 2 - crs_length/2, crs_length, crs_thickness, 90 )
 		surface.DrawTexturedRectRotated( x, y - crs_gap / 2 - crs_length/2, crs_length, crs_thickness, 270 )
+		
+		y = CrosshairPr:GetTall()/4 * 3
+		
+		col = CrosshairMix:GetColor()
+		
+		surface.SetMaterial( matCircle )
+		surface.SetDrawColor( col )
+		surface.DrawTexturedRectRotated( x, y, melee_size, melee_size, 0 )
 		
 	end
 	
@@ -1078,6 +1094,15 @@ function OptionsMenu()
 	sliderGap:SetConVar("_dd_crosshairGap")
 	sliderGap:SetText("Crosshair gap size")
 	sliderGap:SizeToContents()
+	
+	local sliderMelee = vgui.Create("DNumSlider",OpList)
+	sliderMelee:Dock( TOP )
+	sliderMelee:DockMargin( 5,2,5,0 )
+	sliderMelee:SetDecimals(0)
+	sliderMelee:SetMinMax(2, 24)
+	sliderMelee:SetConVar("_dd_crosshairM")
+	sliderMelee:SetText("Melee crosshair size")
+	sliderMelee:SizeToContents()
 	
 	/*local c = vgui.Create( "DCheckBoxLabel",OpList )
 	c:Dock( TOP )

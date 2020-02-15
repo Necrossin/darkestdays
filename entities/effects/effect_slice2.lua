@@ -847,7 +847,7 @@ function EFFECT:MakeBodyParts()
 	
 	// collision safety check for ragdoll entity
 	if not has_collisions then
-		print( tostring( rag ).." has no collisions! Restoring them to avoid out-of-bounds crash!" )
+		//print( tostring( rag ).." has no collisions! Restoring them to avoid out-of-bounds crash!" )
 		for i = 0, rag:GetPhysicsObjectCount() - 1 do
 			local phys = rag:GetPhysicsObjectNum(i)
 			if IsValid( phys ) then
@@ -880,7 +880,7 @@ function EFFECT:MakeBodyParts()
 	
 	// collision safety check for fake ragdoll
 	if not has_collisions then
-		print( tostring( self.Ragdoll ).." has no collisions! Restoring them to avoid out-of-bounds crash!" )
+		//print( tostring( self.Ragdoll ).." has no collisions! Restoring them to avoid out-of-bounds crash!" )
 		for i = 0, self.Ragdoll:GetPhysicsObjectCount() - 1 do
 			local phys = self.Ragdoll:GetPhysicsObjectNum(i)
 			if IsValid( phys ) then

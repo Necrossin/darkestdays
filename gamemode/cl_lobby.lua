@@ -1023,25 +1023,25 @@ function CreateLoadoutMenu(lobby)
 			end
 			
 			if SelectedText.Special then
-				draw.DrawText( SelectedText.Special or "", "Arial_Bold_Scaled_21", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(15,255,255,255) , TEXT_ALIGN_LEFT, nil)
-				surface.SetFont( "Arial_Bold_Scaled_21" )
+				draw.DrawText( SelectedText.Special or "", "Arial_Bold_Scaled_Italic_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(15,255,255,255) , TEXT_ALIGN_LEFT, nil)
+				surface.SetFont( "Arial_Bold_Scaled_Italic_20" )
 				local tX,tY = surface.GetTextSize(SelectedText.Special)
 				moveY = moveY + tY// + 18
 			end
 			if SelectedText.Pr then
-				draw.DrawText( SelectedText.Pr or "", "Arial_Bold_Scaled_21", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, SelectedText.PrColor or Color(131,204,255,255) , TEXT_ALIGN_LEFT, nil)
-				surface.SetFont( "Arial_Bold_Scaled_21" )
+				draw.DrawText( SelectedText.Pr or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, SelectedText.PrColor or Color(131,204,255,255) , TEXT_ALIGN_LEFT, nil)
+				surface.SetFont( "Arial_Bold_Scaled_20" )
 				local tX,tY = surface.GetTextSize(SelectedText.Pr)
 				moveY = moveY + tY// + 18
 			end
 			if SelectedText.Co then
-				surface.SetFont( "Arial_Bold_Scaled_21" )
-				draw.DrawText( SelectedText.Co or "", "Arial_Bold_Scaled_21", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(230,80,80,255) , TEXT_ALIGN_LEFT, nil)//230,60,60,255
+				surface.SetFont( "Arial_Bold_Scaled_20" )
+				draw.DrawText( SelectedText.Co or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(230,80,80,255) , TEXT_ALIGN_LEFT, nil)//230,60,60,255
 				local tX,tY = surface.GetTextSize(SelectedText.Co)
 				moveY = moveY + tY// + 18
 			end
 			if SelectedText.Description then
-				draw.DrawText( SelectedText.Description or "", "Arial_Bold_Scaled_21", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, nil)
+				draw.DrawText( SelectedText.Description or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, nil)
 			end
 		end
 		
@@ -1119,7 +1119,9 @@ function CreateLoadoutMenu(lobby)
 	points:SetSize(loadBtnW*1.5,loadBtnH)
 	points:SetText("")
 	points.Paint = function(self)
-		draw.SimpleText ( "Available points: "..(GetPlayerSkills( SelectedLoadout ) and GetPlayerSkills( SelectedLoadout ).ToSpend or 0),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		//draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_SELECTED_BRIGHT, true, true, true, true )
+		draw.SimpleText ( "Available","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText ( "points: "..(GetPlayerSkills( SelectedLoadout ) and GetPlayerSkills( SelectedLoadout ).ToSpend or 0),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3*2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 	
 	moveX = moveX-loadBtnW*0.8-15

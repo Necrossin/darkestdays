@@ -88,7 +88,7 @@ local function draw_DrawText(text, font, x, y, colour, xalign )
 	local curString = ""
 
 	surface_SetFont(font)
-	local lineHeight = draw_GetFontHeight(font) * 1.2
+	local sizeX, lineHeight = surface_GetTextSize( "\n" )//draw_GetFontHeight(font) * 1.2
 
 	for i=1, #text do
 		local ch = string_sub(text, i, i)
@@ -97,7 +97,7 @@ local function draw_DrawText(text, font, x, y, colour, xalign )
 				draw_SimpleText(curString, font, curX, curY, colour, xalign)
 			end
 
-			curY = curY + lineHeight / 2 + 4
+			curY = curY + lineHeight / 2
 			curX = x
 			curString = ""
 		elseif ch == "\t" then

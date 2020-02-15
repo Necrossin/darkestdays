@@ -38,6 +38,7 @@ net.Receive("Hitmarker",function( len )
 end)
 
 local matLine = Material("VGUI/gradient-r")
+local matCircle = Material("sgm/playercircle")
 function meta:DrawCrosshair()
 	//self:DrawCrosshairCross()
 	//self:DrawCrosshairDot()
@@ -45,14 +46,14 @@ function meta:DrawCrosshair()
 	if not DD_HUD then return end
 	local owner = self.Owner
 
-	if !ValidEntity(owner) then return end
+	if !IsValid(owner) then return end
 	if owner:IsCrow() then return end
 	
 	local text = " {  } "
 	
 	local sp = owner:GetCurrentSpell()
 	
-	if ValidEntity(sp) then
+	if IsValid(sp) then
 		if sp.CanCast and sp:CanCast() then
 			text = " [  ] "
 		end
@@ -86,8 +87,19 @@ function meta:DrawCrosshair()
 	local crs_thickness = DD_CROSSHAIR_THICKNESS or 2
 	local crs_gap = DD_CROSSHAIR_GAP or 6
 	
+	local melee_size = DD_CROSSHAIR_MELEE or 7
+	
+	surface.SetDrawColor( Color( r, g, b, self.IsMelee and a or a / 2 ) )
+	
+	if self.IsMelee then 
+		
+		surface.SetMaterial( matCircle )
+		surface.DrawTexturedRectRotated( x, y, melee_size, melee_size, 0 )
+		
+		return 
+	end
+	
 	surface.SetMaterial( matLine )
-	surface.SetDrawColor( Color( r, g, b, a / 2 ) )
 
 	surface.DrawTexturedRectRotated( x + crs_gap / 2 + crs_length/2, y, crs_length, crs_thickness, 0 )
 	surface.DrawTexturedRectRotated( x + crs_gap / 2 + crs_length/2, y, crs_length, crs_thickness, 180 )
@@ -108,6 +120,65 @@ function meta:DrawCrosshair()
 	draw.SimpleText("Q","HL2_50",x-.5,y-.5,Color(r,g,b,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)*/
 	
 end
+
+local mat_block_bar = Material( "darkestdays/hud/bullet.png" )
+local matBlock = Material( "darkestdays/hud/hud_neutral.png", "smooth" )
+function meta:DrawBulletBlock( offset, alpha_mul )
+	
+	local off = offset or 0
+	local a_mul = alpha_mul or 1
+	
+	local owner = self.Owner
+	
+	local w, h = ScrW(), ScrH()
+	local x, y = w/2, h/2
+	
+	local r,g,b = DD_CROSSHAIR_R or 255,DD_CROSSHAIR_G or 255,DD_CROSSHAIR_B or 255
+	local a = DD_CROSSHAIR_A or 100
+	
+	surface.SetMaterial( matBlock )	
+	surface.SetDrawColor( Color( r, g, b, a * a_mul ) )
+	
+	//surface.DrawTexturedRectRotated( x, y, 50, 50, -90 )
+	
+	local bar_size = 50
+	
+	local max_block = math.max( 1, owner:GetMaxBulletBlockPower() )
+	local cur_block = owner:GetBulletBlockPower() or 0
+	
+	local delta_block = math.Clamp( cur_block / max_block, 0, 1 )
+	
+	render.SetScissorRect( x-3-bar_size-off, y-bar_size, x-3-off, y + bar_size, true )
+	surface.DrawTexturedRectRotated( x-off, y, bar_size, bar_size, 180 + 180 - 180 * delta_block )
+	render.SetScissorRect( x-3-bar_size-off, y-bar_size, x-3-off, y + bar_size, false )
+	
+	render.SetScissorRect( x+3+off, y-bar_size, x+3+bar_size+off, y + bar_size, true )
+	surface.DrawTexturedRectRotated( x+off, y, bar_size, bar_size, -1 * ( 180 - 180 * delta_block ) )
+	render.SetScissorRect( x+3+off, y-bar_size, x+3+bar_size+off, y + bar_size, false )
+	
+	//surface.DrawTexturedRectRotated( x, y, bar_size, bar_size, 180 )
+	
+	
+	/*local realW, realH = 93, 225
+	local realBarW, realBarH = 46, 160
+	
+	local szW, szH = 50, 180
+	
+	local scaleW, scaleH = szW / realW, szH / realH -- headache prevention
+	
+	local barW, barH = realBarW * scaleW, realBarH * scaleH
+	local x, y = w - 100 - szH/2, h - 50 - szW / 2 //w/2, h * 0.6
+	
+	surface.SetMaterial( mat_block_bar )	
+	surface.SetDrawColor( Color( 255, 255, 255, 105 ) )
+	
+	surface.DrawTexturedRectRotated( x, y, szW, szH, 90 )
+	
+	surface.SetDrawColor( Color( 255, 255, 255, 155 ) )
+	surface.DrawRect( x - barH / 2 - 16 * scaleH, y - barW / 2, barH, barW )*/
+	
+end
+
 end
 
 

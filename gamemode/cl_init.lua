@@ -445,6 +445,7 @@ function GM:Initialize( )
 	surface.CreateFont("Arial_Bold_Scaled_14",{font = "Arial", size = NewScreenScale(14),weight = 700,antialias = true})
 	surface.CreateFont("Arial_Bold_Scaled_16",{font = "Arial", size = NewScreenScale(16),weight = 700,antialias = true})	
 	surface.CreateFont("Arial_Bold_Scaled_18",{font = "Arial", size = NewScreenScale(18),weight = 700,antialias = true})	
+	surface.CreateFont("Arial_Bold_Scaled_Italic_20",{font = "Arial", size = NewScreenScale(20),weight = 1200,antialias = true,italic = true})
 	surface.CreateFont("Arial_Bold_Scaled_20",{font = "Arial", size = NewScreenScale(20),weight = 700,antialias = true})
 	surface.CreateFont("Arial_Bold_Scaled_21",{font = "Arial", size = NewScreenScale(21),weight = 700,antialias = true})
 	surface.CreateFont("Arial_Bold_Scaled_23",{font = "Arial", size = NewScreenScale(23),weight = 700,antialias = true})
@@ -1466,6 +1467,7 @@ net.Receive( "PlayerSetupSkillStats", function( len )
 	MySelf._DefaultMeleeSpeedBonus = PLAYER_DEFAULT_MELEE_SPEED_BONUS * 1 + SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL * strength
 	MySelf._DefaultMResBonus = PLAYER_DEFAULT_MAGIC_RESISTANCE_BONUS * 1 + PLAYER_DEFAULT_MAGIC_RESISTANCE_BONUS * strength
 	MySelf._DefaultDodgeBonus = PLAYER_DEFAULT_DODGE_BONUS * 1 + SKILL_STRENGTH_DODGE_PER_LEVEL * strength
+	MySelf._DefaultMeleeVampirismBonus = PLAYER_DEFAULT_MELEE_VAMPIRISM_BONUS + SKILL_STRENGTH_VAMPIRISM_PER_LEVEL * strength
 	MySelf._DefaultMagicBonus = PLAYER_DEFAULT_MAGIC_DMG_BONUS * 1 + SKILL_MAGIC_DAMAGE_PER_LEVEL * magic
 	MySelf._DefaultMChannelingBonus = PLAYER_DEFAULT_MAGIC_CHANNELING_BONUS * 1 + SKILL_MAGIC_CHANNELING_PER_LEVEL * magic
 	MySelf._DefaultBulletFalloffBonus = PLAYER_DEFAULT_BULLET_FALLOFF_BONUS * 1 + SKILL_BULLET_FALLOFF_PER_LEVEL * gunmastery

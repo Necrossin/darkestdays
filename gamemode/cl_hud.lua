@@ -14,6 +14,7 @@ local hud_bg4 = Material( "darkestdays/hud/hud_bg4.png" )
 local hud_bullet = Material( "darkestdays/hud/bullet.png" )
 local hud_health = Material( "darkestdays/hud/hud_health.png" )
 local hud_mana = Material( "darkestdays/hud/hud_mana.png" )
+local hud_mana_neutral = Material( "darkestdays/hud/hud_neutral.png" )
 
 local hud_grenade = Material( "darkestdays/hud/grenade.png" )
 local hud_magic_shield = Material( "darkestdays/hud/magic.png" )
@@ -323,8 +324,10 @@ function DrawHealthMana(MySelf)
 		if wep_am and wep_max then
 			am = math_Clamp( wep_am / wep_max, 0, 1)
 			
+			surface_SetDrawColor(68, 68, 68, 255)
+			
 			if am >= 1 then
-				surface_SetDrawColor( 255, 0, 105, 255)
+				surface_SetDrawColor( COLOR_TEXT_SOFT_BRIGHT )
 			end
 			
 			mana = math_Round( wep_max - wep_am )
@@ -336,7 +339,7 @@ function DrawHealthMana(MySelf)
 	
 	render_SetScissorRect( posX+6,posY-tH/2,posX+tW/2,posY+tH/2, true )
 	//surface_SetDrawColor( 255, 255, 255, 255)
-	surface_SetMaterial(hud_mana)
+	surface_SetMaterial( mana_override and hud_mana_neutral or hud_mana)
 	surface_DrawTexturedRectRotated(posX,posY,tW,tH,-1*(180-math_Round(180*am)))
 	render_SetScissorRect( posX+6,posY-tH/2,posX+tW/2,posY+tH/2, false )
 	
@@ -344,7 +347,7 @@ function DrawHealthMana(MySelf)
 		draw_SimpleText(hp, "Bison_40", posX-4,posY+1, col_hp, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 		if mana_override then
 			if not hide_mana_text then
-				draw_SimpleText(mana, "Bison_40", posX+4,posY+1, col_mana_override, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+				draw_SimpleText(mana, "Bison_40", posX+4,posY+1, COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
 			end
 		else
 			draw_SimpleText(mana, "Bison_40", posX+4,posY+1, col_mana, TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)

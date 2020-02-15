@@ -16,9 +16,11 @@ PLAYER_DEFAULT_MANA = 60
 PLAYER_DEFAULT_SPEED = 210
 PLAYER_DEFAULT_RUNSPEED_BONUS = 50
 PLAYER_DEFAULT_JUMPPOWER = 200
+PLAYER_DEFAULT_BULLETBLOCK_POWER = 175
 PLAYER_DEFAULT_MELEE_BONUS = 0
 PLAYER_DEFAULT_MELEE_SPEED_BONUS = 0
 PLAYER_DEFAULT_DODGE_BONUS = 0
+PLAYER_DEFAULT_MELEE_VAMPIRISM_BONUS = 0
 PLAYER_DEFAULT_MAGIC_RESISTANCE_BONUS = 0
 PLAYER_DEFAULT_AGILITY_DMG_BONUS = 0
 PLAYER_DEFAULT_DEFENSE_DMG_BONUS = 0
@@ -91,6 +93,7 @@ SKILL_STRENGTH_DAMAGE_PER_LEVEL = 1//1.75//0.65
 SKILL_STRENGTH_MAGIC_RESISTANCE_PER_LEVEL = 2.35
 SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL = 0.02 //0.01
 SKILL_STRENGTH_DODGE_PER_LEVEL = 0.027
+SKILL_STRENGTH_VAMPIRISM_PER_LEVEL = 0.6
 SKILL_AGILITY_SPEED_PER_LEVEL = 3.2
 SKILL_AGILITY_DAMAGE_PER_LEVEL = 0.5
 SKILL_MAGIC_DAMAGE_PER_LEVEL = 3
@@ -324,31 +327,169 @@ Abilities = {
 	//["walljumpslide"] = {Name = "Wall Jump/Slide", Pr = "Ability to wall-jump\nJump power is based on your velocity\n\nAbility to slide when sprinting", Description = "\nDouble press jump button near a wall\nto perform a wall-jump.\nHold 'E' while facing a wall to perform\na wall-jump with 180 degrees turn.\n\nCrouch when sprinting to slide.", OnSet = function(pl) pl._SkillWJ = true; pl._SkillSlide = true end, OnReset = function(pl) pl._SkillWJ = false; pl._SkillSlide = false end},
 	//["wallrun"] = {Name = "Wall Run", Pr = "Ability to sprint on wall surfaces\nWallrun power is based on your velocity",Description = "\nJump near wall while sprinting\nto start wall running.", OnSet = function(pl) pl:SetEffect("wallrun") end},
 	
+	
 	//Gun Mastery
-	["gmbasic"] = {Name = "Unlock Gun Mastery", Pr = "- Grants chance not to consume ammo\n- Increased bullet damage for\nsmgs/rifles/pistols/shotguns", Co = "",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
-	["fastreload"] = {Name = "Fast Reload", Pr = "- 70% faster reload speed", Co = "- Only works with pistols/smgs/rifles",Description = "",OnSet = function(pl) pl._SkillFastReload = true; if SERVER then pl:SendLua("LocalPlayer()._FastReload = true") end end, OnReset = function(pl) pl._SkillFastReload = false; pl:SendLua("LocalPlayer()._FastReload = nil") end},
-	["steadyaim"] = {Name = "Steady Aim", Pr = "- No accuracy penalty when moving\n- Guns are 20% more accurate",Description = "",OnSet = function(pl) pl._SkillSteadyAim = true; if SERVER then pl:SendLua("LocalPlayer()._SkillSteadyAim = true") end end, OnReset = function(pl) pl._SkillSteadyAim = false; pl:SendLua("LocalPlayer()._SkillSteadyAim = nil") end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of clip on kill", p*SKILL_BULLET_SCAVENGER_PER_LEVEL*100) end},
+	["gmbasic"] = {
+		Name = "Unlock Gun Mastery", 
+		Pr = "- Grants chance not to consume ammo\n- Increased bullet damage for\nsmgs/rifles/pistols/shotguns", 
+		Co = "",
+		Description = "",
+		OnSet = function(pl) end, 
+		OnReset = function(pl) end
+	},
+	["fastreload"] = {
+		Name = "Fast Reload", 
+		Pr = "- 70% faster reload speed", 
+		Co = "- Only works with pistols/smgs/rifles",
+		Description = "",
+		OnSet = function(pl) 
+			pl._SkillFastReload = true; 
+			if SERVER then 
+				pl:SendLua("LocalPlayer()._FastReload = true") 
+			end 
+		end, 
+		OnReset = function(pl) 
+			pl._SkillFastReload = false; 
+			pl:SendLua("LocalPlayer()._FastReload = nil") 
+		end
+	},
+	["steadyaim"] = {
+		Name = "Steady Aim", 
+		Pr = "- No accuracy penalty when moving\n- Guns are 20% more accurate",
+		Description = "",
+		OnSet = function(pl) 
+			pl._SkillSteadyAim = true; 
+			if SERVER then 
+				pl:SendLua("LocalPlayer()._SkillSteadyAim = true") 
+			end 
+		end, 
+		OnReset = function(pl) 
+			pl._SkillSteadyAim = false; 
+			pl:SendLua("LocalPlayer()._SkillSteadyAim = nil") 
+		end, 
+		PassiveDesc = function( p ) 
+			return string.format("BONUS: %i%% of clip on kill", p*SKILL_BULLET_SCAVENGER_PER_LEVEL*100) 
+		end
+	},
 	//["scavenger"] = {Name = "Scavenger", Pr = "- Restore small amount of ammo on kill",Description = "",OnSet = function(pl) pl._SkillScavenger = true end, OnReset = function(pl) pl._SkillScavenger = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of clip on kill", p*SKILL_BULLET_SCAVENGER_PER_LEVEL*100) end},
-	["grenade"] = {Name = "Grenade", Mat = Material( "darkestdays/hud/grenade.png" ), Pr = "- Throw a grenade by pressing 'G'\n- Grenade recharges after 12 seconds", Co = "", Description = "",OnSet = function(pl) if SERVER then pl:SetEffect("grenade") end end},
+	["grenade"] = {
+		Name = "Grenade", 
+		Mat = Material( "darkestdays/hud/grenade.png" ), 
+		Pr = "- Throw a grenade by pressing 'G'\n- Grenade recharges after 12 seconds", 
+		Co = "", 
+		Description = "",
+		OnSet = function(pl) 
+			if SERVER then 
+				pl:SetEffect("grenade") 
+			end 
+		end
+	},
 	
 	
 	//Magic
-	["mbasic"] = {Name = "Unlock Advanced Magic", Pr = "- Increased magic damage\n- Increased mana pool", Co = "",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
-	["qmanaregen"] = {Name = "Rapid Mana Regen", Pr = "- Ability to rapidly regenerate mana\nafter casting a spell",OnSet = function(pl) pl._SkillQuickRegen = true end, OnReset = function(pl) pl._SkillQuickRegen = false end},
-	["manachannel"] = {Name = "Mana Channeling", Pr = "- Returns some of magic damage done\nas mana", OnSet = function(pl) pl._SkillManaCh = true end, OnReset = function(pl) pl._SkillManaCh = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% of magic damage returned as mana", p*SKILL_MAGIC_CHANNELING_PER_LEVEL*100) end},
-	["magicshield"] = {Name = "Magic Shield", Pr = "- Uses 35% of mana as energy\n- Absorbs 30% of incoming non-melee\ndamage",Co = "- Does NOT absorbs self-damage\n- Has 25 seconds cooldown, once\ndepleted",OnSet = function(pl) pl:SetEffect("magic_shield") end},
+	["mbasic"] = {
+		Name = "Unlock Advanced Magic", 
+		Pr = "- Increased magic damage\n- Increased mana pool", 
+		Co = "",
+		Description = "",
+		OnSet = function(pl) end, 
+		OnReset = function(pl) end
+	},
+	["qmanaregen"] = {
+		Name = "Rapid Mana Regen", 
+		Pr = "- Ability to rapidly regenerate mana\nafter casting a spell",
+		OnSet = function(pl) 
+			pl._SkillQuickRegen = true 
+		end, 
+		OnReset = function(pl) 
+			pl._SkillQuickRegen = false 
+		end
+	},
+	["manachannel"] = {
+		Name = "Mana Channeling", 
+		Pr = "- Returns some of magic damage done\nas mana", 
+		OnSet = function(pl) 
+			pl._SkillManaCh = true 
+		end, 
+		OnReset = function(pl) 
+			pl._SkillManaCh = false 
+		end, 
+		PassiveDesc = function( p ) 
+			return string.format("BONUS: %i%% of magic damage returned as mana", p*SKILL_MAGIC_CHANNELING_PER_LEVEL*100) 
+		end
+	},
+	["magicshield"] = {
+		Name = "Magic Shield", 
+		Pr = "- Uses 35% of mana as energy\n- Absorbs 30% of incoming non-melee\ndamage",
+		Co = "- Does NOT absorbs self-damage\n- Has 25 seconds cooldown, once\ndepleted",
+		OnSet = function(pl) 
+			pl:SetEffect("magic_shield") 
+		end
+	},
 	
 	//Defense
 	["healthregen"] = {Name = "Health Regeneration", Pr = "Ability to slowly regenerate\nyour health", Description = "Regeneration rate is increased while\nstanding still.",OnSet = function(pl) pl._SkillHPRegen = true end, OnReset = function(pl) pl._SkillHPRegen = false end},
 	["bloodpact"] = {Name = "Blood Pact", Pr = "Killing an enemy restores some\nhealth for nearby allies", Description = "",OnSet = function(pl) pl._SkillBloodPact = true end, OnReset = function(pl) pl._SkillBloodPact = false end},
 	
+	
 	//Strength
-	["stbasic"] = {Name = "Unlock Strength", Pr = "- Increased melee damage\n- Grants resistance to magic damage\n- Increased melee speed", Co = "- Works only when you wield melee",Description = "",OnSet = function(pl) end, OnReset = function(pl) end},
-	["bulletblock"] = {Name = "Bullet Blocking", Pr = "- Gives 80% chance to block incoming\nbullet damage with your melee weapons\n- Unlocks passive Dodge ability\n- Grants a chance to avoid bullets when\nyou sprint with melee\n- Also increases your health by 10",Co = "", Description = "Hold 'Reload' button to block incoming\nbullets.",OnSet = function(pl) pl._SkillBulletBlock = true; pl._DefaultHealth = pl._DefaultHealth + 10; end, OnReset = function(pl) pl._SkillBulletBlock = false end, PassiveDesc = function( p ) return string.format("BONUS: %i%% chance to dodge bullets", p*SKILL_STRENGTH_DODGE_PER_LEVEL*100) end},
-	["bloodthirst"] = {Name = "Blood Thirst", Pr = "- Restore small amount of health\nby dealing melee damage\n- Also increases your speed by 15",Co = "- Does not stack with damage", Description = "\"Berzerking!\"",OnSet = function(pl) pl._SkillBloodThirst = true; pl._DefaultSpeed = pl._DefaultSpeed + 15; end, OnReset = function(pl) pl._SkillBloodThirst = false end},
+	["stbasic"] = {
+		Name = "Unlock Strength", 
+		Pr = "- Increased melee damage\n- Grants resistance to magic damage\n- Increased melee speed", 
+		Co = "- Works only when you wield melee",
+		Description = "",
+		OnSet = function(pl) end, 
+		OnReset = function(pl) end
+	},
+	["bulletblock"] = {
+		Name = "Bullet Blocking", 
+		Pr = "- Block up to "..PLAYER_DEFAULT_BULLETBLOCK_POWER.." bullet damage\nwith your melee weapons\n- Melee kills restore bullet block power\n- Also increases your health by 10",
+		Co = "", 
+		Description = "Hold 'Reload' button to block incoming\nbullets.",
+		OnSet = function(pl) 
+			pl._SkillBulletBlock = true; 
+			pl._DefaultHealth = pl._DefaultHealth + 10; 
+			if SERVER then 
+				pl:SendLua("LocalPlayer()._SkillBulletBlock = true") 
+			end 
+		end, 
+		OnReset = function(pl) 
+			pl._SkillBulletBlock = false;
+			if SERVER then 
+				pl:SendLua("LocalPlayer()._SkillBulletBlock = false") 
+			end 			
+		end
+	},
+	["bloodthirst"] = {
+		Name = "Blood Thirst", 
+		Pr = "- Replenish small amount of health\nby dealing melee damage\n- Also increases your speed by 15",
+		Co = "- Does not stack with damage", 
+		Description = "\"Berzerking!\"",
+		OnSet = function(pl) 
+			pl._SkillBloodThirst = true; 
+			pl._DefaultSpeed = pl._DefaultSpeed + 15; 
+		end, 
+		OnReset = function(pl) 
+			pl._SkillBloodThirst = false 
+		end, 
+		PassiveDesc = function( p ) 
+			return string.format("BONUS: replenish %i health on successful hit", p*SKILL_STRENGTH_VAMPIRISM_PER_LEVEL) 
+		end
+	},
 	//["rage"] = {Name = "Rage", Pr = "- Increases melee damage as player\ngets injured",Co = "- Works only at below 50% of health",OnSet = function(pl) pl._SkillRage = true end, OnReset = function(pl) pl._SkillRage = false end},
-	["grit"] = {Name = "Grit", Pr = "- 20% chance to ignore damage that\n would otherwise kill you\n- Also increases your health by 25", Co = "- Not applied to self-damage\n- Works only when you wield melee", Description = "",OnSet = function(pl) pl._SkillGrit = true; pl._DefaultHealth = pl._DefaultHealth + 25; end, OnReset = function(pl) pl._SkillGrit = false end},
-
+	["grit"] = {
+		Name = "Grit", 
+		Pr = "- 20% chance to ignore damage that\n would otherwise kill you\n- Also increases your health by 25", 
+		Co = "- Not applied to self-damage\n- Works only when you wield melee", 
+		Description = "",
+		OnSet = function(pl) 
+			pl._SkillGrit = true; 
+			pl._DefaultHealth = pl._DefaultHealth + 25; 
+		end, 
+		OnReset = function(pl) 
+			pl._SkillGrit = false 
+		end
+	},
 }
 
 

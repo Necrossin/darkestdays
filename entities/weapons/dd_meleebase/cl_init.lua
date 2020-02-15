@@ -3,12 +3,48 @@ include("shared.lua")
 local math = math
 local Angle = Angle
 local Vector = Vector
+local Lerp = Lerp
 
 local vec_zero = Vector( 0, 0, 0 )
 local ang_zero = Angle( 0, 0, 0 )
 
+local bulletblock_lerp = 0
 function SWEP:DrawHUD()
 	self:DrawCrosshair()
+	if self.Owner._SkillBulletBlock then
+	
+		if not self.LastBlockPower then
+			self.LastBlockPower = self.Owner:GetBulletBlockPower() * 1
+		end
+		
+		local dur = 1
+		
+		if self.LastBlockPower < self.Owner:GetBulletBlockPower() then
+			self.PopupBlockPower = CurTime() + dur
+			self.PopupBlockPowerVisual = CurTime() + dur + 1
+		end
+		
+		local delta = 0
+		
+		if self.PopupBlockPower and self.PopupBlockPower >= CurTime() then
+			delta = math.Clamp( ( self.PopupBlockPower - CurTime() ) / dur, 0, 1 )
+		end
+		
+		local offset = 14 * delta
+
+		
+		if self:IsBlocking() or self.PopupBlockPowerVisual and self.PopupBlockPowerVisual >= CurTime() then
+			bulletblock_lerp = math.Approach( bulletblock_lerp, 1, RealFrameTime()*6)
+		else
+			if bulletblock_lerp > 0 then
+				bulletblock_lerp = math.Approach( bulletblock_lerp, 0, RealFrameTime()*6)
+			end
+		end
+		if bulletblock_lerp > 0 then
+			self:DrawBulletBlock( offset, bulletblock_lerp or 1 )
+		end
+		self.LastBlockPower = self.Owner:GetBulletBlockPower() * 1
+	end
 end
 
 function SWEP:AdjustMouseSensitivity()

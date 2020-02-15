@@ -17,6 +17,14 @@ function meta:GetMaxHealthClient()
 	return self:GetDTInt(3)
 end
 
+function meta:GetBulletBlockPower()
+	return self:GetDTInt(4)
+end
+
+function meta:GetMaxBulletBlockPower()
+	return self:GetDTInt(5)
+end
+
 function meta:CastSpell()
 	if self:IsJuggernaut() then return end
 	if self:IsCrow() then return end
@@ -518,6 +526,7 @@ function meta:PenetratingMeleeTrace(distance, size, filter, swipe)
 	local start = self:GetShootPos()
 		
 	local t = {}
+	t.hit_world = false
 	trace.start = start
 	
 	if swipe then
@@ -574,9 +583,13 @@ function meta:PenetratingMeleeTrace(distance, size, filter, swipe)
 			--table.insert(trace.filter, ent)
 		else
 			if tr.HitWorld then
-				--table.insert(t, tr)
-				InsertTBL( t, tr )
-				break
+				if t.hit_world then
+					continue
+				else
+					InsertTBL( t, tr )
+					t.hit_world = true
+				end
+				//break
 			end
 		end
 	end

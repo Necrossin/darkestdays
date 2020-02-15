@@ -1089,7 +1089,9 @@ function SWEP:MeleeSwing()
 							util.Decal(self.HitDecal,  tr_decal.HitPos + tr_decal.HitNormal, tr_decal.HitPos - tr_decal.HitNormal)//
 						end
 					end
-					self:PlayHitSound()
+					if not blood then
+						self:PlayHitSound()
+					end
 				end
 			end
 
@@ -1185,7 +1187,8 @@ function SWEP:MeleeSwing()
 					else
 						hitent:TakeDamageInfo(dmginfo)
 						if owner._SkillBloodThirst and hitent:IsPlayer() then
-							owner:RefillHealth(6)
+							local health = owner._DefaultMeleeVampirismBonus
+							owner:RefillHealth( health ) //6
 							local e = EffectData()
 							e:SetOrigin(owner:GetShootPos())
 							e:SetEntity(owner)

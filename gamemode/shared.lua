@@ -112,7 +112,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 24/01/2020"
+GM.Version		= "v 15/02/2020"
 GM.Email 		= ""
 GM.Website 		= ""
 
@@ -179,7 +179,9 @@ function GM:StartCommand( pl, cmd )
 end
 
 function GM:Move( pl, mv )
-		
+	
+	local speed_mul = pl:Crouching() and pl:GetCrouchedWalkSpeed() or 1
+	
 	if pl._efFrozen and IsValid(pl._efFrozen) then
 		mv:SetMaxSpeed( math.abs( pl:GetMaxSpeed() ) * 0.75 )
 	end
@@ -189,7 +191,11 @@ function GM:Move( pl, mv )
 	end*/
 	
 	if pl:IsCarryingFlag() then
-		mv:SetMaxSpeed( math.abs( pl:GetMaxSpeed() ) * 0.85 )
+		
+		local speed = math.abs( pl:GetMaxSpeed() * speed_mul ) * 0.85
+		
+		mv:SetMaxSpeed( speed )
+		mv:SetMaxClientSpeed( speed )
 	end
 	
 	if pl:IsDefending() then
@@ -198,7 +204,8 @@ function GM:Move( pl, mv )
 		if wep and wep.BlockSpeed then
 			mul = wep.BlockSpeed
 		end
-		local speed = math.abs( pl:GetMaxSpeed() ) * mul
+
+		local speed = math.abs( pl:GetMaxSpeed() * speed_mul ) * mul
 		mv:SetMaxSpeed( speed )
 		mv:SetMaxClientSpeed( speed )
 	end

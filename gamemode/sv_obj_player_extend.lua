@@ -17,6 +17,7 @@ function meta:SetupDefaultStats()
 	self._DefaultMeleeBonus = PLAYER_DEFAULT_MELEE_BONUS
 	self._DefaultMeleeSpeedBonus = PLAYER_DEFAULT_MELEE_SPEED_BONUS
 	self._DefaultDodgeBonus = PLAYER_DEFAULT_DODGE_BONUS
+	self._DefaultMeleeVampirismBonus = PLAYER_DEFAULT_MELEE_VAMPIRISM_BONUS
 	self._DefaultMResBonus = PLAYER_DEFAULT_MAGIC_RESISTANCE_BONUS
 	self._DefaultMChannelingBonus = PLAYER_DEFAULT_MAGIC_CHANNELING_BONUS
 	self._DefaultLightWeaponryBonus = PLAYER_DEFAULT_AGILITY_DMG_BONUS
@@ -40,6 +41,7 @@ function meta:SetupSkillStats()
 	self._DefaultMeleeSpeedBonus = self._DefaultMeleeSpeedBonus + SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL * self:GetStrength()
 	self._DefaultMResBonus = self._DefaultMResBonus + PLAYER_DEFAULT_MAGIC_RESISTANCE_BONUS * self:GetStrength()
 	self._DefaultDodgeBonus = self._DefaultDodgeBonus + SKILL_STRENGTH_DODGE_PER_LEVEL * self:GetStrength()
+	self._DefaultMeleeVampirismBonus = self._DefaultMeleeVampirismBonus + SKILL_STRENGTH_VAMPIRISM_PER_LEVEL * self:GetStrength()
 	self._DefaultLightWeaponryBonus = self._DefaultLightWeaponryBonus + SKILL_AGILITY_DAMAGE_PER_LEVEL * self:GetAgility()
 	self._DefaultHeavyWeaponryBonus = self._DefaultHeavyWeaponryBonus + SKILL_DEFENSE_DAMAGE_PER_LEVEL * self:GetDefense()
 	self._DefaultMagicBonus = self._DefaultMagicBonus + SKILL_MAGIC_DAMAGE_PER_LEVEL * self:GetMagic()
@@ -261,20 +263,36 @@ function meta:RestoreAmmo(reward)
 	return true
 end
 
-function meta:SetMana(am)
-	self:SetDTInt(0,am)
+function meta:SetMana( am )
+	self:SetDTInt( 0, am )
 end
 
-function meta:SetMaxMana(am)
-	self:SetDTInt(1,am)
+function meta:SetMaxMana( am )
+	self:SetDTInt( 1, am )
 end
 
-function meta:SetCurSpellInd(n)
-	self:SetDTInt(2,n)
+function meta:SetCurSpellInd( n )
+	self:SetDTInt( 2, n )
 end
 
-function meta:SetMaxHealthClient(am)
-	self:SetDTInt(3,am)
+function meta:SetMaxHealthClient( am )
+	self:SetDTInt( 3, am )
+end
+
+function meta:SetBulletBlockPower( am )
+	self:SetDTInt( 4, am )
+end
+
+function meta:SetMaxBulletBlockPower( am )
+	self:SetDTInt( 5, am )
+end
+
+function meta:DrainBulletBlockPower( am )
+	self:SetBulletBlockPower( math.Clamp( self:GetBulletBlockPower() - am, 0, self:GetMaxBulletBlockPower() ) )
+end
+
+function meta:RestoreBulletBlockPower()
+	self:SetBulletBlockPower( self:GetMaxBulletBlockPower() )
 end
 
 

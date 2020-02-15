@@ -850,6 +850,10 @@ function GM:PlayerSpawn( pl )
 			pl:SetVoiceSet( "male" )
 		end
 		
+		// set these before calling loadout in case if some weapons will affect block
+		pl:SetMaxBulletBlockPower( PLAYER_DEFAULT_BULLETBLOCK_POWER )
+		pl:SetBulletBlockPower( PLAYER_DEFAULT_BULLETBLOCK_POWER )
+		
 		self:PlayerLoadout(pl)
 		
 		pl.LastHitBox = nil
@@ -1878,6 +1882,10 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 				dmginfo:GetInflictor():OnKill( attacker, ply, dmginfo )
 			end
 			
+			if attacker._SkillBulletBlock and dmginfo:GetInflictor() and dmginfo:GetInflictor().IsMelee then
+				attacker:RestoreBulletBlockPower()
+			end
+			
 			if attacker:GetPerk("bff") then
 				for _, al in pairs(team.GetPlayers(P_Team( attacker ))) do
 					if IsValid(al) and al ~= attacker and attacker:IsTeammate(al) and al:GetPos():DistToSqr(attacker:GetPos()) <= 48400 then
@@ -2192,8 +2200,8 @@ function GM:EntityTakeDamage( ent,dmginfo )
 		//Bullet blocking
 		if (dmginfo:IsBulletDamage() or inflictor and inflictor:GetClass() == "crossbow_bolt") and ent._SkillBulletBlock then
 			local norm = dmginfo:GetDamageForce( ):GetNormal()
-			if norm:Dot(ent:GetAimVector()) <= -0.3 and ent:IsDefending() and math.Rand(0,1) <= 0.8 then//and dmginfo:GetDamagePosition().z - ent:GetPos().z >= ent:OBBMaxs().z / 3.4
-				local force = dmginfo:GetDamage()
+			if norm:Dot(ent:GetAimVector()) <= -0.3 and ent:IsDefending() and ent:GetBulletBlockPower() > 0 then // and math.Rand(0,1) <= 0.8 then//and dmginfo:GetDamagePosition().z - ent:GetPos().z >= ent:OBBMaxs().z / 3.4
+				local force = dmginfo:GetDamage() * 1
 				dmginfo:SetDamage(0)
 				local e = EffectData()
 				e:SetOrigin(dmginfo:GetDamagePosition()+norm*-10)
@@ -2213,15 +2221,17 @@ function GM:EntityTakeDamage( ent,dmginfo )
 					ent:UnlockAchievement("bulletdef")
 				end
 				
+				ent:DrainBulletBlockPower( force )
+				
 				return
 			end
 		end
 		
-		if wep and wep.IsMelee and ent._SkillBulletBlock and dmginfo:IsBulletDamage() and ent:IsSprinting() and ent._DefaultDodgeBonus and math.Rand(0,1) <= ent._DefaultDodgeBonus then
+		/*if wep and wep.IsMelee and ent._SkillBulletBlock and dmginfo:IsBulletDamage() and ent:IsSprinting() and ent._DefaultDodgeBonus and math.Rand(0,1) <= ent._DefaultDodgeBonus then
 			dmginfo:SetDamage(0)
 			sound.Play("weapons/fx/nearmiss/bulletLtoR0"..math.random(5,9)..".wav",ent:GetShootPos(),90,math.random(90,110))
 			return true
-		end
+		end*/
 		
 		
 		//Frozen
@@ -2323,12 +2333,7 @@ function GM:EntityTakeDamage( ent,dmginfo )
 				
 			end
 		end
-		
-		
-		if attacker and attacker:IsPlayer() and attacker:GetPerk("berserker") and dmginfo:IsBulletDamage() then
-			dmginfo:ScaleDamage(0.75)
-		end
-		
+				
 		//Fire and fury perk
 		if attacker and attacker:IsPlayer() and attacker:GetPerk("fireandfury") and attacker ~= ent then
 			if dmginfo:GetDamageType() == DMG_BURN and inflictor and (inflictor.IsSpell) then
