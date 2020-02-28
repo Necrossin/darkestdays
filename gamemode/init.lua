@@ -176,7 +176,7 @@ ROUNDSTATE_PLAY = 2
 ROUNDSTATE_END = 3
 
 ENDROUND = false
-ROUNDWINNER = 0
+ROUNDWINNER = nil
 
 local team = team
 local table = table
@@ -198,7 +198,7 @@ function GM:InitializeVars()
 	self.GameState = ROUNDSTATE_IDLE
 
 	ENDROUND = false
-	ROUNDWINNER = 0
+	ROUNDWINNER = nil
 	
 	team.SetScore(TEAM_RED,0)
 	team.SetScore(TEAM_BLUE,0)
@@ -1258,6 +1258,9 @@ function GM:SendVotemaps ( to )
 	
 	net.Start("RecVotemaps")
 		if self:GetGametype() == "ffa" then
+			if type( ROUNDWINNER ) == "string" then
+				ROUNDWINNER = game.GetWorld()
+			end
 			net.WriteEntity(ROUNDWINNER)
 		else
 			net.WriteString(ROUNDWINNER)
