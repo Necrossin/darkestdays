@@ -92,9 +92,11 @@ util.PrecacheSound( "weapons/m4a1/m4a1-1.wav" )
 
 function SWEP:EmitFireSound()
 	self:EmitSound(self.Primary.Sound)
-	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+	//self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(145, 155), 0.75, CHAN_WEAPON + 20)
 end
-
+// 2 - left
+// 5 - right
 function SWEP:SendWeaponAnimation()
 	//self:SendWeaponAnim(self:Clip1() % 2 == 0 and ACT_VM_PRIMARYATTACK or ACT_VM_SECONDARYATTACK)
 	local vm = self:GetOwner():GetViewModel()
@@ -140,7 +142,7 @@ function SWEP:GetTracerOrigin()
 	if owner:IsValid() then
 		local vm = owner:GetViewModel()
 		if vm and vm:IsValid() then
-			local attachment = vm:GetAttachment(self:Clip1() % 2 + 3)
+			local attachment = vm:GetAttachment( self:Clip1() % 2 == 0 and 1 or 2 )
 			if attachment then
 				return attachment.Pos
 			end
@@ -162,7 +164,7 @@ function SWEP:ShootCustomEffects()
 		fx:SetEntity(self.Weapon)
 		fx:SetOrigin(PlayerPos)
 		fx:SetNormal(PlayerAim)
-		fx:SetAttachment(self:Clip1() % 2 == 0 and 1 or 2)
+		fx:SetAttachment( self:Clip1() % 2 == 0 and 2 or 1 )
 		util.Effect(self.MuzzleEffect,fx)
 	end
 	
@@ -171,7 +173,7 @@ function SWEP:ShootCustomEffects()
 			local fx = EffectData()
 			fx:SetEntity(self.Weapon)
 			fx:SetNormal(PlayerAim)
-			fx:SetAttachment(self:Clip1() % 2 == 0 and 3 or 4)
+			fx:SetAttachment( self:Clip1() % 2 == 0 and 4 or 3 )
 			util.Effect(self.ShellEffect,fx)
 		end
 	end

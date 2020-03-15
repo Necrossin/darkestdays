@@ -144,5 +144,6 @@ util.PrecacheSound( "weapons/m4a1/m4a1-1.wav" )
 
 function SWEP:EmitFireSound()
 	self:EmitSound(self.Primary.Sound)
-	self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+	//self:EmitSound("weapons/m4a1/m4a1-1.wav", 70, math.random(165, 175), 0.75, CHAN_WEAPON + 20)
+	self:EmitSound("weapons/m249/m249-1.wav", 70, math.random(185, 200), 0.75, CHAN_WEAPON + 20)
 end
