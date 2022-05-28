@@ -1,0 +1,16 @@
+"Refract"
+{
+        "$basetexture" "particle/antlion_goop3/antlion_goop3"
+        "$normalmap" "particle/blood_goop1_normal"
+ 	"$refractamount" "0.7"
+	"$vertexalpha" "1"
+	"$vertexcolor" "1"
+	"$translucent" "1"
+	"$forcerefract" 1
+ 	"$bluramount" "0"
+	"$nofog" "1"
+	"$vertexcolormodulate" "1"
+        "$nocull" "1"
+
+        "$depthblend" 1
+}

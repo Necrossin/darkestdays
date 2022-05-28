@@ -8,11 +8,10 @@ game.AddParticles("particles/blood_impact.pcf" )
 PrecacheParticleSystem( "vomit_barnacle" )
 
 PrecacheParticleSystem( "bloodtrap_projectile" )
+PrecacheParticleSystem( "bloodtrap_projectile2" )
 
 if SERVER then
 	AddCSLuaFile("shared.lua")
-	
-
 end
 for i=2,4 do
 	util.PrecacheSound("physics/body/body_medium_break"..i..".wav")
@@ -202,7 +201,7 @@ function ENT:Draw()
 	local pos = self:GetPos()+vector_up*-4
 	
 	if not self.Particle then
-		ParticleEffect("bloodtrap_projectile",pos,Angle(0,0,0),self.Entity)
+		ParticleEffect("bloodtrap_projectile2",pos,Angle(180,180,0),self.Entity)
 		self.Particle = true
 	end
 	
@@ -305,7 +304,6 @@ end
 end
 
 if SERVER then
-
 function ENT:UpdateTransmitState()
 	return TRANSMIT_PVS
 end

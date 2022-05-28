@@ -695,10 +695,14 @@ function EFFECT:Render()
 		if not self.Particle and self.HoleType ~= 1 then
 			if self.Dummy and self.Dummy:IsValid() then
 				//self.Effect = self.Dummy:CreateParticleEffect( "dd_blood_gib_trail", 0, { attachtype = PATTACH_ABSORIGIN_FOLLOW, entity = self.Dummy } )
-				ParticleEffectAttach("dd_blood_gib_trail",PATTACH_ABSORIGIN_FOLLOW,self.Dummy,0)
+				//ParticleEffectAttach("dd_blood_guts",PATTACH_ABSORIGIN_FOLLOW,self.Dummy,0)
+				//ParticleEffectAttach("dd_blood_dismemberment_wound",PATTACH_ABSORIGIN_FOLLOW,self.Dummy,0)
 				
 				if self.HoleType == 3 then
-					ParticleEffect("dd_blood_big_gibsplash",self.Dummy:GetPos(),self.Normal:Angle(),nil)
+					local norm = self.Normal:Angle()
+					norm:RotateAroundAxis(norm:Right(),-90)
+					ParticleEffect("dd_blood_dismemberment",self.Dummy:GetPos() + norm:Forward() * 4,norm,nil)
+					ParticleEffectAttach("dd_blood_guts",PATTACH_ABSORIGIN_FOLLOW,self.Dummy,0)
 				end
 				
 				if self.HoleType == 3 then

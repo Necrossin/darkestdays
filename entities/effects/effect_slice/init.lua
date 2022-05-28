@@ -805,7 +805,7 @@ function EFFECT:Render()
 					local ang = (normal*-1):Angle()
 					ang.p = ang.p + 90
 					
-					ParticleEffect("dd_blood_big1",pos,ang,self.Entity)
+					//ParticleEffect("dd_blood_big1",pos,ang,self.Entity)
 					--ParticleEffectAttach("dd_blood_gib_trail",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
 						
 									

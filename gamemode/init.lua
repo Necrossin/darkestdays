@@ -84,44 +84,36 @@ function GM:AddResources()
 	resource.AddSingleFile("materials/effects/largesmoke_add.vmt")
 	resource.AddSingleFile("materials/effects/softglow.vmt")
 	resource.AddSingleFile("materials/effects/softglow.vtf")
+	resource.AddSingleFile("materials/sprites/smoke_trail.vtf")
+	resource.AddSingleFile("materials/sprites/smoke_trail.vmt")
 
-	local a,b = file.Find("materials/particle/flamethrowerfire/*.*" , "GAME") //gamemodes/darkestdays/content/
+	local a,b = file.Find("materials/particle/flamethrowerfire/*.*" , "GAME")
 	for _, filename in pairs(a) do
 		resource.AddSingleFile("materials/particle/flamethrowerfire/"..string.lower(filename))
 	end
 
-	local a,b = file.Find("materials/particle/fluidExplosions/*.*" , "GAME") //gamemodes/darkestdays/content/
+	local a,b = file.Find("materials/particle/fluidExplosions/*.*" , "GAME")
 	for _, filename in pairs(a) do
 		resource.AddSingleFile("materials/particle/fluidExplosions/"..string.lower(filename))
 	end
+	
+	resource.AddSingleFile("materials/particle/blood_goop1_normal.vtf")
+	resource.AddSingleFile("materials/particle/blood_goop1.vmt")
+	resource.AddSingleFile("materials/particle/blood1_flesh_particle_normal.vtf")
+	resource.AddSingleFile("materials/particle/blood1_flesh_particle.vmt")
+	resource.AddSingleFile("materials/particle/bloodstream_normal.vtf")
+	resource.AddSingleFile("materials/particle/bloodstream_refract.vmt")
 
-	//local a,b = file.Find("particles/*.*" , "GAME") //gamemodes/darkestdays/content/
-	//for _, filename in pairs(a) do
-		resource.AddSingleFile("particles/darkestdays_v10.pcf")
-	//end
+	resource.AddSingleFile("particles/darkestdays_v11.pcf")
 
-	//local a,b = file.Find("materials/sprites/*.*" , "GAME") //gamemodes/darkestdays/content/
-	//for _, filename in pairs(a) do
-		//resource.AddFile("materials/sprites/"..string.lower(filename))
-	//end
-	resource.AddSingleFile("materials/sprites/smoke_trail.vtf")
-	resource.AddSingleFile("materials/sprites/smoke_trail.vmt")
 
-	local a,b = file.Find("materials/models/weapons/v_models/dsword/*.*" , "GAME") //gamemodes/darkestdays/content/
+	local a,b = file.Find("materials/models/weapons/v_models/dsword/*.*" , "GAME")
 	for _, filename in pairs(a) do
 		resource.AddSingleFile("materials/models/weapons/v_models/dsword/"..string.lower(filename))
 	end
 
-	//local a,b = file.Find("resource/fonts/*.*" , "GAME") //gamemodes/darkestdays/content/
-	//for _, filename in pairs(a) do
 	resource.AddFile("resource/fonts/bison.ttf")
 	resource.AddFile("cache/workshop/resource/fonts/bison.ttf") //just to see if it will fix broken fonts if hosted on dedicated server
-	//end
-
-	//local a,b = file.Find("models/weapons/*.*" , "GAME") //gamemodes/darkestdays/content/
-	//for _, filename in pairs(a) do
-	//	resource.AddFile("models/weapons/"..string.lower(filename))
-	//end
 
 	resource.AddSingleFile("models/weapons/c_dsword2.mdl")
 	resource.AddSingleFile("models/weapons/c_dsword2.vvd")
@@ -135,12 +127,12 @@ function GM:AddResources()
 	resource.AddSingleFile("models/weapons/w_dsword.sw.vtx")
 
 
-	local a,b = file.Find("sound/weapons/dsword/*.*" , "GAME") //gamemodes/darkestdays/content/
+	local a,b = file.Find("sound/weapons/dsword/*.*" , "GAME")
 	for _, filename in pairs(a) do
 		resource.AddSingleFile("sound/weapons/dsword/"..string.lower(filename))
 	end
 
-	local a,b = file.Find("sound/physics/gore/*.*" , "GAME") //gamemodes/darkestdays/content/
+	local a,b = file.Find("sound/physics/gore/*.*" , "GAME")
 	for _, filename in pairs(a) do
 		resource.AddSingleFile("sound/physics/gore/"..string.lower(filename))
 	end

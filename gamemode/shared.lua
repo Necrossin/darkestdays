@@ -1,4 +1,4 @@
-game.AddParticles("particles/darkestdays_v10.pcf" ) //_v8
+game.AddParticles("particles/darkestdays_v11.pcf" ) //_v8
 
 //some  particles
 PrecacheParticleSystem( "muzzle_autorifles" )
@@ -7,16 +7,16 @@ PrecacheParticleSystem( "muzzle_pistols" )
 PrecacheParticleSystem( "muzzle_shotguns" )
 PrecacheParticleSystem( "muzzle_smgs" )
 
-
-PrecacheParticleSystem( "dd_blood_impact1" )
+PrecacheParticleSystem( "dd_blood_impact" )
 PrecacheParticleSystem( "dd_blood_impact2" )
-PrecacheParticleSystem( "dd_blood_impact3" )
-PrecacheParticleSystem( "dd_blood_headshot" )
 PrecacheParticleSystem( "dd_blood_headshot_2" )
-PrecacheParticleSystem( "dd_blood_big1" )
-PrecacheParticleSystem( "dd_blood_big2" )
+PrecacheParticleSystem( "dd_blood_dismemberment" )
+PrecacheParticleSystem( "dd_blood_dismemberment_wound" )
 PrecacheParticleSystem( "dd_blood_big_gibsplash" )
 PrecacheParticleSystem( "dd_blood_gib_trail" )
+PrecacheParticleSystem( "dd_blood_gib_trail_big" )
+PrecacheParticleSystem( "dd_blood_gib_trail_big_alt" )
+PrecacheParticleSystem( "dd_blood_guts" )
 PrecacheParticleSystem( "dd_blood_big1_mist" )
 PrecacheParticleSystem( "impact_melee_block" )
 PrecacheParticleSystem( "melee_trail" )
@@ -112,7 +112,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 15/03/2020"
+GM.Version		= "v 28/05/2022"
 GM.Email 		= ""
 GM.Website 		= ""
 

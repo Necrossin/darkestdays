@@ -690,17 +690,22 @@ function SWEP:ViewModelDrawn()
 
 		// Create the clientside models here because Garry says we can't do it in the render hook
 		for k, v in pairs( tab ) do
-			if (v.type == "Model" and v.model and v.model != "" and (!ValidEntity(v.modelEnt) or v.createdModel != v.model) and 
+			
+			if v.WorldModel and self:GetOwner() != LocalPlayer() then continue end
+			
+			if (v.type == "Model" and v.model and v.model != "" and (!IsValid(v.modelEnt) or v.createdModel != v.model) and 
 					string.find(v.model, ".mdl") and file.Exists (v.model,"GAME") ) then
 				
 				v.modelEnt = ClientsideModel(v.model, RENDERGROUP_VIEWMODEL_TRANSLUCENT )
-				if (ValidEntity(v.modelEnt)) then
+				if (IsValid(v.modelEnt)) then
 					v.modelEnt:SetPos(self:GetPos())
 					v.modelEnt:SetAngles(self:GetAngles())
 					v.modelEnt:SetParent(self)
 					v.modelEnt:SetNoDraw(true)
 					v.modelEnt:SetLegacyTransform( true )
 					v.createdModel = v.model
+					
+					v.modelEnt.sck = true
 				
 					if v.Spell then
 						v.modelEnt.Spell = v.Spell
@@ -709,8 +714,6 @@ function SWEP:ViewModelDrawn()
 					if v.WorldModel then
 						v.modelEnt.WorldModel = true
 					end
-					
-				
 					
 					//set bonemods
 					if self.ElementsBoneMods and self.ElementsBoneMods[k] then
@@ -761,12 +764,18 @@ function SWEP:ViewModelDrawn()
 	function SWEP:RemoveModels()
 		if (self.VElements) then
 			for k, v in pairs( self.VElements ) do
-				if (ValidEntity( v.modelEnt )) then v.modelEnt:Remove() end
+				if IsValid(v.modelEnt) then 
+					v.modelEnt:Remove()
+					v.modelEnt = nil
+				end
 			end
 		end
 		if (self.WElements) then
 			for k, v in pairs( self.WElements ) do
-				if (ValidEntity( v.modelEnt )) then v.modelEnt:Remove() end
+				if IsValid(v.modelEnt) then 
+					v.modelEnt:Remove()
+					v.modelEnt = nil
+				end
 			end
 		end
 		self.VElements = nil

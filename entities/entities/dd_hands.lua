@@ -4,7 +4,7 @@ ENT.Type			= "anim"
 ENT.RenderGroup		= RENDERGROUP_OTHER
 
 local viewmodel_bones = {
-	--["ValveBiped.Bip01_L_Clavicle"] = true,
+	["ValveBiped.Bip01_L_Trapezius"] = true,
 	["ValveBiped.Bip01_L_UpperArm"] = true,
 	["ValveBiped.Bip01_L_Forearm"] = true,
 	["ValveBiped.Bip01_L_Hand"] = true,
@@ -23,7 +23,7 @@ local viewmodel_bones = {
 	["ValveBiped.Bip01_L_Finger0"] = true,
 	["ValveBiped.Bip01_L_Finger01"] = true,
 	["ValveBiped.Bip01_L_Finger02"] = true,
-	--["ValveBiped.Bip01_R_Clavicle"] = true,
+	["ValveBiped.Bip01_R_Trapezius"] = true,
 	["ValveBiped.Bip01_R_UpperArm"] = true,
 	["ValveBiped.Bip01_R_Forearm"] = true,
 	["ValveBiped.Bip01_R_Hand"] = true,
@@ -48,6 +48,8 @@ local viewmodel_bones = {
 	["ValveBiped.Bip01_L_Wrist"] = true,
 	["ValveBiped.Bip01_L_Bicep"] = true,
 	["ValveBiped.Bip01_R_Bicep"] = true,
+	["ValveBiped.Bip01_L_Elbow"] = true,
+	["ValveBiped.Bip01_R_Elbow"] = true,
 }
 
 local body_bones = {

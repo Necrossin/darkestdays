@@ -28,7 +28,7 @@ function EFFECT:Init( data )
 		return		
 	end
 	
-	ParticleEffect("dd_blood_impact2",pos,norm:Angle(),self.Entity)
+	ParticleEffect("dd_blood_impact",pos,norm:Angle(),self.Entity)
 	
 	util.Decal("Blood", pos + norm, pos - norm)
 	
@@ -60,7 +60,7 @@ function EFFECT:Init( data )
 		MySelf:AddBloodyStuff()		
 	end
 	
-	emitter:Finish()
+	emitter:Finish() emitter = nil collectgarbage("step", 64)
 	
 	self.DieTime = CurTime() + 2
 end

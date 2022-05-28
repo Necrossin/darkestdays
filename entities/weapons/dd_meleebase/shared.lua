@@ -211,9 +211,11 @@ end
 
 function SWEP:CreateViewModelElements()
 	
+	if self:GetOwner() != LocalPlayer() then return end
+	
 	self:CreateModels(self.VElements)
 	
-	 self.BuildViewModelBones = function( s )
+	self.BuildViewModelBones = function( s )
 		if MySelf:GetActiveWeapon() == self and self.ViewModelBoneMods then
 			for k, v in pairs( self.ViewModelBoneMods ) do
 				local bone = s:LookupBone(k)
@@ -1820,6 +1822,8 @@ local blood_mat = Material( "models/flesh" )
 					v.modelEnt:SetLegacyTransform( true )
 					v.createdModel = v.model
 					
+					v.modelEnt.sck = true
+					
 					if v.Spell then
 						v.modelEnt.Spell = v.Spell
 					end
@@ -1881,12 +1885,18 @@ local blood_mat = Material( "models/flesh" )
 	function SWEP:RemoveModels()
 		if (self.VElements) then
 			for k, v in pairs( self.VElements ) do
-				if (IsValid( v.modelEnt )) then v.modelEnt:Remove() end
+				if IsValid(v.modelEnt) then 
+					v.modelEnt:Remove()
+					v.modelEnt = nil
+				end
 			end
 		end
 		if (self.WElements) then
 			for k, v in pairs( self.WElements ) do
-				if (IsValid( v.modelEnt )) then v.modelEnt:Remove() end
+				if IsValid(v.modelEnt) then 
+					v.modelEnt:Remove()
+					v.modelEnt = nil
+				end
 			end
 		end
 		self.VElements = nil

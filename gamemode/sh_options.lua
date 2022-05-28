@@ -995,7 +995,7 @@ function IsWeapon(name)
 	return Weapons[name]
 end
 
-Radio = {}
+Radio = Radio or {}
 Radio[1] = {"music/VLVX_song22.mp3", 195}
 Radio[2] = {"music/VLVX_song23.mp3", 167}
 Radio[3] = {"music/VLVX_song24.mp3", 127}
@@ -1038,7 +1038,12 @@ if CLIENT then
 		if (v[2] == 60) then
 			v[2] = 0.1
 		end
+		
+		if !file.Exists( "sound/"..v[1], "GAME" ) then
+			Radio[k] = nil
+		end
 	end
+	table.Resequence(Radio)
 end
 
 

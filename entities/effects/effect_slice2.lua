@@ -1,5 +1,10 @@
 EFFECT.BoneCountToRemove = 3
 
+local Dot_Threshold = 0.2
+local Dist_Threshold = 70 * 70
+
+local Force_LOD = -1
+
 local string_Replace = string.Replace
 local vector_origin = vector_origin
 
@@ -114,38 +119,6 @@ function EFFECT:GetHighestParent( ent, bone, tbl, prev_bone )
 		local spine2 = ent:LookupBone( "ValveBiped.Bip01_Spine2" )
 		local spine1 = ent:LookupBone( "ValveBiped.Bip01_Spine1" )
 		local spine = ent:LookupBone( "ValveBiped.Bip01_Spine" )
-		
-		/*if spine4 and tbl[ spine4 ] and spine2 then
-			return spine2, true
-		end
-		
-		if spine2 and tbl[ spine2 ] and spine1 then
-			return spine1, true
-		end
-		
-		if spine1 and tbl[ spine1 ] and spine then
-			return spine, true
-		end
-		
-		if spine and tbl[ spine ] then
-			return 0, true
-		end*/
-		
-		/*if spine4 and tbl[ spine4 ] then
-			return spine4, true
-		end
-		
-		if spine2 and tbl[ spine2 ] then
-			return spine2, true
-		end
-		
-		if spine1 and tbl[ spine1 ] then
-			return spine1, true
-		end
-		
-		if spine and tbl[ spine ] then
-			return spine, true
-		end*/
 		
 	end
 	
@@ -264,6 +237,9 @@ function EFFECT:CreateRagdoll()
 	self.Ragdoll.OverrideRagdollOwner = true
 	self.Ragdoll.InverseBones = true
 	
+	rag:SetLOD( Force_LOD )
+	self.Ragdoll:SetLOD( Force_LOD )
+	
 	if GAMEMODE:GetGametype() == "ffa" then
 		local col = self.ent:GetPlayerColor()
 		self.Ragdoll.GetPlayerColor = function() return Vector( col.x, col.y, col.z ) end
@@ -281,8 +257,7 @@ function EFFECT:CreateRagdoll()
 	local count = 1
 	
 	local rag_count_1 = 0
-	local rag_count_2 = 0
-	
+	local rag_count_2 = 0	
 	
 	for k = 0, self.ent:GetBoneCount() - 1 do
 					
@@ -454,10 +429,18 @@ local E_SetBoneMatrix = M_Entity.SetBoneMatrix
 
 // shrink down stuff that needs to be... uh... shrinked down
 local function BodyPartBBP( ent, bonecount )
+
+	local ent_pos = ent:GetPos()
+	local my_pos = EyePos()
+	local my_aim = LocalPlayer():GetAimVector()
+	
+	local norm = ( ent_pos - my_pos ):GetNormal()
+	local dist_sqr = ent_pos:DistToSqr( my_pos )
+	
+	if MySelf and my_aim:Dot( norm ) < Dot_Threshold and dist_sqr > Dist_Threshold then return end
 	
 	if ent.ShrinkTo and ent.BoneTable then
 
-		
 		if ent.BoneCountTable then
 		
 			for i = 1, #ent.BoneCountTable do
@@ -536,6 +519,15 @@ local vec_1_1 = Vector( 1.2, 1.02, 1.02 )
 local vec_1_9 = Vector( 2.4, 1.9, 1.9 )
 local function BodyPartBBP2( ent, bonecount )
 	
+	local ent_pos = ent:GetPos()
+	local my_pos = EyePos()
+	local my_aim = LocalPlayer():GetAimVector()
+	
+	local norm = ( ent_pos - my_pos ):GetNormal()
+	local dist_sqr = ent_pos:DistToSqr( my_pos )
+	
+	if MySelf and my_aim:Dot( norm ) < Dot_Threshold and dist_sqr > Dist_Threshold then return end
+	
 	if ent.SolidBone then
 
 		local m_shrinkto = E_GetBoneMatrix( ent, ent.SolidBone )
@@ -569,6 +561,13 @@ local function BodyPartBBP2( ent, bonecount )
 	end
 
 end
+
+
+local spine_params = {
+	pos = Vector(16.985, -1.415, 2.656),
+	angle = Angle(-87.894, -112.918, 67.843), 
+	size = Vector(1.573, 1.362, 1.111),
+}
 
 function EFFECT:MakeBodyParts()
 	
@@ -610,7 +609,7 @@ function EFFECT:MakeBodyParts()
 			part.BoneTable = v
 			if empty_1 and fleshy_bones[ rag:GetBoneName( part.ShrinkTo ) ] then
 				self.FleshyParts[ part.ShrinkTo ] = true
-				//self.FleshyPartsSimple[ part.ShrinkTo ] = true
+				self.FleshyPartsSimple[ part.ShrinkTo ] = true
 			else
 				self.FleshyPartsSimple[ part.ShrinkTo ] = true
 			end
@@ -619,6 +618,8 @@ function EFFECT:MakeBodyParts()
 				self.RemoveCollisions1[ k ] = true
 				//self.RemoveCollisions[ part.ShrinkTo ] = true
 			end
+			
+			part:SetLOD( Force_LOD )
 			
 			part:SetNoDraw( true )
 			
@@ -648,7 +649,7 @@ function EFFECT:MakeBodyParts()
 			
 			if empty_2 and fleshy_bones[ rag:GetBoneName( part.ShrinkTo ) ] then
 				self.FleshyParts[ part.ShrinkTo ] = true
-				//self.FleshyPartsSimple[ part.ShrinkTo ] = true
+				self.FleshyPartsSimple[ part.ShrinkTo ] = true
 			else
 				self.FleshyPartsSimple[ part.ShrinkTo ] = true
 			end
@@ -657,6 +658,8 @@ function EFFECT:MakeBodyParts()
 				self.RemoveCollisions2[ k ] = true
 				//self.RemoveCollisions[ part.ShrinkTo ] = true
 			end
+			
+			part:SetLOD( Force_LOD )
 			
 			part:SetNoDraw( true )
 			
@@ -672,11 +675,11 @@ function EFFECT:MakeBodyParts()
 	
 	self.FleshyPartsReference = {}
 	
-	for k, v in pairs( self.FleshyParts ) do
+	/*for k, v in pairs( self.FleshyParts ) do
 		
 		//bonemerged stuff
 		
-		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_BOTH )
+		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_OPAQUE )
 			
 		if part2:IsValid() then
 				
@@ -689,7 +692,9 @@ function EFFECT:MakeBodyParts()
 			part2.SolidBone = k	
 			part2.FleshBit = true
 			part2.IsThug = self.IsThug
-				
+			
+			//part2:SetLOD( 3 )
+			part2:SetLOD( Force_LOD )
 				
 			part2.SolidBone2 = rag:GetBoneParent( k )
 				
@@ -701,7 +706,7 @@ function EFFECT:MakeBodyParts()
 			self.FleshyPartsReference[ #self.FleshyPartsReference + 1 ] = part2
 		end
 			
-		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_BOTH )
+		local part2 = ClientsideModel( self:GetModel(), RENDERGROUP_OPAQUE )
 			
 		if part2:IsValid() then
 				
@@ -714,6 +719,9 @@ function EFFECT:MakeBodyParts()
 			part2.SolidBone = k
 			part2.FleshBit = true
 			part2.IsThug = self.IsThug
+			
+			//part2:SetLOD( 3 )
+			part2:SetLOD( Force_LOD )
 							
 			part2.SolidBone2 = self.Ragdoll:GetBoneParent( k )
 
@@ -725,31 +733,42 @@ function EFFECT:MakeBodyParts()
 			self.FleshyPartsReference[ #self.FleshyPartsReference + 1 ] = part2
 		end			
 	
-	end
+	end*/
 	
+	
+	local spine1 = false
+	local spine2 = false
 	
 	for k, v in pairs( self.FleshyPartsSimple ) do
 
-		local invisible = fleshy_bones[ rag:GetBoneName( k ) ]
-	
+		local spine = string.find( rag:GetBoneName( k ), "Spine1" ) or string.find( rag:GetBoneName( k ), "Spine2" )
+		local invisible = fleshy_bones[ rag:GetBoneName( k ) ] and not spine
+
 		if k == 0 then continue end
-		if fleshy_bones[ rag:GetBoneName( k ) ] then continue end
-		if self.ObsoleteBones[ k ] then continue end
+		//if fleshy_bones[ rag:GetBoneName( k ) ] then continue end
+		if self.ObsoleteBones[ k ] and not spine then continue end
 		if string.find( rag:GetBoneName( k ), "arm" ) then continue end
 		if string.find( rag:GetBoneName( k ), "Finger" ) then continue end
 		if string.find( rag:GetBoneName( k ), "Hand" ) then continue end
-				
+		if spine and spine1 and spine2 then continue end
+			
 		//if self.FinalBones1[ k ] or self.FinalBones2[ k ] then
 		
-			local part = ClientsideModel( "models/props_junk/garbage_bag001a.mdl", RENDERGROUP_BOTH )
+			local part = ClientsideModel( spine and "models/props_combine/breenbust_chunk03.mdl" or "models/props_junk/garbage_bag001a.mdl", RENDERGROUP_BOTH )
 				
 			if part:IsValid() then
 					
 				part:SetPos( self:GetPos() )
 				part:SetAngles( self:GetAngles() )
 				//part:SetModelScale( math.Rand( 0.4, 0.5 ), 0 )
-				part.Scale = Vector( math.Rand( 0.2, 0.4 ), math.Rand( 0.2, 0.3 ), math.Rand( 0.3, 0.5 ) )
-				part.Scale = part.Scale * 1.2
+				if spine then
+					part.Scale = spine_params.size * 1
+					spine1 = true
+				else
+					part.Scale = Vector( math.Rand( 0.2, 0.4 ), math.Rand( 0.2, 0.3 ), math.Rand( 0.3, 0.5 ) )
+					part.Scale = part.Scale * 1.2
+				end
+				part.Spine = spine
 				part:SetParent( rag )
 				part:SetCollisionGroup( COLLISION_GROUP_NONE )
 				part:SetMoveType( MOVETYPE_NONE )
@@ -761,7 +780,7 @@ function EFFECT:MakeBodyParts()
 					part.Invisible = true
 				end
 				
-				//if not empty_1 then
+				//if not empty_1 and not spine then
 					//part.SolidBoneParent = rag:GetBoneParent( k )
 				//end
 					
@@ -774,15 +793,22 @@ function EFFECT:MakeBodyParts()
 		
 		//if self.FinalBones1[ k ] or self.FinalBones2[ k ] then
 		
-			local part = ClientsideModel( "models/props_junk/garbage_bag001a.mdl", RENDERGROUP_BOTH )
+			local part = ClientsideModel( spine and "models/props_combine/breenbust_chunk03.mdl" or "models/props_junk/garbage_bag001a.mdl", RENDERGROUP_BOTH )
 				
 			if part:IsValid() then
 										
 				part:SetPos( self:GetPos() )
 				part:SetAngles( self:GetAngles() )
 				//part:SetModelScale( math.Rand( 0.4, 0.5 ), 0 )
-				part.Scale = Vector( math.Rand( 0.2, 0.4 ), math.Rand( 0.2, 0.3 ), math.Rand( 0.3, 0.5 ) )
-				part.Scale = part.Scale * 1.2
+				if spine then
+					part.Scale = spine_params.size * 1
+					spine2 = true
+				else
+					part.Scale = Vector( math.Rand( 0.2, 0.4 ), math.Rand( 0.2, 0.3 ), math.Rand( 0.3, 0.5 ) )
+					part.Scale = part.Scale * 1.2
+				end
+
+				part.Spine = spine
 				part:SetParent( self.Ragdoll )
 				part:SetCollisionGroup( COLLISION_GROUP_NONE )
 				part:SetMoveType( MOVETYPE_NONE )
@@ -795,8 +821,10 @@ function EFFECT:MakeBodyParts()
 				end
 				//part.DoBlood = true
 
-				part.SolidBoneParent = rag:GetBoneParent( k )
-					
+				if not spine then
+					part.SolidBoneParent = rag:GetBoneParent( k )
+				end
+				
 				part:SetNoDraw( true )
 					
 				self.BodyParts[ 2 ][ #self.BodyParts[ 2 ] + 1 ] = part
@@ -893,6 +921,15 @@ end
 
 
 local function RagBuildBonePositions( ent, bonecount )
+
+	local ent_pos = ent:GetPos()
+	local my_pos = EyePos()
+	local my_aim = LocalPlayer():GetAimVector()
+	
+	local norm = ( ent_pos - my_pos ):GetNormal()
+	local dist_sqr = ent_pos:DistToSqr( my_pos )
+	
+	if MySelf and my_aim:Dot( norm ) < Dot_Threshold and dist_sqr > Dist_Threshold then return end
 
 	if ent.ThugBoneBBP then
 		
@@ -1062,16 +1099,29 @@ function EFFECT:Render()
 									
 								end
 								
-								
-								v:SetPos( v_pos )
-								v:SetAngles( v_ang * ( v.InverseAngles and -1 or 1 ) )
+								if v.Spine then
+									v_pos = v_pos + v_ang:Forward() * spine_params.pos.x + v_ang:Right() * spine_params.pos.y + v_ang:Up() * spine_params.pos.z
+									v_ang:RotateAroundAxis(v_ang:Up(), spine_params.angle.y)
+									v_ang:RotateAroundAxis(v_ang:Right(), spine_params.angle.p)
+									v_ang:RotateAroundAxis(v_ang:Forward(), spine_params.angle.r)
+									v:SetPos( v_pos )
+									v:SetAngles( v_ang )
+								else
+									v:SetPos( v_pos )
+									v:SetAngles( v_ang * ( v.InverseAngles and -1 or 1 ) )
+								end
 
 							end
 							
 							if not v.Particle and v.DoBlood then
-								v.Particle = CreateParticleSystem( v, "dd_blood_headshot_2", PATTACH_POINT_FOLLOW, 0 ) //"dd_blood_headshot_2"
+								v.Particle = CreateParticleSystem( v, "dd_blood_headshot_2", PATTACH_POINT_FOLLOW, 0 )
 							end
 							
+							if IsValid(v.Particle) and v_ang and v.Spine then
+								v.Particle:SetControlPointUpVector( 0, v_ang:Up() )
+								v.Particle:SetControlPointForwardVector( 0, v_ang:Forward() )
+								v.Particle:SetControlPointRightVector( 0, v_ang:Right() )
+							end
 							
 							if v.Scale then
 								local m = Matrix()
@@ -1101,7 +1151,7 @@ function EFFECT:Render()
 							render.ModelMaterialOverride(  )
 							
 							if not self.Particle and self.Origin then
-								ParticleEffect( "dd_blood_big_gibsplash", self.Origin, self.Normal:Angle(), self.Entity )
+								ParticleEffect( "dd_blood_dismemberment", self.Origin, self.Normal:Angle(), self.Entity )
 								self.Particle = true
 							end
 							

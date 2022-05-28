@@ -76,9 +76,9 @@ function ENT:Cast()
 	
 	if CLIENT then
 		self:SetRenderBoundsWS( self.Entity:GetPos(),self:GetDTVector(0))
-		if self.End then
+		/*if self.End then
 			self.End:SetPos(self:GetDTVector(0))
-		end
+		end*/
 	end
 	
 	if SERVER then
@@ -198,27 +198,27 @@ function ENT:OnRemove()
 		if IsValid(self.EntOwner) then
 			self.EntOwner:StopParticles()
 		end
-		if IsValid(self.End) then
+		/*if IsValid(self.End) then
 			self.End:Remove()
 			self.End = nil
-		end
+		end*/
 	end
 end
 
 function ENT:Think()
 	
 	if SERVER then
-		if !ValidEntity(self.EntOwner) or not self.EntOwner:Alive() then
+		if !IsValid(self.EntOwner) or not self.EntOwner:Alive() then
 			self:Remove()
 			return
 		end
 	end
 	
 	if CLIENT then
-		if not self.End then
+		if !IsValid(self.End) then
 			self:CreateEndPos()
 		end
-		if self.End and self.End:GetPos() ~= self:GetDTVector(0) then
+		if IsValid(self.End) and self.End:GetPos() ~= self:GetDTVector(0) then
 			self.End:SetPos(self:GetDTVector(0))
 		end
 	end
@@ -228,22 +228,25 @@ end
 if CLIENT then
 function ENT:OnInitialize()
 	self:SetRenderBounds(Vector(-90, -90, -98), Vector(90, 90, 90))
-	self.Emitter = ParticleEmitter(self:GetPos())
+	//self.Emitter = ParticleEmitter(self:GetPos())
 	
-	self:CreateEndPos()
+	//self:CreateEndPos()
 	
 end
 
 function ENT:CreateEndPos()
+	/*if IsValid(self.End) then 
+		self.End:Remove()
+		self.End = nil
+	end
 	
 	self.End = ClientsideModel(endMdl, RENDER_GROUP_VIEW_MODEL_OPAQUE)
-	if ValidEntity(self.End) then
+	if IsValid(self.End) then
 		self.End:SetPos(self:GetPos())
 		self.End:SetAngles(self:GetAngles())
 		self.End:SetNoDraw(true)
-	else
-		self.End = nil
-	end
+		self.End:SetOwner(self)
+	end*/
 	
 end
 
@@ -261,7 +264,16 @@ function ENT:OnDraw()
 		
 		self.LastEmit = self:GetDTFloat(1) 
 		
-		if self.End and point and (owner ~= MySelf or GAMEMODE.ThirdPerson) then//and
+		if !IsValid(self.BeamParticle) then		
+			self.BeamParticle = point:CreateParticleEffect( "electrobolt_main_beam", 0, {} )
+			self.BeamParticle:SetShouldDraw( false )
+		end
+		
+		if point and (owner ~= MySelf or GAMEMODE.ThirdPerson) then
+			self.BeamParticle:SetControlPoint( 1, self:GetDTVector(0) )
+		end
+		
+		/*if self.End and point and (owner ~= MySelf or GAMEMODE.ThirdPerson) then
 			if self.End and self.End:GetPos() ~= self:GetDTVector(0) then
 				self.End:SetPos(self:GetDTVector(0))
 			end
@@ -275,8 +287,12 @@ function ENT:OnDraw()
 				}
 			self.End:CreateParticleEffect("electrobolt_main_beam",{CPoint0,CPoint1})
 			
-		end
+		end*/
 	
+	end
+	
+	if IsValid(self.BeamParticle) and (owner ~= MySelf or GAMEMODE.ThirdPerson) then
+		self.BeamParticle:Render()
 	end
 	
 	if owner:GetCurSpellInd() ~= self:GetDTInt(0) then
@@ -316,7 +332,17 @@ function ENT:HandDraw( owner, reverse, point, ignore_passive)
 		
 		self.VLastEmit = self:GetDTFloat(1) 
 		
-		if self.EntOwner == MySelf and self.End then
+		if !IsValid(self.BeamParticleVM) then		
+			self.BeamParticleVM = point:CreateParticleEffect( "electrobolt_main_beam", 0, {} )
+			self.BeamParticleVM:SetShouldDraw( false )
+		end
+		
+		if self.EntOwner == MySelf then
+			self.BeamParticleVM:SetControlPoint( 1, self:GetDTVector(0) )
+		end
+		
+		
+		/*if self.EntOwner == MySelf and self.End then
 			local CPoint0 = {
 				["entity"] = point,
 				["attachtype"] = PATTACH_ABSORIGIN_FOLLOW,
@@ -327,8 +353,12 @@ function ENT:HandDraw( owner, reverse, point, ignore_passive)
 				}
 			self.End:CreateParticleEffect("electrobolt_main_beam",{CPoint0,CPoint1})
 			
-		end
+		end*/
 	
+	end
+	
+	if IsValid(self.BeamParticleVM) then
+		self.BeamParticleVM:Render()
 	end
 	
 	if point and not point.Particle and not ignore_passive then

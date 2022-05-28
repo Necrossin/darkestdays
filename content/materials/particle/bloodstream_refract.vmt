@@ -1,0 +1,13 @@
+"Refract"
+{
+        //"$basetexture" "effects/bloodstream"
+        "$normalmap" "particle/bloodstream_normal"
+ 	"$refractamount" "0.1"
+	"$vertexalpha" "1"
+	"$vertexcolor" "1"
+	"$translucent" "1"
+	"$forcerefract" 1
+ 	"$bluramount" "2"
+	"$nofog" "1"
+	"$vertexcolormodulate" "1"
+}

@@ -152,11 +152,12 @@ function EFFECT:Init( data )
 							phys:SetVelocityInstantaneous( gib_normal * power * 2 + VectorRand() * math.random(-power/2,power/2) + vector_up *  math.random( power/2, power ) )
 						end
 						
-						if i == 1 then
+						if gib.BigDecal then
 							if self.Frozen then
 								ParticleEffectAttach("winterblast_projectile",PATTACH_ABSORIGIN_FOLLOW,gib,0)
 							else
-								ParticleEffectAttach("dd_blood_gib_trail",PATTACH_ABSORIGIN_FOLLOW,gib,0)
+								ParticleEffectAttach("dd_blood_gib_trail_big",PATTACH_ABSORIGIN_FOLLOW,gib,0)
+								ParticleEffectAttach("dd_blood_gib_trail_big_alt",PATTACH_ABSORIGIN_FOLLOW,gib,0)
 							end
 						end
 
@@ -251,7 +252,8 @@ function EFFECT:Init( data )
 	if self.Frozen then
 		ParticleEffect("frozen_death",Pos+vector_up*math.random(20,30),Angle(0,0,0),nil)
 	else
-		ParticleEffect("dd_blood_big_gibsplash",Pos+vector_up*math.random(20,30),Angle(0,0,0),nil)
+		//ParticleEffect("dd_blood_big_gibsplash",Pos+vector_up*math.random(20,30),Angle(0,0,0),nil)
+		ParticleEffect("dd_blood_big_gibsplash",Pos+vector_up*5,Angle(0,0,0),nil)
 	end
 	
 	if IsValid(ent) then

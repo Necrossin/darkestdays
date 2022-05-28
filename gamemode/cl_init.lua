@@ -33,6 +33,7 @@ local Lerp = Lerp
 
 
 local vector_up = Vector(0, 0, 1)
+local vecfake = Vector(0, 0, 16000)
 local col_white = color_white
 
 local surface_SetMaterial = surface.SetMaterial
@@ -596,7 +597,6 @@ CurSong = 1
 //NextSong = 0
 function GM:_Think()
 
-	
 	if RadioOn then
 		if NextSong and NextSong < CurTime() then
 		
@@ -1057,6 +1057,8 @@ function GM:FakeFlashlight()
 		self._FakeFlashlight:SetAngles( EyeAngles() )
 		self._FakeFlashlight:SetNearZ( 4 )
 	else
+		self._FakeFlashlight:SetPos( EyePos() )
+		self._FakeFlashlight:SetAngles( EyeAngles() )
 		self._FakeFlashlight:SetNearZ( 0 )
 	end
 	
@@ -1074,22 +1076,27 @@ function GM:UpdateFakeFlashlight()
 	
 	if IsValid( self._FakeFlashlight ) then
 		
+		local ang = EyeAngles()
+		local offset = ang:Forward() * flashlight_offset.x + ang:Right() * flashlight_offset.y + ang:Up() * flashlight_offset.z
+		
+		
 		if MySelf.FlashlightState then
-		
-			local ang = EyeAngles()
-			local offset = ang:Forward() * flashlight_offset.x + ang:Right() * flashlight_offset.y + ang:Up() * flashlight_offset.z
-		
+			
 			self._FakeFlashlight:SetPos( EyePos() + offset )
 			self._FakeFlashlight:SetAngles( ang )
-			self._FakeFlashlight:Update()
-
+			
 			if !MySelf:Alive() or P_Team( MySelf ) == TEAM_SPECTATOR or self:GetGametype() == "ts" and P_Team( MySelf ) == TEAM_THUG then
 				MySelf.FlashlightState = false
 				self._FakeFlashlight:SetNearZ( 0 )
-				self._FakeFlashlight:Update()
+				//self._FakeFlashlight:Update()
 			end
-			
+		else
+			self._FakeFlashlight:SetPos( EyePos() - vector_up * 5000 )
+			self._FakeFlashlight:SetAngles( ang )
+			self._FakeFlashlight:SetNearZ( 0 )
 		end
+		
+		self._FakeFlashlight:Update()
 		
 	end
 	
@@ -1292,7 +1299,7 @@ local function AddNightFogSkybox(skyboxscale)
 
 end
 
-local vecfake = Vector(0, 0, 16000)
+
 local function ThugVision()
 	
 	local light = Entity(0):GetDTEntity(3)

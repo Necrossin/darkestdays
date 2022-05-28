@@ -285,7 +285,7 @@ function EFFECT:Render()
 				
 					if self.dism == 1 then
 						ParticleEffectAttach("dd_blood_headshot_2",PATTACH_POINT_FOLLOW,self.Entity,0)
-						self.BloodParticle = CreateParticleSystem( self.Entity, "dd_blood_gib_trail", PATTACH_ABSORIGIN_FOLLOW, 0 ) 
+						self.BloodParticle = CreateParticleSystem( self.Entity, "dd_blood_dismemberment_wound", PATTACH_ABSORIGIN_FOLLOW, 0 ) 
 						--ParticleEffectAttach("dd_blood_gib_trail",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
 												
 						-- tiny snippet from zs headshot effect 
@@ -314,7 +314,7 @@ function EFFECT:Render()
 						end
 						
 					else
-						ParticleEffectAttach("dd_blood_gib_trail",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
+						ParticleEffectAttach("dd_blood_dismemberment_wound",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
 					end
 					self.Done = true
 				end

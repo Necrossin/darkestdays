@@ -187,20 +187,11 @@ end
 
 function SWEP:CreateViewModelElements()
 	
-	local toadd = {
-		["cast_point"] = { type = "Model", model = "models/props_junk/PopCan01a.mdl", bone = "v_weapon.Right_Hand", rel = "", pos = Vector(0.864, -0.072, -0.68), angle = Angle(0, 0, 0), size = Vector(0.224, 0.224, 0.224), color = Color(255, 255, 255, 0), surpresslightning = false, material = "", skin = 0, bodygroup = {} },
-		["cast_point_reversed"] = { type = "Model", model = "models/props_junk/PopCan01a.mdl", bone = "v_weapon.Left_Hand", rel = "", pos = Vector(1.417, -0.566, -0.689), angle = Angle(0, 0, 0), size = Vector(0.224, 0.224, 0.224), color = Color(255, 255, 255, 0), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
-	}
-	
-	if self.VElements then
-		//table.Merge(self.VElements,toadd)
-	end
-	
-	//PrintTable(self.VElements)
+	if self:GetOwner() != LocalPlayer() then return end
 	
 	self:CreateModels(self.VElements)
 	
-	 self.BuildViewModelBones = function( s )
+	self.BuildViewModelBones = function( s )
 		if MySelf:GetActiveWeapon() == self and self.ViewModelBoneMods then
 			for k, v in pairs( self.ViewModelBoneMods ) do
 				local bone = s:LookupBone(k)
@@ -213,80 +204,12 @@ function SWEP:CreateViewModelElements()
 				s:SetBoneMatrix(bone, m)
 			end
 		end
-	end   
-
-	//MakeNewArms(self)
-	
+	end   	
 end
 
 local vec_norm = Vector(1, 1, 1)
 local vec_zero = Vector(0, 0, 0)
 local ang_zero = Angle(0, 0, 0)
-
-/*local allbones
-local hasGarryFixedBoneScalingYet = true
-
-function SWEP:UpdateBonePositions(vm)
-
-	if self.ViewModelBoneMods then
-
-		if (!vm:GetBoneCount()) then return end
-
-		
-		local loopthrough = self.ViewModelBoneMods
-		if (!hasGarryFixedBoneScalingYet) then
-			allbones = {}
-			for i=0, vm:GetBoneCount() do
-				local bonename = vm:GetBoneName(i)
-				if (self.ViewModelBoneMods[bonename]) then
-					allbones[bonename] = self.ViewModelBoneMods[bonename]
-				else
-					allbones[bonename] = {
-						scale = Vector(1,1,1),
-						pos = Vector(0,0,0),
-						angle = Angle(0,0,0)
-					}
-				end
-			end
-
-			loopthrough = allbones
-		end
-	
-
-		for k, v in pairs( loopthrough ) do
-			local bone = vm:LookupBone(k)
-			if (!bone) then continue end
-
-			
-			local s = Vector(v.scale.x,v.scale.y,v.scale.z)
-			local p = Vector(v.pos.x,v.pos.y,v.pos.z)
-			local ms = Vector(1,1,1)
-			if (!hasGarryFixedBoneScalingYet) then
-				local cur = vm:GetBoneParent(bone)
-				while(cur >= 0) do
-					local pscale = loopthrough[vm:GetBoneName(cur)].scale
-					ms = ms * pscale
-					cur = vm:GetBoneParent(cur)
-				end
-			end
-
-			s = s * ms
-
-			if vm:GetManipulateBoneScale(bone) != s then
-				vm:ManipulateBoneScale( bone, s )
-			end
-			if vm:GetManipulateBoneAngles(bone) != v.angle then
-				vm:ManipulateBoneAngles( bone, v.angle )
-			end
-			if vm:GetManipulateBonePosition(bone) != p then
-				vm:ManipulateBonePosition( bone, p )
-			end
-		end
-	else
-		self:ResetBonePositions(vm)
-	end
-
-end*/
 
 
 function SWEP:UpdateBonePositions(vm)
@@ -331,16 +254,7 @@ function SWEP:UpdateBonePositions(vm)
 				vm:ManipulateBonePosition( bone, v.pos )
 				v.cur_pos = v.pos
 			end
-			
-			/*if vm:GetManipulateBoneScale(bone) ~= v.scale then
-				vm:ManipulateBoneScale( bone, v.scale )
-			end
-			if vm:GetManipulateBoneAngles(bone) ~= v.angle then
-				vm:ManipulateBoneAngles( bone, v.angle )
-			end
-			if vm:GetManipulateBonePosition(bone) ~= v.pos then
-				vm:ManipulateBonePosition( bone, v.pos )
-			end*/
+
 		end		
 		self.ChangedBoneMods = true
 	else
@@ -362,37 +276,7 @@ function SWEP:UpdateBonePositions(vm)
 	
 end
 
-/*function SWEP:UpdateBonePositions(vm)
-	
-	if MySelf:GetActiveWeapon() == self and self.ViewModelBoneMods then
-		for k, v in pairs( self.ViewModelBoneMods ) do
-			local bone = vm:LookupBone(k)
-			if (!bone) then continue end
-			if vm:GetManipulateBoneScale(bone) ~= v.scale then
-				vm:ManipulateBoneScale( bone, v.scale )
-			end
-			if vm:GetManipulateBoneAngles(bone) ~= v.angle then
-				vm:ManipulateBoneAngles( bone, v.angle )
-			end
-			if vm:GetManipulateBonePosition(bone) ~= v.pos then
-				vm:ManipulateBonePosition( bone, v.pos )
-			end
-		end
-	else
-		for i=0, vm:GetBoneCount() do
-			if vm:GetManipulateBoneScale(i) ~= vec_norm then
-				vm:ManipulateBoneScale( i, vec_norm )
-			end
-			if vm:GetManipulateBoneAngles(i) ~= ang_zero  then
-				vm:ManipulateBoneAngles( i, ang_zero  )
-			end
-			if vm:GetManipulateBonePosition(i) ~= vec_zero then
-				vm:ManipulateBonePosition( i, vec_zero )
-			end
-		end
-	end
-	
-end*/
+
 function SWEP:ResetBonePositions()
 	
 	if !IsValid(self.Owner) then return end
@@ -1000,18 +884,13 @@ function GenericBulletCallback(attacker, tr, dmginfo)//function GenericBulletCal
 							ent.LastHitGrNormal = tr.HitGroup
 						end
 						
-						--if tr.HitGroup == HITGROUP_HEAD then
-							--ent.LastHitBoxBone = tr.HitBoxBone
-						--end
 						
 						if tr.HitGroup == HITGROUP_CHEST or tr.HitGroup == HITGROUP_STOMACH then//or tr.HitGroup == HITGROUP_GENERIC
 							ent.LastHitBox = tr.HitBox
 							ent.LastHitGr = tr.HitGroup
 							ent.LastHitPos = tr.HitPos
 						else
-							//ent.LastHitBox = nil
-							//ent.LastHitGr = nil
-							//ent.LastHitPos = nil
+
 						end
 					else
 						ent.LastHitBox = tr.HitBox
@@ -1021,9 +900,7 @@ function GenericBulletCallback(attacker, tr, dmginfo)//function GenericBulletCal
 					end
 					
 				end
-				//util.Decal("Blood", tr.HitPos + tr.HitNormal*10, tr.HitPos - tr.HitNormal*10)
-				//util.Decal("Blood", tr.HitPos + tr.HitNormal*10, tr.HitPos - tr.HitNormal*10)
-				//util.Decal("Blood", tr.HitPos-vector_up*3 + tr.HitNormal*10, tr.HitPos-vector_up*3 - tr.HitNormal*10)
+
 				if CLIENT then
 					if tr.HitGroup == HITGROUP_HEAD then
 						local e = EffectData()
