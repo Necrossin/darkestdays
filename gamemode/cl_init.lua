@@ -1299,71 +1299,80 @@ local function AddNightFogSkybox(skyboxscale)
 
 end
 
-
+local col_red = Color( 255, 55, 55, 255 )
 local function ThugVision()
-	
-	local light = Entity(0):GetDTEntity(3)
-	
-	if light and light:IsValid() then
-	
-		--local MySelf = LocalPlayer()
-		
-		local todraw = MySelf and IsValid(MySelf) and MySelf:Alive() and P_Team( MySelf ) == TEAM_THUG
-		
-		if todraw then
-			
-			if light:IsEffectActive( EF_NODRAW ) then
-				light:SetNoDraw(false)
-			end
-			
-			light:SetOwner(MySelf)
-			light:SetPos(EyePos())
-			light:SetAngles(EyeAngles())
-		else
-			if not light:IsEffectActive( EF_NODRAW ) then
-				light:SetNoDraw(true)
-			end
-			light:SetPos(vecfake)
+
+	local todraw = MySelf and IsValid(MySelf) and MySelf:Alive() and P_Team( MySelf ) == TEAM_THUG
+
+	if !todraw then
+		if IsValid(GAMEMODE._ThugFlashlight) then
+			GAMEMODE._ThugFlashlight:Remove()
+			GAMEMODE._ThugFlashlight = nil
 		end
+		return
 	end
-	
+
+	local pos, ang = EyePos(), EyeAngles()
+
+	if !IsValid( GAMEMODE._ThugFlashlight ) then
+		GAMEMODE._ThugFlashlight = ProjectedTexture()
+
+		GAMEMODE._ThugFlashlight:SetTexture( "effects/flashlight001" )
+		GAMEMODE._ThugFlashlight:SetColor( col_red  )
+		GAMEMODE._ThugFlashlight:SetEnableShadows( false )
+		GAMEMODE._ThugFlashlight:SetFOV( 90 )
+		GAMEMODE._ThugFlashlight:SetNearZ( 0 )
+		GAMEMODE._ThugFlashlight:SetFarZ( 6000 )
+		GAMEMODE._ThugFlashlight:SetLinearAttenuation( 100 )
+		GAMEMODE._ThugFlashlight:SetConstantAttenuation( 0 )
+		GAMEMODE._ThugFlashlight:SetQuadraticAttenuation( 0 )
+	end
+
+	GAMEMODE._ThugFlashlight:SetPos( pos )
+	GAMEMODE._ThugFlashlight:SetAngles( ang )
+	GAMEMODE._ThugFlashlight:SetNearZ( 8 )
+
+	GAMEMODE._ThugFlashlight:Update()
+
 end
 
 local is_night = false
 local redownloaded_lightmaps = false
 
 net.Receive( "CheckNight", function( len )
-	
+
 	local server_night = net.ReadBool()
-	
+
 	//enable
 	if server_night and !is_night then
 		hook.Add( "SetupWorldFog","AddNightFog", AddNightFog )
 		hook.Add( "SetupSkyboxFog","AddNightFogSkybox", AddNightFogSkybox )
 		hook.Add( "HUDPaint", "AddThugVision", ThugVision )
 		is_night = true
-		//render.RedownloadAllLightmaps()
-		
+
 		if !redownloaded_lightmaps then
 			timer.Simple(1, function()
-				render.RedownloadAllLightmaps( true ) 
+				render.RedownloadAllLightmaps( true )
 			end)
 			redownloaded_lightmaps = true
 		end
-		
+
 	end
-	
+
 	//remove
 	if !server_night and is_night then
-		hook.Remove( "SetupWorldFog","AddSlenderFog" )
-		hook.Remove( "SetupSkyboxFog","AddSlenderFogSkybox" )
+		hook.Remove( "SetupWorldFog","AddNightFog" )
+		hook.Remove( "SetupSkyboxFog","AddNightFogSkybox" )
 		hook.Remove( "HUDPaint","AddThugVision" )
 		is_night = false
-		//render.RedownloadAllLightmaps()
+
+		if IsValid(GAMEMODE._ThugFlashlight) then
+			GAMEMODE._ThugFlashlight:Remove()
+			GAMEMODE._ThugFlashlight = nil
+		end
+
 	end
-	
-	//render.RedownloadAllLightmaps()
-	
+
 end)
 
 

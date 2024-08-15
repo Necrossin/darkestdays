@@ -1035,14 +1035,20 @@ function GM:SetNight(bl)
 		env_skypaint:SetSunColor(Vector(0,0,0))
 		env_skypaint:SetStarScale(1.1)
 	
-		game.ConsoleCommand("sv_skyname painted\n");
+		game.ConsoleCommand("sv_skyname painted\n")
 		
-		timer.Simple(1,function() engine.LightStyle(0,"a") end)
+		timer.Simple(1,function()
+			engine.LightStyle(0,"a")
+			game.ConsoleCommand("sv_skyname painted\n")
+		end)
 	else
 		
 		if GetConVar( "sv_skyname" ):GetString() == "painted" then
 			//game.ConsoleCommand("sv_skyname "..GetConVar( "sv_skyname" ):GetDefault() .."\n");
-			game.ConsoleCommand("sv_skyname \n");
+			game.ConsoleCommand("sv_skyname \n")
+			timer.Simple(1,function()
+				game.ConsoleCommand("sv_skyname \n")
+			end)
 		end
 		//timer.Simple(1,function() engine.LightStyle(0,"m") end)
 	end
@@ -2685,7 +2691,7 @@ function GM:InitPostEntity( )
 	self:SetMapList()
 	self:CheckNormalColorModels()
 	
-	self:CreateFlashLight()
+	--self:CreateFlashLight()
 	
 	
 end
