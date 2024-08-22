@@ -128,7 +128,7 @@ function EFFECT:Think( )
 		end
 		
 		if CurTime() > ( self.DieTime - 2 ) then
-			if self.BloodParticle then
+			if IsValid(self.BloodParticle) then
 				self.BloodParticle:StopEmission( false, false ) --StopEmissionAndDestroyImmediately() 
 			end
 		end
