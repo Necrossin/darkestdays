@@ -124,7 +124,7 @@ local function GetPlayerText()
 		//player_tbl.Pr = "+"..math.Round(((p*SKILL_DEFENSE_HEALTH_PER_LEVEL)/PLAYER_DEFAULT_HEALTH)*100).."% more health\n"
 		//player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_DEFENSE_DAMAGE_PER_LEVEL).."% dmg bonus for assault rifles\n"
 	end
-	player_tbl.Stats[1] = { "Health: %i", PLAYER_DEFAULT_HEALTH + dummy._DefaultHealth}
+	player_tbl.Stats[1] = { "player_stats_health", PLAYER_DEFAULT_HEALTH + dummy._DefaultHealth}
 	
 	
 	
@@ -132,13 +132,12 @@ local function GetPlayerText()
 	
 	if p and p~=0 then
 		player_tbl.Pr = player_tbl.Pr or ""
-		//player_tbl.Pr = player_tbl.Pr.."+"..math.Round(((p*SKILL_MAGIC_MANA_PER_LEVEL)/PLAYER_DEFAULT_MANA)*100).."% more mana capacity\n"
-		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_MAGIC_DAMAGE_PER_LEVEL).."% magic damage\n"
+		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_MAGIC_DAMAGE_PER_LEVEL)..""..translate.Get("player_stats_magic_dmg").."\n"
 		if p >= 10 then
-			player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_DODGE_PER_LEVEL*100).."% mana channeling\n"
+			player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_DODGE_PER_LEVEL*100)..""..translate.Get("player_stats_magic_chn").."\n"
 		end
 	end
-	player_tbl.Stats[2] = { "Mana: %i", PLAYER_DEFAULT_MANA + SKILL_MAGIC_MANA_PER_LEVEL * (p or 0) + dummy._DefaultMana}
+	player_tbl.Stats[2] = { "player_stats_mana", PLAYER_DEFAULT_MANA + SKILL_MAGIC_MANA_PER_LEVEL * (p or 0) + dummy._DefaultMana}
 	
 	
 	
@@ -146,12 +145,10 @@ local function GetPlayerText()
 	
 	if p and p~=0 then
 		player_tbl.Pr = player_tbl.Pr or ""
-		//player_tbl.Pr = player_tbl.Pr.."+"..math.Round(((p*SKILL_AGILITY_SPEED_PER_LEVEL)/PLAYER_DEFAULT_SPEED)*100).."% more speed\n"
-		//player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_AGILITY_DAMAGE_PER_LEVEL).."% dmg bonus for pistols/smgs\n"
-		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_BULLET_CONSUME_PER_LEVEL*100).."% chance not to consume ammo\n"
-		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_BULLET_FALLOFF_PER_LEVEL).."% bullet damage\n"
+		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_BULLET_CONSUME_PER_LEVEL*100)..""..translate.Get("player_stats_ammo_chn").."\n"
+		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_BULLET_FALLOFF_PER_LEVEL)..""..translate.Get("player_stats_bullet_dmg").."\n"
 	end
-	player_tbl.Stats[3] = { "Speed: %i", PLAYER_DEFAULT_SPEED + dummy._DefaultSpeed}//+ SKILL_AGILITY_SPEED_PER_LEVEL * (p or 0)
+	player_tbl.Stats[3] = { "player_stats_speed", PLAYER_DEFAULT_SPEED + dummy._DefaultSpeed}//+ SKILL_AGILITY_SPEED_PER_LEVEL * (p or 0)
 	
 	
 	
@@ -159,9 +156,9 @@ local function GetPlayerText()
 	
 	if p and p~=0 then
 		player_tbl.Pr = player_tbl.Pr or ""
-		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_DAMAGE_PER_LEVEL).."% more melee damage\n"
-		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_MAGIC_RESISTANCE_PER_LEVEL).."% magic resistance\n"
-		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL*100).."% melee swing speed\n"
+		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_DAMAGE_PER_LEVEL)..""..translate.Get("player_stats_melee_dmg").."\n"
+		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_MAGIC_RESISTANCE_PER_LEVEL)..""..translate.Get("player_stats_magic_res").."\n"
+		player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_MELEE_SPEED_PER_LEVEL*100)..""..translate.Get("player_stats_melee_spd").."\n"
 		if p >= 5 then
 			//player_tbl.Pr = player_tbl.Pr.."+"..(p*SKILL_STRENGTH_DODGE_PER_LEVEL*100).."% chance to dodge bullets\n"
 		end
@@ -212,14 +209,6 @@ function DrawLobby()
 		Votemaplist = {}
 		EndMenu:Remove()
 		EndMenu = nil
-	end
-	
-	if CMMenu then
-		SaveEquipment()
-		CMMenu:Remove()
-		CMMenu = nil
-	else
-		timer.Simple(2,function() CheckEquipment() end)
 	end
 	
 	tListW,tListH= ScaleW(200), ScaleH(500)
@@ -295,7 +284,7 @@ function MakeGentleOffer()
 		RunConsoleCommand("gmod_mcore_test", "1")
 		RunConsoleCommand("cl_threaded_bone_setup", "1")
 		surface.PlaySound( "misc/achievement_earned.wav" )
-		MySelf:ChatPrint( "Congratulations! Now you will probably have more fps!" ) 
+		MySelf:ChatPrint( translate.Get("multicore_sucess") )
 		local e = EffectData()
 			e:SetOrigin( MySelf:GetPos() )
 		util.Effect( "achievement_unlock", e )
@@ -310,11 +299,11 @@ function MakeGentleOffer()
 		if self.Overed and not self:GetDisabled() then
 					
 			draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT, true, true, true, true )
-			draw.SimpleText ( "Enable Multicore Rendering","Arial_Bold_Scaled_34", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( translate.Get("multicore_ask"),"Arial_Bold_Scaled_34", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
 		else
 			draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT, true, true, true, true )
-			draw.SimpleText ( "Enable Multicore Rendering","Arial_Bold_Scaled_34", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( translate.Get("multicore_ask"),"Arial_Bold_Scaled_34", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		
 		end
 	end
@@ -374,7 +363,7 @@ function MakeTeamSelection()
 		
 		draw.SimpleText ( GAMEMODE.Version,"Bison_Scaled_45", fw/1.25+shake4, fh/3+shake6, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		
-		draw.SimpleText ( "by Necrossin","Bison_Scaled_35", fw/1.25, fh/1.5, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText ( translate.Format("by_author", "Necrossin"),"Bison_Scaled_35", fw/1.25, fh/1.5, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		
 	end
 	
@@ -424,13 +413,13 @@ function MakeTeamSelection()
 				if self.Overed and not self:GetDisabled() then
 					
 					draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT, true, true, true, true )
-					draw.SimpleText ( "Free for All","Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText ( translate.Get("ffa_name"),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
 					draw.RoundedBoxEx( 8,bw,2, (fw-4)/5, fh-4, COLOR_DESELECTED_BRIGHT, false, true, false, true )
 					draw.SimpleText ( team.NumPlayers(tm),"Arial_Bold_Scaled_30", bw+((fw-4)/5)/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				else
 					draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT, true, true, true, true )
-					draw.SimpleText ( "Free for All","Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText ( translate.Get("ffa_name"),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
 					draw.RoundedBoxEx( 8,bw,2, (fw-4)/5, fh-4, COLOR_BACKGROUND_DARK, false, true, false, true )
 					draw.SimpleText ( team.NumPlayers(tm),"Arial_Bold_Scaled_30", bw+((fw-4)/5)/2, fh/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -482,13 +471,13 @@ function MakeTeamSelection()
 				if self.Overed and not self:GetDisabled() then
 					
 					draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT, true, true, true, true )
-					draw.SimpleText ( "Punchpocalypse","Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText ( translate.Get("ts_name"),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
 					draw.RoundedBoxEx( 8,bw,2, (fw-4)/5, fh-4, COLOR_DESELECTED_BRIGHT, false, true, false, true )
 					draw.SimpleText ( team.NumPlayers(tm),"Arial_Bold_Scaled_30", bw+((fw-4)/5)/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				else
 					draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT, true, true, true, true )
-					draw.SimpleText ( "Punchpocalypse","Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText ( translate.Get("ts_name"),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
 					draw.RoundedBoxEx( 8,bw,2, (fw-4)/5, fh-4, COLOR_BACKGROUND_DARK, false, true, false, true )
 					draw.SimpleText ( team.NumPlayers(tm),"Arial_Bold_Scaled_30", bw+((fw-4)/5)/2, fh/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -542,13 +531,13 @@ function MakeTeamSelection()
 				if self.Overed and not self:GetDisabled() then
 					
 					draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT, true, true, true, true )
-					draw.SimpleText ( team.GetName(tm),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText ( translate.Get(GAMEMODE.TranslateTeamNameByID[tm]),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
 					draw.RoundedBoxEx( 8,bw,2, (fw-4)/5, fh-4, COLOR_DESELECTED_BRIGHT, tm ~= TEAM_RED, tm == TEAM_RED, tm ~= TEAM_RED, tm == TEAM_RED )
 					draw.SimpleText ( team.NumPlayers(tm),"Arial_Bold_Scaled_30", bw+((fw-4)/5)/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				else
 					draw.RoundedBoxEx( 8,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT, true, true, true, true )
-					draw.SimpleText ( team.GetName(tm),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText ( translate.Get(GAMEMODE.TranslateTeamNameByID[tm]),"Arial_Bold_Scaled_34", fw/tw, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
 					draw.RoundedBoxEx( 8,bw,2, (fw-4)/5, fh-4, COLOR_BACKGROUND_DARK, tm ~= TEAM_RED, tm == TEAM_RED, tm ~= TEAM_RED, tm == TEAM_RED )
 					draw.SimpleText ( team.NumPlayers(tm),"Arial_Bold_Scaled_30", bw+((fw-4)/5)/2, fh/2, COLOR_DESELECTED_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -679,30 +668,7 @@ function MakeTeamSelectionOld()
 		
 		x = tW/2
 		
-	end
-	
-	/*Info = vgui.Create("DFrame",InvisiblePanel)
-	Info:SetSize(tW/1.5,tH/2)
-	Info:SetPos(w/2-tW/1.5/2,h/2+tH*0.7)
-	Info:SetDraggable ( false )
-	Info:SetTitle("")
-	Info:ShowCloseButton (false)
-	
-	--tW,tH = w/2,h/1.9
-	--local text = "Due to latest 'amazing' GMod update - some stuff\nlike spell animations and such are not working for now."
-	local text = "*Telekinesis might be slow sometimes"
-	
-	
-	Info.Paint = function() 
-		draw.RoundedBox( 16,0,0, Info:GetWide(), Info:GetTall(), Color(0, 0, 0, 230))
-		draw.SimpleTextOutlined("Bugs due to latest GMod update:", "Arial_Bold_30", Info:GetWide()/2,30, Color(255,55,55,255), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-		draw.DrawText(text, "Arial_Bold_23", Info:GetWide()/2,45, Color(255,255,255,255), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		draw.SimpleTextOutlined("Please report about any existing bugs at http://mrgreengaming.com!", "Arial_Bold_16", Info:GetWide()/2,Info:GetTall() - 20, Color(255,255,255,255), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-	end*/
-	
-	
-	
-	
+	end	
 
 end
 
@@ -793,8 +759,8 @@ function CreateLoadoutMenu(lobby)
 			end
 		end
 		SelectedIcon = nil
-		SelectedItem = MySelf:Nick()//nil
-		SelectedText = GetPlayerText()//nil
+		SelectedItem = MySelf:Nick()
+		SelectedText = GetPlayerText()
 		SkillsButton.Active = true
 		CreateSkillsMenu(overlay:GetWide()/3+15,30,2*overlay:GetWide()/3-30-15,overlay:GetTall()-60)
 	end
@@ -852,12 +818,11 @@ function CreateLoadoutMenu(lobby)
 		LoadoutButton[i].Paint = function(self)
 			if LoadoutButton[i].Overed or i == SelectedLoadout then
 				draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_SELECTED_BRIGHT, true, true, true, true )
-				draw.SimpleText ( "Loadout "..i,"Arial_Bold_26", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( translate.Get("player_loadout").." "..i,"Arial_Bold_26", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			else
 				draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_DESELECTED_BRIGHT, true, true, true, true )
-				draw.SimpleText ( "Loadout "..i,"Arial_Bold_26", self:GetWide()/2, self:GetTall()/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( translate.Get("player_loadout").." "..i,"Arial_Bold_26", self:GetWide()/2, self:GetTall()/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
-			//draw.SimpleTextOutlined ( "Loadout "..i.."  "..(i == SelectedLoadout and " <<" or ""), i == SelectedLoadout and "Arial_Bold_32" or "Arial_Bold_26", LoadoutButton[i]:GetWide()/2, LoadoutButton[i]:GetTall()/2, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
 		end
 		step=step+1
 	end
@@ -993,25 +958,41 @@ function CreateLoadoutMenu(lobby)
 					if not cur then continue end
 					if cur[2] and cur[2] == 0 then continue end
 					
-					local max = SelectedText.Melee and MaxMeleeStats or SelectedText.Spell and MaxSpellStats or SelectedText.Ranged and MaxRangedStats or MaxPlayerStats
+					local max = SelectedText.Melee and MaxMeleeStats or SelectedText.Spell and MaxSpellStats or SelectedText.Ranged and MaxRangedStats or SelectedText.Perk and MaxSpellStats or MaxPlayerStats
 					
 					local mul = math.Clamp((cur[2] or 0)/(max[i] or cur[2]),0,1)
 					
 					if cur[4] then
 						mul = 1 - mul
 					end
+
 					
+					draw.RoundedBox( 2,stX, stY+moveY, stW, stH, COLOR_MISC_SELECTED_BRIGHT_OUTLINE )
+					draw.RoundedBox( 2,stX+1, stY+1+moveY, stW-2, stH-2, COLOR_MISC_BACKGROUND2 )
 					
+					draw.SimpleText( string.format(translate.Get( cur[1] ),cur[2]), "Arial_Bold_Scaled_18", self:GetWide()/2, stY+stH/2+moveY, COLOR_MISC_SELECTED_BRIGHT_OUTLINE , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+					render.SetStencilWriteMask(0xFF)
+					render.SetStencilTestMask(0xFF)
+					render.SetStencilCompareFunction(STENCIL_ALWAYS)
+					render.SetStencilPassOperation(STENCIL_KEEP)
+					render.SetStencilFailOperation(STENCIL_KEEP)
+					render.SetStencilZFailOperation(STENCIL_KEEP)
+					render.ClearStencil()
 					
-					draw.RoundedBox( 2,stX, stY+moveY, stW, stH, COLOR_MISC_SELECTED_BRIGHT_OUTLINE )//COLOR_MISC_SELECTED_BRIGHT_OUTLINE
-					draw.RoundedBox( 2,stX+1, stY+1+moveY, stW-2, stH-2, COLOR_MISC_BACKGROUND2 )//COLOR_BACKGROUND_INNER
+					render.SetStencilEnable( true )
+					
+					render.SetStencilReferenceValue( 1 )
+					render.SetStencilPassOperation( STENCIL_REPLACE )
 					
 					draw.RoundedBox( 2,stX+2,stY+2+moveY, (stW-4)*mul, stH-4, COLOR_MISC_SELECTED_BRIGHT_OUTLINE )
+
+					render.SetStencilCompareFunction(STENCIL_EQUAL)
 					
-					draw.SimpleText( string.format(cur[1],cur[2]), "Arial_Bold_Scaled_18", self:GetWide()/2, stY+stH/2+moveY, COLOR_BACKGROUND_INNER , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText( string.format(translate.Get( cur[1] ),cur[2]), "Arial_Bold_Scaled_18", self:GetWide()/2, stY+stH/2+moveY, COLOR_BACKGROUND_INNER , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					
-					//cur[1]..": "..cur[2]
-					
+					render.SetStencilEnable( false )
+
 					moveY = moveY + stH + 4
 				
 				end
@@ -1023,25 +1004,61 @@ function CreateLoadoutMenu(lobby)
 			end
 			
 			if SelectedText.Special then
-				draw.DrawText( SelectedText.Special or "", "Arial_Bold_Scaled_Italic_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(15,255,255,255) , TEXT_ALIGN_LEFT, nil)
+				local t = translate.Get(SelectedText.Special)
+				draw.DrawText( t or "", "Arial_Bold_Scaled_Italic_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(15,255,255,255) , TEXT_ALIGN_LEFT, nil)
 				surface.SetFont( "Arial_Bold_Scaled_Italic_20" )
-				local tX,tY = surface.GetTextSize(SelectedText.Special)
-				moveY = moveY + tY// + 18
+				local tX,tY = surface.GetTextSize( t )
+				moveY = moveY + tY
 			end
-			if SelectedText.Pr then
-				draw.DrawText( SelectedText.Pr or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, SelectedText.PrColor or Color(131,204,255,255) , TEXT_ALIGN_LEFT, nil)
+
+			local pr = SelectedText.Pr
+			if SelectedText.PrTr then
+				pr = translate.Get(SelectedText.PrTr)
+				if SelectedText.PrForm then
+					pr = translate.Format( SelectedText.PrTr, SelectedText.PrForm() )
+				end
+			else
+				if SelectedText.PrForm then
+					pr = string.format( SelectedText.Pr, SelectedText.PrForm() )
+				end
+			end
+
+			if pr then
+				draw.DrawText( pr or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, SelectedText.PrColor or Color(131,204,255,255) , TEXT_ALIGN_LEFT, nil)
 				surface.SetFont( "Arial_Bold_Scaled_20" )
-				local tX,tY = surface.GetTextSize(SelectedText.Pr)
-				moveY = moveY + tY// + 18
+				local tX,tY = surface.GetTextSize(pr)
+				moveY = moveY + tY
 			end
-			if SelectedText.Co then
+
+			local co = SelectedText.Co
+			if SelectedText.CoTr then
+				co = translate.Get(SelectedText.CoTr)
+				if SelectedText.CoForm then
+					co = translate.Format( SelectedText.CoTr, SelectedText.CoForm() )
+				end
+			else
+				if SelectedText.CoForm then
+					co = string.format( SelectedText.Co, SelectedText.CoForm() )
+				end
+			end
+
+			if co then
 				surface.SetFont( "Arial_Bold_Scaled_20" )
-				draw.DrawText( SelectedText.Co or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(230,80,80,255) , TEXT_ALIGN_LEFT, nil)//230,60,60,255
-				local tX,tY = surface.GetTextSize(SelectedText.Co)
-				moveY = moveY + tY// + 18
+				draw.DrawText( co or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, Color(230,80,80,255) , TEXT_ALIGN_LEFT, nil)//230,60,60,255
+				local tX,tY = surface.GetTextSize(co)
+				moveY = moveY + tY
 			end
-			if SelectedText.Description then
-				draw.DrawText( SelectedText.Description or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, nil)
+
+			local desc = SelectedText.Description
+			if desc and desc != "" then
+				desc = translate.Get(desc)
+				if SelectedText.DescForm then
+					desc = translate.Format( SelectedText.Description, SelectedText.DescForm() )
+				end
+			end
+
+			if desc then
+				draw.DrawText( desc or "", "Arial_Bold_Scaled_20", 15, self:GetTall()/3+self:GetTall()/9+15+moveY, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, nil)
 			end
 		end
 		
@@ -1087,10 +1104,10 @@ function CreateLoadoutMenu(lobby)
 		SpawnButton.Paint = function(self)
 			if SpawnButton.Overed then
 				draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_SELECTED_BRIGHT, true, true, true, true )
-				draw.SimpleText ( "SPAWN ME!","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( translate.Get("player_spawn_button"),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			else
 				draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_DESELECTED_BRIGHT, true, true, true, true )
-				draw.SimpleText ( "SPAWN ME!","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( translate.Get("player_spawn_button"),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 		end
 	else
@@ -1104,10 +1121,10 @@ function CreateLoadoutMenu(lobby)
 		SpawnButton.Paint = function(self)
 			if SpawnButton.Overed then
 				draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_SELECTED_BRIGHT, true, true, true, true )
-				draw.SimpleText ( "SAVE","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( translate.Get( "player_loadout_save" ),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			else
 				draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_DESELECTED_BRIGHT, true, true, true, true )
-				draw.SimpleText ( "SAVE","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( translate.Get( "player_loadout_save" ),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 		end
 	end
@@ -1119,9 +1136,10 @@ function CreateLoadoutMenu(lobby)
 	points:SetSize(loadBtnW*1.5,loadBtnH)
 	points:SetText("")
 	points.Paint = function(self)
-		//draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_SELECTED_BRIGHT, true, true, true, true )
-		draw.SimpleText ( "Available","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText ( "points: "..(GetPlayerSkills( SelectedLoadout ) and GetPlayerSkills( SelectedLoadout ).ToSpend or 0),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3*2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		local text = translate.Get( "player_loadout_points" )
+		text = string.Explode("\n", text)
+		draw.SimpleText ( text[1] or "","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText ( (text[2] or "")..": "..(GetPlayerSkills( SelectedLoadout ) and GetPlayerSkills( SelectedLoadout ).ToSpend or 0),"Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3*2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 	
 	moveX = moveX-loadBtnW*0.8-15
@@ -1141,14 +1159,17 @@ function CreateLoadoutMenu(lobby)
 		skills.Overed = false
 	end
 	skills.Paint = function(self)	
+		local text = translate.Get( "player_loadout_respec" )
+		text = string.Explode("\n", text)
+		
 		if self.Overed then
 			draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_SELECTED_BRIGHT, true, true, true, true )
-			draw.SimpleText ( "Respec","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-			draw.SimpleText ( "all skills","Arial_Bold_Scaled_34", self:GetWide()/2, 2*self:GetTall()/3, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text[1] or "","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text[2] or "","Arial_Bold_Scaled_34", self:GetWide()/2, 2*self:GetTall()/3, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		else
 			draw.RoundedBoxEx( 8,0,0, self:GetWide(), self:GetTall(), COLOR_DESELECTED_BRIGHT, true, true, true, true )
-			draw.SimpleText ( "Respec","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-			draw.SimpleText ( "all skills","Arial_Bold_Scaled_34", self:GetWide()/2, 2*self:GetTall()/3, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text[1] or "","Arial_Bold_Scaled_34", self:GetWide()/2, self:GetTall()/3, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text[2] or "","Arial_Bold_Scaled_34", self:GetWide()/2, 2*self:GetTall()/3, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 	end
 	
@@ -1315,7 +1336,7 @@ function CreateLoadoutSlot(x,y,ww,hh,class,num,tbl,classind)
 			end
 			
 			if LoadoutSlotItems[SelectedLoadout][num] == "none" then
-				draw.SimpleText( "NO ITEM", "Arial_Bold_18", ww/2, hh/2, col , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText( translate.Get("player_loadout_noitem "), "Arial_Bold_18", ww/2, hh/2, col , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				return
 			else
 				local mat = false
@@ -1334,17 +1355,17 @@ function CreateLoadoutSlot(x,y,ww,hh,class,num,tbl,classind)
 					surface.DrawTexturedRectRotated( self:GetWide()/2,self:GetTall()/2.5, math.Clamp(mw*dif,0,self:GetWide()/div), mh*dif,0 );
 					mat = true
 				end
-				draw.SimpleText ( tbl[LoadoutSlotItems[SelectedLoadout][num]] and tbl[LoadoutSlotItems[SelectedLoadout][num]].Name or "ERROR!", "Arial_Bold_16", ww/2, mat and 4*hh/5 or hh/2, col , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( tbl[LoadoutSlotItems[SelectedLoadout][num]] and tbl[LoadoutSlotItems[SelectedLoadout][num]].Name and translate.Get( tbl[LoadoutSlotItems[SelectedLoadout][num]].Name ) or "ERROR!", "Arial_Bold_16", ww/2, mat and 4*hh/5 or hh/2, col , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 		end
 
 end
 
 local SkillIcons = {
-	["defense"] = {Mat = Material( "darkestdays/hud/shield.png" ), Name = "Defense"},
-	["magic"] = {Mat = Material( "darkestdays/hud/magic.png" ), Name = "Magic"},
-	["strength"] = {Mat = Material( "darkestdays/hud/swords.png" ), Name = "Strength"},
-	["agility"] = {Mat = Material( "darkestdays/hud/scope.png" ), Name = "Gun Mastery"},
+	["defense"] = {Mat = Material( "darkestdays/hud/shield.png" ), Name = "Defense"}, //unused
+	["magic"] = {Mat = Material( "darkestdays/hud/magic.png" ), Name = "player_skill_magic"},
+	["strength"] = {Mat = Material( "darkestdays/hud/swords.png" ), Name = "player_skill_strength"},
+	["agility"] = {Mat = Material( "darkestdays/hud/scope.png" ), Name = "player_skill_gun"},
 	}
 
 function CreateSkillsMenu(x,y,ww,hh)
@@ -1394,7 +1415,7 @@ function CreateSkillsMenu(x,y,ww,hh)
 		//CurPanel.Icon:DockMargin( 0, 0, 0, 0 )
 		CurPanel.Name:SetText("")
 		CurPanel.Name.Paint = function(self,sw,sh)
-			draw.SimpleText(SkillIcons[skillname].Name , "Bison_32", 0, sh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+			draw.SimpleText(translate.Get(SkillIcons[skillname].Name) , "Bison_32", 0, sh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 			
 			local p = GetPlayerSkills( SelectedLoadout ) and GetPlayerSkills( SelectedLoadout )[skillname] or 0
 			
@@ -1446,7 +1467,7 @@ function CreateSkillsMenu(x,y,ww,hh)
 				Bar[i].Overed = true	
 				if ab then
 					SelectedIcon = nil
-					SelectedItem = Abilities[ab] and Abilities[ab].Name or ""
+					SelectedItem = Abilities[ab] and Abilities[ab].Name and translate.Get(Abilities[ab].Name) or ""
 					SelectedText = Abilities[ab] or nil
 				end
 			end
@@ -1544,17 +1565,17 @@ function CreateSkillsMenu(x,y,ww,hh)
 				draw.RoundedBox( 4,0,0, self:GetWide(), self:GetTall(), COLOR_MISC_SELECTED_BRIGHT)
 			end
 			
-			draw.SimpleText(stuff.Name or name , "Bison_30", self:GetWide()/2, self:GetTall()/4, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText(translate.Get(stuff.Name) or name , "Bison_30", self:GetWide()/2, self:GetTall()/4, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			
 			local moveY = 0
 			
 			if stuff.Pr then
-				draw.DrawText( stuff.Pr or "", "Arial_Bold_Scaled_21", self:GetWide()/2, self:GetTall()/2+moveY, Color(131,204,255,255) , TEXT_ALIGN_CENTER, nil)
+				draw.DrawText( translate.Get(stuff.Pr) or "", "Arial_Bold_Scaled_21", self:GetWide()/2, self:GetTall()/2+moveY, Color(131,204,255,255) , TEXT_ALIGN_CENTER, nil)
 				local tX,tY = surface.GetTextSize(stuff.Pr)
 				moveY = moveY + tY
 			end
 			if stuff.Co then
-				draw.DrawText( stuff.Co or "", "Arial_Bold_Scaled_21", self:GetWide()/2, self:GetTall()/2+moveY, Color(230,80,80,255) , TEXT_ALIGN_CENTER, nil)
+				draw.DrawText( translate.Get(stuff.Co) or "", "Arial_Bold_Scaled_21", self:GetWide()/2, self:GetTall()/2+moveY, Color(230,80,80,255) , TEXT_ALIGN_CENTER, nil)
 				local tX,tY = surface.GetTextSize(stuff.Co)
 				moveY = moveY + tY
 			end
@@ -1609,6 +1630,9 @@ function DrawContextMenu(x,y,ww,hh,num,tbl)
 					end
 					if tab.Name then
 						SelectedItem = tab.Name
+						if string.find( tab.Name, "weapon_" ) or string.find( tab.Name, "spell_" ) or string.find( tab.Name, "perk_" ) then
+							SelectedItem = translate.Get( tab.Name )
+						end
 					end
 					//if tab.Description then
 						SelectedText = tab//tab.Description
@@ -1677,10 +1701,10 @@ function DrawContextMenu(x,y,ww,hh,num,tbl)
 				
 				if item == "none" then
 					surface.SetDrawColor( 255, 255, 255, 255) 
-					draw.SimpleText( "NO ITEM", "WeaponNames", ItemLabel[item]:GetWide()/1.5, pos, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText( translate.Get("player_loadout_noitem"), "WeaponNames", ItemLabel[item]:GetWide()/1.5, pos, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					return
 				else
-					draw.SimpleText( tbl[item] and tbl[item].Name or "ERROR!", "Bison_32",ItemLabel[item]:GetWide()/1.5, pos, lock and COLOR_BACKGROUND_DARK or COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText( tbl[item] and tbl[item].Name and translate.Get(tbl[item].Name) or "ERROR!", "Bison_32",ItemLabel[item]:GetWide()/1.5, pos, lock and COLOR_BACKGROUND_DARK or COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					if lock then
 						draw.SimpleText( tbl[item] and tbl[item].Level or "ERROR!", "Bison_55",ItemLabel[item]:GetWide()/4, pos, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 						draw.SimpleText( tbl[item] and tbl[item].Level or "ERROR!", "Bison_50",ItemLabel[item]:GetWide()/4, pos, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -1826,12 +1850,15 @@ function LoadoutMenu()
 	LoadoutEdit.Paint = function(self,fw,fh)
 		draw.RoundedBox( 4,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
 		draw.RoundedBox( 4,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+		
+		local text = translate.Get("player_loadout_edit")
+		
 		if self.Overed then
 			draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT )
-			draw.SimpleText ( "EDIT LOADOUTS AND SKILLS","Arial_Bold_30", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text,"Arial_Bold_30", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		else
 			draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT)
-			draw.SimpleText ( "EDIT LOADOUTS AND SKILLS","Arial_Bold_30", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text,"Arial_Bold_30", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 	end
 	
@@ -1894,7 +1921,7 @@ function LoadoutMenu()
 						surface.DrawTexturedRectRotated( self:GetWide()/2,self:GetTall()/2.5, math.Clamp(mw*dif,0,self:GetWide()/div), mh*dif,0 );
 						mat = true
 					end
-					draw.SimpleText ( tbl[item] and tbl[item].Name or "<empty>","Arial_Bold_18", fw/2, mat and fh*4/5 or fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.SimpleText ( tbl[item] and tbl[item].Name and translate.Get(tbl[item].Name) or translate.Get("player_loadout_empty"),"Arial_Bold_18", fw/2, mat and fh*4/5 or fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				end
 			end
 		end
@@ -1909,116 +1936,16 @@ function LoadoutMenu()
 		LoadoutButton.Paint = function(self,fw,fh)
 			draw.RoundedBox( 4,0,0, fw, fh, COLOR_BACKGROUND_OUTLINE)
 			draw.RoundedBox( 4,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
+			local text = translate.Get("player_loadout")
 			if self.Overed then
 				
 				draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT )
-				draw.SimpleText ( "Loadout "..i,"Arial_Bold_30", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( text.." "..i,"Arial_Bold_30", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			else
 				draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT)
-				draw.SimpleText ( "Loadout "..i,"Arial_Bold_30", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( text.." "..i,"Arial_Bold_30", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 		end
 	end
-
-	//LoadoutPreview:SetPos(0,LoadoutSwitcher:GetTall()/2)
-	//LoadoutPreview.Paint = function() end
-	
-	/*LoadoutPreview = vgui.Create("DLabel",LoadoutSwitcher)
-	LoadoutPreview:SetSize(ScaleW(750),ScaleH(100))
-	LoadoutPreview:SetPos(w/2-ScaleW(750)/2,h/2.5+(ScaleH(60)+2)*3)
-	LoadoutPreview:SetText("")
-	LoadoutPreview.Paint = function() end
-	
-	local LoadoutEdit = vgui.Create("DButton",LoadoutSwitcher)
-	LoadoutEdit:SetPos(w/2-ScaleW(280)/2,h*0.9)
-	LoadoutEdit:SetSize(ScaleW(280),ScaleH(70))
-	LoadoutEdit:SetText("")
-	LoadoutEdit.DoClick = function() 
-		--ApplyLoadout(i)
-		--gui.EnableScreenClicker(false)
-		LoadoutSwitcher:Close()
-		CreateLoadoutMenu()
-	end
-	LoadoutEdit.OnCursorEntered = function() 
-		LoadoutEdit.Overed = true 
-	end
-	LoadoutEdit.OnCursorExited = function () 
-		LoadoutEdit.Overed = false
-	end
-	LoadoutEdit.Paint = function()
-		surface.SetTexture(grad)
-		if LoadoutEdit.Overed then
-			surface.SetDrawColor(60, 60, 60, 200 )
-		else
-			surface.SetDrawColor(0, 0, 0, 220 )
-		end
-		surface.DrawTexturedRectRotated(LoadoutEdit:GetWide()/2,LoadoutEdit:GetTall()/2,LoadoutEdit:GetWide(),LoadoutEdit:GetTall(),0)
-		draw.SimpleTextOutlined ( ">> EDIT MY LOADOUTS <<", "Arial_Bold_32", LoadoutEdit:GetWide()/2, LoadoutEdit:GetTall()/2, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-	end
-	
-	local step = 0
-	for i=1,3 do
-		local LoadoutButton = vgui.Create("DButton",LoadoutSwitcher)
-		LoadoutButton:SetPos(w/2-ScaleW(220)/2,h/2.5+(ScaleH(60))*step)
-		LoadoutButton:SetSize(ScaleW(220),ScaleH(60))
-		LoadoutButton:SetText("")
-		LoadoutButton.DoClick = function() 
-			ApplyLoadout(i)
-			gui.EnableScreenClicker(false)
-			LoadoutSwitcher:Close()
-		end
-		LoadoutButton.OnCursorEntered = function() 
-			LoadoutButton.Overed = true 
-			
-			if LoadoutPreview then
-				LoadoutPreview.Paint = function()
-				
-					if not LoadoutPreview then return end
-					surface.SetTexture(grad)
-					surface.SetDrawColor(0, 0, 0, 240 )
-					surface.DrawTexturedRectRotated(LoadoutPreview:GetWide()/2,LoadoutPreview:GetTall()/2,LoadoutPreview:GetWide(),LoadoutPreview:GetTall(),0)
-					
-					draw.SimpleTextOutlined ( "WEAPONS", "Arial_Bold_16", LoadoutPreview:GetWide()/3.5, LoadoutPreview:GetTall()/4, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-					local step = 0
-					for j=1,2 do
-						draw.SimpleTextOutlined ( Weapons[LoadoutSlotItems[i][j]] and Weapons[LoadoutSlotItems[i][j]].Name or "<empty>", "Arial_Bold_14", LoadoutPreview:GetWide()/3.5, LoadoutPreview:GetTall()/2+14*step, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-						step = 1
-					end
-					
-					draw.SimpleTextOutlined ( "SPELLS", "Arial_Bold_16", LoadoutPreview:GetWide()/2, LoadoutPreview:GetTall()/4, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-					local step = 0
-					for j=3,4 do
-						draw.SimpleTextOutlined ( Spells[LoadoutSlotItems[i][j]] and Spells[LoadoutSlotItems[i][j]].Name or "<empty>", "Arial_Bold_14", LoadoutPreview:GetWide()/2, LoadoutPreview:GetTall()/2+14*step, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-						step = 1
-					end
-					
-					draw.SimpleTextOutlined ( "PERKS", "Arial_Bold_16", LoadoutPreview:GetWide()-LoadoutPreview:GetWide()/3.5, LoadoutPreview:GetTall()/4, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-					local step = 0
-					for j=5,5 do
-						draw.SimpleTextOutlined ( Perks[LoadoutSlotItems[i][j]] and Perks[LoadoutSlotItems[i][j]].Name or "<empty>", "Arial_Bold_14", LoadoutPreview:GetWide()-LoadoutPreview:GetWide()/3.5, LoadoutPreview:GetTall()/2+14*step, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-						step = step+1
-					end
-					
-					
-				end
-			end
-			
-		end
-		LoadoutButton.OnCursorExited = function () 
-			LoadoutButton.Overed = false
-			LoadoutPreview.Paint = function() end
-		end
-		LoadoutButton.Paint = function()
-			surface.SetTexture(grad)
-			if LoadoutButton.Overed then
-				surface.SetDrawColor(60, 60, 60, 200 )
-			else
-				surface.SetDrawColor(0, 0, 0, 220 )
-			end
-			surface.DrawTexturedRectRotated(LoadoutButton:GetWide()/2,LoadoutButton:GetTall()/2,LoadoutButton:GetWide(),LoadoutButton:GetTall(),0)
-			draw.SimpleTextOutlined ( "Loadout "..i, "Arial_Bold_26", LoadoutButton:GetWide()/2, LoadoutButton:GetTall()/2, Color(255, 255, 255, 255) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0,255))
-		end
-		step=step+1
-	end	*/
 end
 

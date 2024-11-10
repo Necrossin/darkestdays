@@ -67,15 +67,11 @@ function SWEP:PlaySwingSound()
 end
 
 function SWEP:PlayHitSound()
-	//self:EmitSound("weapons/knife/knife_hitwall1.wav")
 	self:EmitSound("weapons/dsword/dsword_hitwall1.wav", 70, math.random(80,90))
 end
 
 function SWEP:PlayHitFleshSound()
-	//self:EmitSound("physics/body/body_medium_break"..math.random(2, 4)..".wav")
 	self:EmitSound("weapons/knife/knife_hit"..math.random(3)..".wav", 100, math.random(80,90))
-	--self.Owner:EmitSound("weapons/physcannon/superphys_small_zap"..math.random(4)..".wav", 50, math.random(100,110))
-	//self:EmitSound("weapons/dsword/dsword_hit"..math.random(4)..".wav")
 end 
 
 //Killicon
@@ -83,7 +79,7 @@ if CLIENT then
 	SWEP.ShowViewModel = true
 	SWEP.ShowWorldModel = false
 	
-	killicon.AddFont( "dd_eyelander", "Bison_30", "dominated", Color(231, 231, 231, 255 ) ) 
+	GAMEMODE:KilliconAddFontTranslated( "dd_eyelander", "Bison_30", "killicon_eyelander", Color(231, 231, 231, 255 ) ) 
 end
 
 function SWEP:Precache()

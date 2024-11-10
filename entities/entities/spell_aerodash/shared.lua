@@ -15,7 +15,7 @@ if SERVER then
 end
 
 if CLIENT then
-	AddSpellIcon("spell_aerodash","aerodash")
+	GAMEMODE:KilliconAddSpell("spell_aerodash","aerodash")
 end
 
 util.PrecacheSound("ambient/machines/thumper_dust.wav")

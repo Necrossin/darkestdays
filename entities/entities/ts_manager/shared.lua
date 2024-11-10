@@ -36,12 +36,12 @@ function ENT:Think()
 
 					if IsValid(fresh) and fresh:Alive() then
 						fresh:Kill()
-						fresh:ChatPrint("Congratulations! You have been randomly selected to visit our new gym!")
+						fresh:ChatPrint( translate.ClientGet( fresh, "obj_ts_welcome" ) )
 						fresh:Spawn()
 					end
 					
 				end
-			GAMEMODE:HUDMessage(nil, "The Thugs are coming!", NULL, 4)
+			GAMEMODE:HUDMessage(nil, "obj_ts_begin", NULL, 4)
 			end
 			
 		end

@@ -374,32 +374,6 @@ function meta:SetTeamColor()
 	
 end
 
-function meta:SpawnSuit(tbl)
-	
-	if !ENABLE_OUTFITS then return end
-	
-	tbl = tbl or {}
-	
-	if IsValid(self:GetDTEntity(3)) then
-		//self:GetDTEntity(3):Remove()
-		self:GetDTEntity(3):SetSuitTable( tbl )
-
-	else
-
-		local suit = ents.Create("suit")
-		suit:SetOwner(self)
-		suit:SetParent(self)
-		suit:SetPos(self:GetPos())
-		suit:SetSuitTable( tbl )
-		suit:Spawn()
-		
-		self:SetDTEntity(3,suit)
-	end
-	
-	
-	
-end
-
 function meta:SetVoiceSet( set )
 	self:SetDTString( 1, set )
 end
@@ -912,7 +886,7 @@ function meta:BalanceTeams()
 	
 	if team.NumPlayers(myteam) - team.NumPlayers(enemyteam) >= 2 then
 		self:SetTeam(enemyteam)
-		self:ChatPrint("You were moved into opposite team for balance!")
+		self:ChatPrint( translate.ClientGet( self, "balance_note" ) )
 	end
 	
 end

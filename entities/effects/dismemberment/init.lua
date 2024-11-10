@@ -357,13 +357,7 @@ function EFFECT:Render()
 					end
 				end
 			end
-						
-			if !rag:IsPlayer() then
-				if not rag.RemoveSuit then
-					rag.RemoveSuit = true
-				end
-			end
-			
+								
 			
 			if self.IsThug then
 				if not self.DoneThug then
@@ -466,12 +460,7 @@ end
 							end
 						end
 						
-						if !rag:IsPlayer() then
-							rag:ManipulateBoneScale( bone, Vector(0, 0, 0) )	
-							if not rag.RemoveSuit then
-								rag.RemoveSuit = true
-							end
-						end
+					
 					end	
 				end
 			end

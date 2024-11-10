@@ -13,7 +13,7 @@ if SERVER then
 end
 
 if CLIENT then 
-	AddSpellIcon("projectile_cyclonetrap","cyclonetrap")
+	GAMEMODE:KilliconAddSpell("projectile_cyclonetrap","cyclonetrap")
 end
 
 for i=1,3 do

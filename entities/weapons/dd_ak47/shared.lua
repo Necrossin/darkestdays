@@ -11,7 +11,7 @@ if CLIENT then
 	SWEP.ViewModelFOV = 50
 	
 	SWEP.IconLetter = "b"
-	killicon.AddFont( "dd_ak47", "CSKillIcons", SWEP.IconLetter, Color(255, 255, 255, 255 ) )
+	GAMEMODE:KilliconAddFont( "dd_ak47", "CSKillIcons", SWEP.IconLetter, Color(255, 255, 255, 255 ) )
 	
 	SWEP.SwitchWorldModel = true
 	

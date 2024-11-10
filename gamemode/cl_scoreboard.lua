@@ -3,7 +3,7 @@ local logo = Material( "darkestdays/hud/logo.png" )
 local logo_bg = Material( "darkestdays/hud/logo_bg.png" )
 
 local comtoname = {
-	["admin_kick"] = "Kick",
+	["admin_kick"] = "admin_kick",
 }
 
 local function CreateReasonForm( command, id )
@@ -13,18 +13,17 @@ local function CreateReasonForm( command, id )
 	local form = vgui.Create("DFrame")
 	form:SetSize(300,80)
 	form:Center()
-	form:SetTitle((comtoname[command] or "Stop").." player "..tostring(Entity(id).Name and Entity(id):Name() or "ERROR"))
+	form:SetTitle(  translate.Format( "admin_reason_popup", comtoname[command] and translate.Get( comtoname[command] ) or "Kick",  tostring(Entity(id).Name and Entity(id):Name() or "ERROR" ) ) )
 	form:ShowCloseButton(false)
 	form:MakePopup()
-	
 	
 	local reason = form:Add("DTextEntry")
 	reason:SetPos(2,24)
 	reason:SetSize(form:GetWide()-4, 23)
-	reason:SetText("No reason given.")
+	reason:SetText( translate.Get( "admin_no_reason" ) )
 	
 	local conf = form:Add("DButton")
-	conf:SetText("Confirm")
+	conf:SetText( translate.Get( "admin_menu_confirm" ) )
 	conf:SetSize( form:GetWide()/2-4, 30 )
 	conf:SetPos( 2, form:GetTall() - 32)
 	conf.DoClick = function(self)
@@ -33,7 +32,7 @@ local function CreateReasonForm( command, id )
 	end
 	
 	local cancel = form:Add("DButton")
-	cancel:SetText("Cancel")
+	cancel:SetText(  translate.Get( "admin_menu_cancel" )  )
 	cancel:SetSize( form:GetWide()/2-4, 30 )
 	cancel:SetPos( form:GetWide()/2+2, form:GetTall() - 32)
 	cancel.DoClick = function(self)
@@ -72,12 +71,12 @@ local PLAYER_LINE =
 			if MySelf:IsAdmin() and ADMIN_MENU then
 
 					local AdminMenu = DermaMenu()
-					AdminMenu:AddOption("Slay", function() RunConsoleCommand("admin_slay", tostring(self.Player:EntIndex())) end )
-					AdminMenu:AddOption("Kick", function() CreateReasonForm( "admin_kick", self.Player:EntIndex() ) end )
-					AdminMenu:AddOption("Mute/Unmute", function() RunConsoleCommand("admin_mute", tostring(self.Player:EntIndex())) end )
-					AdminMenu:AddOption("Gag/Ungag", function() RunConsoleCommand("admin_gag", tostring(self.Player:EntIndex())) end )
-					AdminMenu:AddOption("Bring", function() RunConsoleCommand("admin_bring", tostring(self.Player:EntIndex())) end )
-					AdminMenu:AddOption("Block/Enable spawning", function() RunConsoleCommand("admin_delayrespawn", tostring(self.Player:EntIndex())) end )
+					AdminMenu:AddOption( translate.Get( "admin_slay" ) , function() RunConsoleCommand("admin_slay", tostring(self.Player:EntIndex())) end )
+					AdminMenu:AddOption( translate.Get( "admin_kick" ), function() CreateReasonForm( "admin_kick", self.Player:EntIndex() ) end )
+					AdminMenu:AddOption( translate.Get( "admin_mute" ), function() RunConsoleCommand("admin_mute", tostring(self.Player:EntIndex())) end )
+					AdminMenu:AddOption( translate.Get( "admin_gag" ), function() RunConsoleCommand("admin_gag", tostring(self.Player:EntIndex())) end )
+					AdminMenu:AddOption( translate.Get( "admin_bring" ), function() RunConsoleCommand("admin_bring", tostring(self.Player:EntIndex())) end )
+					AdminMenu:AddOption( translate.Get( "admin_delayrespawn" ), function() RunConsoleCommand("admin_delayrespawn", tostring(self.Player:EntIndex())) end )
 					AdminMenu:Open()
 				
 			end
@@ -265,8 +264,10 @@ local SCORE_BOARD =
 			end
 					
 			draw.SimpleText( hostname, font, self.Header:GetWide()-10, 40, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+
+			local gm = GAMEMODE:GetGametype()
 			
-			draw.SimpleText( GAMEMODE.Gametypes[GAMEMODE:GetGametype()] and GAMEMODE.Gametypes[GAMEMODE:GetGametype()].Name or "King of the Hill", "Arial_Bold_30", self.Header:GetWide()-10, 35+70, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+			draw.SimpleText( translate.Get( GAMEMODE.Gametypes[gm] and GAMEMODE.Gametypes[gm].TranslateName or "koth_name" ), "Arial_Bold_30", self.Header:GetWide()-10, 35+70, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 					
 			
 		end
@@ -278,44 +279,31 @@ local SCORE_BOARD =
 		
 		end
 		
-		if ENABLE_OUTFITS then
-			self.Cust = vgui.Create( "DButton", self.Help )
-			self.Cust:Dock( LEFT )
-			//self.Cust:SetSize( self:GetWide()/3, 36 )
-			self.Cust:SetWidth( 540/3-2.5 )
-			self.Cust:DockMargin( 0, 2, 2, 2 )
-			self.Cust:SetFont( "ScoreboardDefault" )
-			self.Cust:SetTextColor( color_white )
-			self.Cust:SetText("Outfit")
-			self.Cust.DoClick = function() CustomizationMenu() end
-			self.Cust.Paint = function(s,fw,fh)
-				draw.RoundedBox( 4,0,0,self.Cust:GetWide(), self.Cust:GetTall(), Color(0, 0, 0, 150))
-			end
-		end
-		
 		self.Ach = vgui.Create( "DButton", self.Help )
 		self.Ach:Dock( LEFT )
 		//self.Op:SetSize( self:GetWide()/3, 36 )
-		self.Ach:SetWidth( ENABLE_OUTFITS and ( 540/3-2.5 )  or ( 540/2-2.5 ) )
-		self.Ach:DockMargin( ENABLE_OUTFITS and 2 or 0, 2, 2, 2 )
-		self.Ach:SetFont( "ScoreboardDefault" )
-		self.Ach:SetTextColor( color_white )
-		self.Ach:SetText("Stats")
+		self.Ach:SetWidth( 540 / 2-2.5 )
+		self.Ach:DockMargin( 0, 2, 2, 2 )
+		//self.Ach:SetFont( "ScoreboardDefault" )
+		//self.Ach:SetTextColor( color_white )
+		self.Ach:SetText( "" )
 		self.Ach.DoClick = function() AchievementsMenu() end
 		self.Ach.Paint = function(s,fw,fh)
 			draw.RoundedBox( 4,0,0,self.Ach:GetWide(), self.Ach:GetTall(), Color(0, 0, 0, 150))
+			draw.SimpleText( translate.Get( "scoreboard_achievements" ), "ScoreboardDefault", s:GetWide() / 2, s:GetTall() / 2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		
 		self.Op = vgui.Create( "DButton", self.Help )
 		self.Op:Dock( LEFT )
-		self.Op:SetWidth( ENABLE_OUTFITS and ( 540/3-2.5 )  or ( 540/2-2.5 ) )
+		self.Op:SetWidth( 540 / 2-2.5 )
 		self.Op:DockMargin( 2, 2, 0, 2 )
-		self.Op:SetFont( "ScoreboardDefault" )
-		self.Op:SetTextColor( color_white )
-		self.Op:SetText("Options")
+		//self.Op:SetFont( "ScoreboardDefault" )
+		//self.Op:SetTextColor( color_white )
+		self.Op:SetText( "" )
 		self.Op.DoClick = function() OptionsMenu() end
 		self.Op.Paint = function(s,fw,fh)
 			draw.RoundedBox( 4,0,0,self.Op:GetWide(), self.Op:GetTall(), Color(0, 0, 0, 150))
+			draw.SimpleText( translate.Get( "scoreboard_options" ), "ScoreboardDefault", s:GetWide() / 2, s:GetTall() / 2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 
 		self.Scores = self:Add( "DScrollPanel" )

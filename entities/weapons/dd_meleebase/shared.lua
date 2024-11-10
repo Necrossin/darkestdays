@@ -1567,6 +1567,8 @@ local blood_mat = Material( "models/flesh" )
 				end
 				render.SetBlend(1)
 				render.SetColorModulation(1, 1, 1)
+
+				self:OnVElementDrawn( name, model )
 				
 				if (v.surpresslightning) then
 					render.SuppressEngineLighting(false)
@@ -1712,6 +1714,8 @@ local blood_mat = Material( "models/flesh" )
 				model:SetupBones()
 				model:DrawModel()
 				
+				self:OnWElementDrawn( name, model )
+
 				if DD_BLOODYMODELS and self.Bloody and not v.no_blood then
 						
 					if self.BloodScale then
@@ -1901,6 +1905,12 @@ local blood_mat = Material( "models/flesh" )
 		end
 		self.VElements = nil
 		self.WElements = nil
+	end
+
+	function SWEP:OnVElementDrawn( name, modelEnt )
+	end
+
+	function SWEP:OnWElementDrawn( name, modelEnt )
 	end
 
 end

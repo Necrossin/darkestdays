@@ -80,45 +80,6 @@ local P_Team = M_Player.Team
 
 local team_GetColor = team.GetColor
 
-
-SpellIcons = {}
-
-local def = Material("HUD/killicons/default")
-function AddSpellIcon(name,alias)
-
-	local mat = Spells[alias] and Spells[alias].Mat or def
-
-	SpellIcons[name] = mat
-	--table.insert(SpellIcons, {})
-end
-
-function IsSpellIcon(name)
-	return SpellIcons[name] ~= nil
-end
-
-
-function DrawSpellIcon(x, y, name, alpha)
-
-	alpha = alpha or 255
-
-	local w = 50
-	local h = 50
-	
-	x = x - w * 0.5
-	y = y - h * 0.5
-	
-	local mat = SpellIcons[name]
-	surface_SetMaterial( mat )
-	surface_SetDrawColor( 255, 255, 255, alpha )
-	surface_DrawTexturedRect( x, y, w, h )
-
-	
-end
-
-function GetSpellIconSize()
-	return 50,50
-end
-
 //Because im tired creating every single effect for each particle
 
 function RegisterParticleEffect( name )
@@ -400,9 +361,9 @@ end
 
 function GM:Initialize( )	
 
-	surface.CreateFont( "ScoreboardHead",{font = "coolvetica", size = 48,weight = 500,antialias = true})
-	surface.CreateFont( "ScoreboardSub",{font = "coolvetica", size = 24,weight = 500,antialias = true})
-	surface.CreateFont( "ScoreboardText",{font = "Tahoma", size = 16,weight = 1000,antialias = true})
+	surface.CreateFont( "ScoreboardHead",{font = "coolvetica", size = 48,weight = 500,antialias = true, extended = true})
+	surface.CreateFont( "ScoreboardSub",{font = "coolvetica", size = 24,weight = 500,antialias = true, extended = true})
+	surface.CreateFont( "ScoreboardText",{font = "Tahoma", size = 16,weight = 1000,antialias = true, extended = true})
 
 
 	surface.CreateFont("HL2_15",{font = "HalfLife2", size = 15,weight = 400,antialias = true})	
@@ -415,89 +376,89 @@ function GM:Initialize( )
 	surface.CreateFont("HL2_90",{font = "HalfLife2", size = 90,weight = 400,antialias = true})	
 	surface.CreateFont("HL2_100",{font = "HalfLife2", size = 100,weight = 400,antialias = true})	
 	
-	surface.CreateFont("Arial_Bold_9",{font = "Arial", size = 9,weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_11",{font = "Arial", size = 11,weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_13",{font = "Arial", size = 13,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_14",{font = "Arial", size = 14,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_16",{font = "Arial", size = 16,weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_18",{font = "Arial", size = 18,weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_20",{font = "Arial", size = 20,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_23",{font = "Arial", size = 23,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_25",{font = "Arial", size = 25,weight = 700,antialias = true})		
-	surface.CreateFont("Arial_Bold_26",{font = "Arial", size = 26,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_30",{font = "Arial", size = 30,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_32",{font = "Arial", size = 32,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Italic_32",{font = "Arial", size = 32,weight = 700,antialias = true,italic = true})
-	surface.CreateFont("Arial_Bold_34",{font = "Arial", size = 34,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Italic_34",{font = "Arial", size = 34,weight = 700,antialias = true,italic = true})
-	surface.CreateFont("Arial_Bold_36",{font = "Arial", size = 36,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Italic_36",{font = "Arial", size = 36,weight = 700,antialias = true,italic = true})
-	surface.CreateFont("Arial_Bold_38",{font = "Arial", size = 38,weight = 700,antialias = true})		
-	surface.CreateFont("Arial_Bold_40",{font = "Arial", size = 40,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_50",{font = "Arial", size = 50,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_60",{font = "Arial", size = 60,weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_70",{font = "Arial", size = 70,weight = 700,antialias = true})		
-	surface.CreateFont("Arial_Bold_80",{font = "Arial", size = 80,weight = 700,antialias = true})	
+	surface.CreateFont("Arial_Bold_9",{font = "Arial", size = 9,weight = 700,antialias = true, extended = true})	
+	surface.CreateFont("Arial_Bold_11",{font = "Arial", size = 11,weight = 700,antialias = true, extended = true})	
+	surface.CreateFont("Arial_Bold_13",{font = "Arial", size = 13,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_14",{font = "Arial", size = 14,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_16",{font = "Arial", size = 16,weight = 700,antialias = true, extended = true})	
+	surface.CreateFont("Arial_Bold_18",{font = "Arial", size = 18,weight = 700,antialias = true, extended = true})	
+	surface.CreateFont("Arial_Bold_20",{font = "Arial", size = 20,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_23",{font = "Arial", size = 23,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_25",{font = "Arial", size = 25,weight = 700,antialias = true, extended = true})	
+	surface.CreateFont("Arial_Bold_26",{font = "Arial", size = 26,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_30",{font = "Arial", size = 30,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_32",{font = "Arial", size = 32,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Italic_32",{font = "Arial", size = 32,weight = 700,antialias = true,italic = true, extended = true})
+	surface.CreateFont("Arial_Bold_34",{font = "Arial", size = 34,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Italic_34",{font = "Arial", size = 34,weight = 700,antialias = true,italic = true, extended = true})
+	surface.CreateFont("Arial_Bold_36",{font = "Arial", size = 36,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Italic_36",{font = "Arial", size = 36,weight = 700,antialias = true,italic = true, extended = true})
+	surface.CreateFont("Arial_Bold_38",{font = "Arial", size = 38,weight = 700,antialias = true, extended = true})		
+	surface.CreateFont("Arial_Bold_40",{font = "Arial", size = 40,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_50",{font = "Arial", size = 50,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_60",{font = "Arial", size = 60,weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_70",{font = "Arial", size = 70,weight = 700,antialias = true, extended = true})		
+	surface.CreateFont("Arial_Bold_80",{font = "Arial", size = 80,weight = 700,antialias = true, extended = true})	
 	
 	//Scaled Arial
-	surface.CreateFont("Arial_Bold_Scaled_9",{font = "Arial", size = NewScreenScale(9),weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_Scaled_11",{font = "Arial", size = NewScreenScale(11),weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_Scaled_13",{font = "Arial", size = NewScreenScale(13),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_14",{font = "Arial", size = NewScreenScale(14),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_16",{font = "Arial", size = NewScreenScale(16),weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_Scaled_18",{font = "Arial", size = NewScreenScale(18),weight = 700,antialias = true})	
-	surface.CreateFont("Arial_Bold_Scaled_Italic_20",{font = "Arial", size = NewScreenScale(20),weight = 1200,antialias = true,italic = true})
-	surface.CreateFont("Arial_Bold_Scaled_20",{font = "Arial", size = NewScreenScale(20),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_21",{font = "Arial", size = NewScreenScale(21),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_23",{font = "Arial", size = NewScreenScale(23),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_25",{font = "Arial", size = NewScreenScale(25),weight = 700,antialias = true})		
-	surface.CreateFont("Arial_Bold_Scaled_26",{font = "Arial", size = NewScreenScale(26),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_30",{font = "Arial", size = NewScreenScale(30),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_32",{font = "Arial", size = NewScreenScale(32),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_Italic_32",{font = "Arial", size = NewScreenScale(32),weight = 700,antialias = true,italic = true})
-	surface.CreateFont("Arial_Bold_Scaled_34",{font = "Arial", size = NewScreenScale(34),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_Italic_34",{font = "Arial", size = NewScreenScale(34),weight = 700,antialias = true,italic = true})
-	surface.CreateFont("Arial_Bold_Scaled_36",{font = "Arial", size = NewScreenScale(36),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_Italic_36",{font = "Arial", size = NewScreenScale(36),weight = 700,antialias = true,italic = true})
-	surface.CreateFont("Arial_Bold_Scaled_38",{font = "Arial", size = NewScreenScale(38),weight = 700,antialias = true})		
-	surface.CreateFont("Arial_Bold_Scaled_40",{font = "Arial", size = NewScreenScale(40),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_50",{font = "Arial", size = NewScreenScale(50),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_60",{font = "Arial", size = NewScreenScale(60),weight = 700,antialias = true})
-	surface.CreateFont("Arial_Bold_Scaled_70",{font = "Arial", size = NewScreenScale(70),weight = 700,antialias = true})		
-	surface.CreateFont("Arial_Bold_Scaled_80",{font = "Arial", size = NewScreenScale(80),weight = 700,antialias = true})
+	surface.CreateFont("Arial_Bold_Scaled_9",{font = "Arial", size = NewScreenScale(9),weight = 700,antialias = true, extended = true})	
+	surface.CreateFont("Arial_Bold_Scaled_11",{font = "Arial", size = NewScreenScale(11),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_13",{font = "Arial", size = NewScreenScale(13),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_14",{font = "Arial", size = NewScreenScale(14),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_16",{font = "Arial", size = NewScreenScale(16),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_18",{font = "Arial", size = NewScreenScale(18),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_Italic_20",{font = "Arial", size = NewScreenScale(20),weight = 1200,antialias = true,italic = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_20",{font = "Arial", size = NewScreenScale(20),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_21",{font = "Arial", size = NewScreenScale(21),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_23",{font = "Arial", size = NewScreenScale(23),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_25",{font = "Arial", size = NewScreenScale(25),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_26",{font = "Arial", size = NewScreenScale(26),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_30",{font = "Arial", size = NewScreenScale(30),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_32",{font = "Arial", size = NewScreenScale(32),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_Italic_32",{font = "Arial", size = NewScreenScale(32),weight = 700,antialias = true,italic = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_34",{font = "Arial", size = NewScreenScale(34),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_Italic_34",{font = "Arial", size = NewScreenScale(34),weight = 700,antialias = true,italic = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_36",{font = "Arial", size = NewScreenScale(36),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_Italic_36",{font = "Arial", size = NewScreenScale(36),weight = 700,antialias = true,italic = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_38",{font = "Arial", size = NewScreenScale(38),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_40",{font = "Arial", size = NewScreenScale(40),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_50",{font = "Arial", size = NewScreenScale(50),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_60",{font = "Arial", size = NewScreenScale(60),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_70",{font = "Arial", size = NewScreenScale(70),weight = 700,antialias = true, extended = true})
+	surface.CreateFont("Arial_Bold_Scaled_80",{font = "Arial", size = NewScreenScale(80),weight = 700,antialias = true, extended = true})
 
-	surface.CreateFont("Bison_20",{font = "Bison", size = 20,weight = 500,antialias = true})
-	surface.CreateFont("Bison_23",{font = "Bison", size = 23,weight = 500,antialias = true})
-	surface.CreateFont("Bison_25",{font = "Bison", size = 25,weight = 500,antialias = true})
-	surface.CreateFont("Bison_30",{font = "Bison", size = 30,weight = 500,antialias = true})
-	surface.CreateFont("Bison_32",{font = "Bison", size = 32,weight = 500,antialias = true})
-	surface.CreateFont("Bison_35",{font = "Bison", size = 35,weight = 500,antialias = true})
-	surface.CreateFont("Bison_40",{font = "Bison", size = 40,weight = 500,antialias = true})
-	surface.CreateFont("Bison_45",{font = "Bison", size = 45,weight = 500,antialias = true})
-	surface.CreateFont("Bison_50",{font = "Bison", size = 50,weight = 500,antialias = true})	
-	surface.CreateFont("Bison_55",{font = "Bison", size = 55,weight = 500,antialias = true})
-	surface.CreateFont("Bison_60",{font = "Bison", size = 60,weight = 500,antialias = true})
-	surface.CreateFont("Bison_65",{font = "Bison", size = 65,weight = 500,antialias = true})
-	surface.CreateFont("Bison_70",{font = "Bison", size = 70,weight = 500,antialias = true})	
-	surface.CreateFont("Bison_75",{font = "Bison", size = 75,weight = 500,antialias = true})	
-	surface.CreateFont("Bison_80",{font = "Bison", size = 80,weight = 500,antialias = true})
+	surface.CreateFont("Bison_20",{font = "Bison(RUS BY LYAJKA)", size = 20, weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_23",{font = "Bison(RUS BY LYAJKA)", size = 23, weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_25",{font = "Bison(RUS BY LYAJKA)", size = 25, weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_30",{font = "Bison(RUS BY LYAJKA)", size = 30, weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_32",{font = "Bison(RUS BY LYAJKA)", size = 32, weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_35",{font = "Bison(RUS BY LYAJKA)", size = 35,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_40",{font = "Bison(RUS BY LYAJKA)", size = 40,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_45",{font = "Bison(RUS BY LYAJKA)", size = 45,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_50",{font = "Bison(RUS BY LYAJKA)", size = 50,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_55",{font = "Bison(RUS BY LYAJKA)", size = 55,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_60",{font = "Bison(RUS BY LYAJKA)", size = 60,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_65",{font = "Bison(RUS BY LYAJKA)", size = 65,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_70",{font = "Bison(RUS BY LYAJKA)", size = 70,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_75",{font = "Bison(RUS BY LYAJKA)", size = 75,weight = 500, antialias = true, extended = true})
+	surface.CreateFont("Bison_80",{font = "Bison(RUS BY LYAJKA)", size = 80,weight = 500, antialias = true, extended = true})
 
 	//scaled bison
-	surface.CreateFont("Bison_Scaled_20",{font = "Bison", size = NewScreenScale(20),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_23",{font = "Bison", size = NewScreenScale(23),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_25",{font = "Bison", size = NewScreenScale(25),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_30",{font = "Bison", size = NewScreenScale(30),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_32",{font = "Bison", size = NewScreenScale(32),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_35",{font = "Bison", size = NewScreenScale(35),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_40",{font = "Bison", size = NewScreenScale(40),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_45",{font = "Bison", size = NewScreenScale(45),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_50",{font = "Bison", size = NewScreenScale(50),weight = 500,antialias = true})	
-	surface.CreateFont("Bison_Scaled_55",{font = "Bison", size = NewScreenScale(55),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_60",{font = "Bison", size = NewScreenScale(60),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_65",{font = "Bison", size = NewScreenScale(65),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_70",{font = "Bison", size = NewScreenScale(70),weight = 500,antialias = true})	
-	surface.CreateFont("Bison_Scaled_75",{font = "Bison", size = NewScreenScale(75),weight = 500,antialias = true})
-	surface.CreateFont("Bison_Scaled_80",{font = "Bison", size = NewScreenScale(80),weight = 500,antialias = true})
+	surface.CreateFont("Bison_Scaled_20",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(20), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_23",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(23), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_25",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(25), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_30",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(30), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_32",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(32), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_35",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(35), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_40",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(40), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_45",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(45), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_50",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(50), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_55",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(55), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_60",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(60), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_65",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(65), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_70",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(70), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_75",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(75), weight = 500,antialias = true, extended = true})
+	surface.CreateFont("Bison_Scaled_80",{font = "Bison(RUS BY LYAJKA)", size = NewScreenScale(80), weight = 500,antialias = true, extended = true})
 	
 	//scaled csd
 	surface.CreateFont("CSD_Scaled_40",{font = "csd", size = NewScreenScale(40),weight = 500,antialias = true})
@@ -1135,7 +1096,7 @@ function GM:_HUDDrawTargetID()
 	if trace.Entity:IsPlayer() and not trace.Entity:IsGhosting() then
 		text = trace.Entity:Nick()
 		if not MySelf:IsTeammate(trace.Entity) then//trace.Entity:Team() ~= LocalPlayer():Team() then
-			text = text.." (ENEMY)"
+			text = translate.Format( "hud_targetid_enemy", text ) //text.." (ENEMY)"
 		end
 		if self:GetGametype() == "ts" and P_Team ( trace.Entity ) == TEAM_THUG and !MySelf:IsTeammate(trace.Entity) then return end
 	else

@@ -122,8 +122,7 @@ if CLIENT then
 	SWEP.ShowViewModel = true
 	SWEP.ShowWorldModel = false
 	
-	killicon.AddFont( "dd_thugfists", "Bison_30", "destroyed", Color(231, 231, 231, 255 ) ) 
-	//killicon.AddFont( "dd_crowbar", "HL2MPTypeDeath", "6", Color(255, 255, 255, 255 ) )
+	GAMEMODE:KilliconAddFontTranslated( "dd_thugfists", "Bison_30", "killicon_thugfists", Color(231, 231, 231, 255 ) )
 end
 
 function SWEP:Precache()

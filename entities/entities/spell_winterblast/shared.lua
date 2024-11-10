@@ -13,8 +13,8 @@ if SERVER then
 end
 
 if CLIENT then 
-	AddSpellIcon("spell_winterblast","winterblast")
-	AddSpellIcon("projectile_winterblast","winterblast")
+	GAMEMODE:KilliconAddSpell("spell_winterblast","winterblast")
+	GAMEMODE:KilliconAddSpell("projectile_winterblast","winterblast")
 end
 
 PrecacheParticleSystem( "v_winterblast" )

@@ -90,7 +90,7 @@ if CLIENT then
 	SWEP.ShowViewModel = true
 	SWEP.ShowWorldModel = true
 	
-	killicon.AddFont( "dd_crowbar", "HL2MPTypeDeath", "6", Color(231, 231, 231, 255 ) )
+	GAMEMODE:KilliconAddFont( "dd_crowbar", "HL2MPTypeDeath", "6", Color(231, 231, 231, 255 ) )
 
 end
 

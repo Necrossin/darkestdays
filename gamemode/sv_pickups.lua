@@ -359,6 +359,7 @@ end
 concommand.Add( "dd_mapprofiler", RequestMapProfiler )
 
 util.AddNetworkString( "HUDMessage" )
+util.AddNetworkString( "HUDMessagePlayer" )
 util.AddNetworkString( "SendMapProfilesToClient" )
 util.AddNetworkString( "SendMapPointsToServer" )
 util.AddNetworkString( "SendMapExploitsToServer" )
@@ -454,9 +455,24 @@ net.Receive( "SendMapExploitsToServer", function( len, pl )
 end)
 
 function GM:HUDMessage(to, txt, about, snd)
-	
+
 	net.Start( "HUDMessage" )
 		net.WriteString( txt or "" )
+		net.WriteEntity( about or NULL )
+		net.WriteDouble( snd or 0 )
+	if to and type( to ) == "player" then
+		net.Send( to )
+	else
+		net.Broadcast()
+	end
+
+end
+
+function GM:HUDMessagePlayer(to, txt, txt_player, about, snd)
+
+	net.Start( "HUDMessagePlayer" )
+		net.WriteString( txt or "" )
+		net.WriteString( txt_player or "" )
 		net.WriteEntity( about or NULL )
 		net.WriteDouble( snd or 0 )
 	if to and type( to ) == "player" then

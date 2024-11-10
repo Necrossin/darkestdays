@@ -17,11 +17,11 @@ PrecacheParticleSystem( "burningplayer" )
 PrecacheParticleSystem( "firebolt_projectile" )
 
 
- 
+
 if CLIENT then
-	AddSpellIcon("spell_firebolt","firebolt")
-	AddSpellIcon("effect_afterburn","firebolt")
-	AddSpellIcon("projectile_firebolt","firebolt")
+	GAMEMODE:KilliconAddSpell("spell_firebolt","firebolt")
+	GAMEMODE:KilliconAddSpell("effect_afterburn","firebolt")
+	GAMEMODE:KilliconAddSpell("projectile_firebolt","firebolt")
 	RegisterParticleEffectAttach( "burningplayer" )
 end
 

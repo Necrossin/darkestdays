@@ -13,7 +13,7 @@ if SERVER then
 end
 
 if CLIENT then 
-	AddSpellIcon("spell_firebolt2","firebolt2")
+	GAMEMODE:KilliconAddSpell("spell_firebolt2","firebolt2")
 end
 
 PrecacheParticleSystem( "firebolt2_stream" )

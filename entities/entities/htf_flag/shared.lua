@@ -100,9 +100,10 @@ if SERVER then
 			
 			self.Entity:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
 			
-			GAMEMODE:HUDMessage(nil, ent:Nick().." has picked up the flag!", ent, 1)
+			//GAMEMODE:HUDMessage(nil, ent:Nick().." has picked up the flag!", ent, 1)
+			GAMEMODE:HUDMessagePlayer(nil, "obj_flag_pickup", ent:Nick(), ent, 1)
 			
-			local phys = self.Entity:GetPhysicsObject()
+			local phys = self:GetPhysicsObject()
 			if (phys:IsValid()) then
 				phys:Wake()
 				phys:EnableMotion( true ) 
@@ -230,18 +231,17 @@ function ENT:Draw()
 		end
 
 	else
-		--self:SetNoDraw( false )
 		if self:GetModelScale() ~= 1 then
 			self:SetModelScale(1,0)
 		end
-		
+
 		self:DrawModel()
-		
+
 		if not self.Particle then
-			ParticleEffectAttach("flag_neutral",PATTACH_ABSORIGIN_FOLLOW,self.Entity,0)
+			ParticleEffectAttach("flag_neutral",PATTACH_ABSORIGIN_FOLLOW,self,0)
 			self.Particle = true
 		end
-	end						
+	end	
 end
 end
 
@@ -255,7 +255,7 @@ end
 
 function ENT:SetHoldingTeam(tm)
 	local t = 0
-	if tm then 
+	if tm then
 		t = self:TeamToHill(tm)
 	end
 	self:SetDTInt(0,t)
@@ -284,9 +284,9 @@ function ENT:SetCarrier(ent)
 		self:SetOwner(ent)
 		self:SetSolid(SOLID_NONE)
 		//self.Entity:PhysicsInit(SOLID_NONE)
-		self.Entity:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
+		self:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
 		
-		ent._CapturePoints = CurTime() + 15 
+		ent._CapturePoints = CurTime() + 15
 		
 		//ent:Give("flag_carry")
 		//ent:SelectWeapon("flag_carry")
@@ -305,28 +305,23 @@ end
 
 function ENT:DropFlag(reset)
 	self.NextTouch = CurTime() + 0.3
-	
-	//if not throw then
-		//self:EmitSound(dropsound)
-	//end
-	
+
+
 	if IsValid(self:GetCarrier()) then
-	//	self:GetCarrier():StripWeapon("flag_carry")
-		//self:GetCarrier():SendLua("RestoreBoneMods()")
-		//self:GetCarrier():SprintEnable( )
-		GAMEMODE:HUDMessage(nil, self:GetCarrier():Nick().." has dropped the flag!", self:GetCarrier(), 3)
+		//GAMEMODE:HUDMessage(nil, self:GetCarrier():Nick().." has dropped the flag!", self:GetCarrier(), 3)
+		GAMEMODE:HUDMessagePlayer(nil, "obj_flag_drop", self:GetCarrier():Nick(), self:GetCarrier(), 3)
 	end
-	
+
 	self:SetHoldingTeam()
-	
+
 	self:SetCarrier()
 	self:SetParent()
 	//self:SetMoveType(MOVETYPE_VPHYSICS)
 	//self.Entity:SetSolid(SOLID_VPHYSICS)
-	self.Entity:PhysicsInit(SOLID_VPHYSICS)
-	self.Entity:SetTrigger(true)
-	self.Entity:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-	
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetTrigger(true)
+	self:SetCollisionGroup( COLLISION_GROUP_WEAPON )
+
 	local phys = self:GetPhysicsObject()
 	if phys and phys:IsValid() then
 		phys:Wake()
@@ -361,7 +356,7 @@ function ENT:GetTickAmount(tm)
 	local hotherteam = self:TeamToHill(otherteam)
 	
 	if (team.NumPlayers(myteam) < team.NumPlayers(otherteam) or team.GetScore(myteam) < team.GetScore(otherteam)) and 
-		self:GetTeamTimer(hmyteam) > self:GetTeamTimer(hotherteam)and self.Swaps and self.Swaps > 3 then
+		self:GetTeamTimer(hmyteam) > self:GetTeamTimer(hotherteam) and self.Swaps and self.Swaps > 3 then
 		am = 0.45
 		need = true
 	end
@@ -445,27 +440,26 @@ function ENT:GetStartCooldown()
 end
 
 function ENT:ResetFlag()
-	
+
 	if not KOTHPoints then return end
 	if #KOTHPoints < 1 then return end
-		
+
 	local ind = math.random(1,#KOTHPoints)
-		
 	local rand = KOTHPoints[ind]
-		
+
 	self:SetPos(rand.Pos+vector_up*25)
-	//self:SetRadius(rand.R)
-	local phys = self.Entity:GetPhysicsObject()
+
+	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Sleep()
-		phys:EnableMotion( false ) 
+		phys:EnableMotion( false )
 	end
-	
-		
+
+
 	sound.Play("ambient/machines/teleport"..math.random(3,4)..".wav",rand.Pos,140,100,1)
-	
-	GAMEMODE:HUDMessage(nil, "Flag has been reset!", nil, 0)
-		
+
+	GAMEMODE:HUDMessage(nil, "obj_flag_reset_done", nil, 0)
+
 	self:SetStartTime(CurTime() + 10)
 	
 end

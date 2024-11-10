@@ -10,17 +10,17 @@ if CLIENT then
 	SWEP.Slot = 3
 	SWEP.SlotPos = 1
 	SWEP.IconLetter = "k"
-	killicon.AddFont("dd_launcher", "CSKillIcons", SWEP.IconLetter, Color(255, 80, 0, 255 ))
+
 	SWEP.ViewModelFOV = 57
 	SWEP.ViewModelFlip = false//true
 
 	SWEP.ShowViewModel = false
 	SWEP.ShowWorldModel = true
 	
-	killicon.AddFont( "projectile_bolt", "HL2MPTypeDeath","1", color_white )
+	GAMEMODE:KilliconAddFont( "projectile_bolt", "HL2MPTypeDeath","1", color_white )
 
-	
 	//SWEP.ReverseCastHand = true
+	SWEP.AnimDuration = 1
 
 end
 
@@ -108,16 +108,17 @@ function SWEP:PrimaryAttack()
 	if self.Owner:IsCrow() then return end
 	if self.Owner:IsSprinting() and not ( self.IgnoreSprint or self.Owner:IsSliding() ) then 
 		self.Owner.NextSprint = CurTime() + 0.5
-		return 
+		return
 	end
-	self.Weapon:SetNextPrimaryFire(CurTime() + 0.1)
 	if not self:CanPrimaryAttack() then return end
+
+	self:SetNextPrimaryFire(CurTime() + 0.3)
 	
 	self:EmitSound( self.Primary.Sound )
 	
-	if SERVER then	
+	if SERVER then
 		
-		local owner = self.Owner
+		local owner = self:GetOwner()
 		
 		local dmg, force = 40,3000
 		
@@ -129,51 +130,58 @@ function SWEP:PrimaryAttack()
 			//dmg, force = 25, 2600
 		//end
 		
-		local ent = ents.Create("crossbow_bolt")//"projectile_bolt"
-		if ent:IsValid() then		
-			ent:SetOwner(owner)
+		local ent = ents.Create("crossbow_bolt")
+
+		if ent:IsValid() then	
+			
 			local ang = owner:GetAimVector():Angle()
 			ang:RotateAroundAxis(ang:Right(), 0.2)
 			ang:RotateAroundAxis(ang:Up(), 0.1)
-			ent:SetPos(owner:GetShootPos()+ang:Right()*5-ang:Up()*4)
-			//ang:RotateAroundAxis(ang:Right(),180)
+
+			local trace = {}
+			trace.start = self:GetOwner():GetShootPos() + ang:Right() * 5 -  ang:Up() * 4
+			trace.endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 5
+			trace.filter = { self:GetOwner() }
+			trace.mask = MASK_SOLID
+
+			ent:SetOwner(owner)
+			
+			local tr = util.TraceLine( trace )
+
+			ent:SetPos( tr.Hit and tr.HitPos or trace.start )
 			ent:SetAngles(ang)
-			//ent.Team = owner:Team()
-			//ent.m_iDamage = 60
 			
 			ent:Spawn()
+
 			ent.Damage = dmg
 			ent.StartPos = ent:GetPos()
 			ent:SetVelocity(ang:Forward() * force)
 			ent:SetModelScale( 1.2, 0 )
 			ent:EmitSound("npc/manhack/mh_blade_snick1.wav",70,math.random(100,110))
+
 			local col = team.GetColor(owner:Team())
 			col.a = 120
 			util.SpriteTrail(ent, 0,col , false, 18, 10, 0.3, 1/(18+10)*0.5, "Effects/laser1.vmt")
-			
-			//local phys = ent:GetPhysicsObject()
-			//if phys:IsValid() then
-			//	phys:Wake()
-			//	phys:SetVelocityInstantaneous(owner:GetAimVector() * 2000)
-			//end
 		end
 		
 		//self.Owner:EmitSound("npc/manhack/mh_blade_snick1.wav",70,math.random(100,110))
 
 	end
 	
+
+	self:SetNextAttack( CurTime() + self:SequenceDuration() + 0.5 )
 	
+	self:TakeAmmo()
+
 	if CLIENT then
 		if self:GetCrossbow() then
-			self:GetCrossbow():SetSequence(self:GetCrossbow():LookupSequence("fire"))
-			
-			self:SetAnim(CurTime()+self:GetCrossbow():SequenceDuration())
+			self:GetCrossbow():ResetSequence(self:GetCrossbow():LookupSequence("fire"))
+			self.AnimDuration = self:SequenceDuration() + 0.5
+			//self:SetAnim(CurTime()+self:GetCrossbow():SequenceDuration())
 		end
 	end
 
-	self:SetNextAttack(CurTime()+self:SequenceDuration()+0.5)
-	
-	self:TakeAmmo()
+	self:SetAnim( CurTime() + self:SequenceDuration() + 0.5 )
 	
 	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 	self.Owner:SetAnimation(PLAYER_ATTACK1)
@@ -183,20 +191,24 @@ end
 function SWEP:Reload()
 	if self.Owner:IsCrow() then return end
 	if self:IsCasting() then return end
-	
+
 	if self:GetNextReload() <= CurTime() and self:DefaultReload(ACT_VM_PRIMARYATTACK) then
 		self.IdleAnimation = CurTime() + 1.6
 		self:SetNextReload(self.IdleAnimation)
 		--self.Owner:DoReloadEvent()
 		self.Weapon:SetNextPrimaryFire(CurTime() + 1.6)
 		self.Weapon:SetNextSecondaryFire(CurTime() + 1.6)
-		
+	
 		if CLIENT then
 			if self:GetCrossbow() then
-				self:GetCrossbow():ResetSequence(self:GetCrossbow():LookupSequence("idle"))	
-				self:SetAnim(CurTime()+self:GetCrossbow():SequenceDuration())
+				self:GetCrossbow():ResetSequence(self:GetCrossbow():LookupSequence("reload"))	
+				self.AnimDuration = 1.6
+				//self:SetAnim(CurTime()+self:GetCrossbow():SequenceDuration())
 			end
 		end
+
+		self:SetAnim(CurTime() + 1.6)
+
 		self:EmitSound("Weapon_Crossbow.Reload")
 		self:EmitSound("Weapon_Crossbow.BoltElectrify")
 		
@@ -210,7 +222,7 @@ function SWEP:CanPrimaryAttack()
 	if self.Owner:IsGhosting() then return false end
 
 	if self:Clip1() <= 0 then
-		self:EmitSound("Weapon_Crossbow.Reload")
+		//self:EmitSound("Weapon_Crossbow.Reload")
 		self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 		
 		self:Reload()
@@ -230,20 +242,26 @@ function SWEP:GetCrossbow()
 end
 
 function SWEP:SetAnim(tm)
-	self:SetDTFloat(3,tm)
+	self:SetDTFloat(10,tm)
 end
 
+/*function SWEP:SetAnimDuration(tm)
+	self:SetDTFloat(4,tm)
+end*/
+
 function SWEP:IsPlayingAnim()
-	return self:GetDTFloat(3) > CurTime()
+	return self:GetDTFloat(10) > CurTime()
 end
 
 function SWEP:OnThink()
 	
 	if CLIENT then
 		if self.VElements and self.VElements["crossbow"] then
-			if self.VElements["crossbow"].modelEnt and IsValid(self.VElements["crossbow"].modelEnt) then
+			local mdl = self.VElements["crossbow"].modelEnt
+			if mdl and IsValid( mdl ) then
 				if self:IsPlayingAnim() then
-					self.VElements["crossbow"].modelEnt:SetCycle((self.VElements["crossbow"].modelEnt:GetCycle() + RealFrameTime( ) / self.VElements["crossbow"].modelEnt:SequenceDuration()) % 1)
+					//self.VElements["crossbow"].modelEnt:SetCycle((self.VElements["crossbow"].modelEnt:GetCycle() + RealFrameTime( ) / self.VElements["crossbow"].modelEnt:SequenceDuration()) % 1)
+					mdl:SetCycle( math.Clamp(  1 - (  self:GetDTFloat(3) - CurTime() ) / self.AnimDuration ,0, 1 ) )
 				end
 			end
 		end
@@ -252,7 +270,6 @@ function SWEP:OnThink()
 end
 
 if CLIENT then
-
 //finally you get the zoom
 local zoom_lerp = 0
 function SWEP:TranslateFOV( fov )

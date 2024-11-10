@@ -12,10 +12,7 @@ if CLIENT then
 	SWEP.IconLetter = "k"
 	SWEP.ViewModelFOV = 55
 	
-	//killicon.AddFont("dd_launcher", "HL2MPTypeDeath", 	"3", Color(231, 231, 231, 255 ))
-	//killicon.AddFont("projectile_launchergrenade", "HL2MPTypeDeath", "3", Color(231, 231, 231, 255 ))
-	
-	killicon.AddFont( "dd_striker", "Bison_30", "grinded", Color(231, 231, 231, 255 ) ) 
+	GAMEMODE:KilliconAddFontTranslated( "dd_striker", "Bison_30", "killicon_striker", Color(231, 231, 231, 255 ) )
 	
 	//SWEP.ViewModelFlip = false
 

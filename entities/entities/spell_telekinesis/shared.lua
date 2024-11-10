@@ -10,7 +10,7 @@ if SERVER then
 end
 
 if CLIENT then
-	AddSpellIcon("spell_telekinesis","telekinesis")
+	GAMEMODE:KilliconAddSpell("spell_telekinesis","telekinesis")
 end
 
 util.PrecacheSound("weapons/physcannon/superphys_launch1.wav")

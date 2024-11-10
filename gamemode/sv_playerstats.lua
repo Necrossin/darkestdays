@@ -192,69 +192,70 @@ function meta:RequestAchievements()
 
 	if self.UpdatedAchievements then return end
 	self.UpdatedAchievements = true
-	
+
 	GAMEMODE.PlayerAchievements[ tostring(self:SteamID()) ] = {}
-	
+
 	net.Start( "RequestAchievements" )
 		net.WriteInt( self:EntIndex(), 32 )
-	net.Send( self )	
-	
+	net.Send( self )
+
 end
 
 net.Receive( "ReceiveAchievements", function( len, target )
-		
+
 	local pl = Entity( net.ReadInt( 32 ) )
 	local tbl = net.ReadTable()
-	
+
 	if pl and pl:IsValid() and pl:IsPlayer() then
-	
+
 		//slightly change the structure, so I dont have to call table.HasValue every time I want to check achievements o nserver
-		
+
 		for _, ach in pairs( tbl ) do
 			if Achievements[ ach ] and GAMEMODE.PlayerAchievements[ tostring(pl:SteamID()) ] then
 				GAMEMODE.PlayerAchievements[ tostring(pl:SteamID()) ][ ach ] = true
 			end
 		end
-		
+
 		//GAMEMODE.PlayerAchievements[ tostring(pl:SteamID()) ] = table.Copy( tbl )
-		
+
 	end
-	
+
 		
 end)
 
 util.AddNetworkString( "ClientUnlockAchievement" )
 
 function meta:UnlockAchievement( key )
-	
+
 	//if #player.GetAll() < 6 then return end
 	if not Achievements[key] then return end
 	if not GAMEMODE.PlayerAchievements[ tostring(self:SteamID()) ] then return end
 	//if table.HasValue( GAMEMODE.PlayerAchievements[ tostring(self:SteamID()) ], key ) then return end
 	if GAMEMODE.PlayerAchievements[ tostring(self:SteamID()) ][ key ] then return end
-	
+
 	GAMEMODE.PlayerAchievements[ tostring(self:SteamID()) ][ key ] = true
-	
+
 	net.Start( "AchievementNotify" )
 		net.WriteString( tostring( key ) )
 	net.Send( self )
-	
+
 	for _,pl in ipairs( player.GetAll() ) do
-		pl:ChatPrint( "Player "..self:Name().." got the achievement: "..Achievements[key].Name.."!" )
-	end	
-	
+		//pl:ChatPrint( "Player "..self:Name().." got the achievement: "..Achievements[key].Name.."!" )
+		pl:ChatPrint( translate.ClientFormat(pl, "ach_chat_unlocked", self:Name(), translate.ClientGet(pl, Achievements[key].Name) ) )
+	end
+
 	self._AchSound = self._AchSound or 0
-	
+
 	if self._AchSound > CurTime() then return end
-	
+
 	local e = EffectData()
 	e:SetOrigin( self:GetPos() )
 	e:SetEntity( self )
 	util.Effect( "achievement_unlock", e, true, true )
-	
+
 	self._AchSound = CurTime() + 0.2
 	self:EmitSound( "weapons/physcannon/physcannon_charge.wav", math.random(105,120), math.random(95,110) )
-	
+
 	/*if #player.GetAll() < 6 then return end
 	
 	if not self.Stats then return end

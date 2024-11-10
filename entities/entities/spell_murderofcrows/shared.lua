@@ -13,8 +13,8 @@ if SERVER then
 end
 
 if CLIENT then 
-	AddSpellIcon("effect_murderofcrows","murderofcrows")
-	AddSpellIcon("projectile_crow","murderofcrows")
+	GAMEMODE:KilliconAddSpell("effect_murderofcrows","murderofcrows")
+	GAMEMODE:KilliconAddSpell("projectile_crow","murderofcrows")
 end
 
 PrecacheParticleSystem( "v_murderofcrows" )

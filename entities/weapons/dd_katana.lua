@@ -94,7 +94,7 @@ if CLIENT then //killicon.AddFont( "weapon_zs_melee_combatknife", "CSKillIcons",
 	SWEP.ShowViewModel = true
 	SWEP.ShowWorldModel = false
 	
-	killicon.AddFont( "dd_katana", "Bison_30", "taken down", Color(231, 231, 231, 255 ) ) 
+	GAMEMODE:KilliconAddFontTranslated( "dd_katana", "Bison_30", "killicon_katana", Color(231, 231, 231, 255 ) ) 
 end
 
 function SWEP:Precache()

@@ -11,7 +11,7 @@ if SERVER then
 end
 
 if CLIENT then 
-	AddSpellIcon("projectile_scorn","scorn")
+	GAMEMODE:KilliconAddSpell("projectile_scorn","scorn")
 end
 
 PrecacheParticleSystem( "v_scorn2" )

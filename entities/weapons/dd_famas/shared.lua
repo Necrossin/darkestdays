@@ -9,7 +9,7 @@ if CLIENT then
 	SWEP.SlotPos = 1
 	SWEP.IconLetter = "t"
 	
-	killicon.AddFont("dd_famas", "CSKillIcons", SWEP.IconLetter, Color(255, 255, 255, 255 ))
+	GAMEMODE:KilliconAddFont("dd_famas", "CSKillIcons", SWEP.IconLetter, Color(255, 255, 255, 255 ))
 	
 	SWEP.SwitchWorldModel = true
 	

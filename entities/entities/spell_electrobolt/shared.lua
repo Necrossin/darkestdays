@@ -13,7 +13,7 @@ ENT.Mat = Material( "sprites/rollermine_shock" )
 end
 
 if CLIENT then 
-	AddSpellIcon("spell_electrobolt","electrobolt")
+	GAMEMODE:KilliconAddSpell("spell_electrobolt","electrobolt")
 end
 
 if SERVER then

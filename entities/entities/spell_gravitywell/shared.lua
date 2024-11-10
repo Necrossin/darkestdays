@@ -12,7 +12,7 @@ if SERVER then
 end
 
 if CLIENT then 
-	AddSpellIcon("spell_gravitywell","gravitywell")
+	GAMEMODE:KilliconAddSpell("spell_gravitywell","gravitywell")
 	RegisterParticleEffect( "gravitywell_effect" )
 end
 

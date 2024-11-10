@@ -71,9 +71,18 @@ if SERVER then
 			if ent:IsThug() or ent:GetPerk("hpregen") then
 				torestore = 17
 			end
+
+			
 			
 			local restore = ent:RestoreSomeHealth( torestore )//ent:RestoreHealth()
 			if restore then
+
+				local wep = IsValid( ent:GetActiveWeapon() ) and ent:GetActiveWeapon()
+
+				if wep and wep.OnOrbPickup then
+					wep:OnOrbPickup()
+				end
+
 				ent:EmitSound("items/medshot4.wav",100,math.random(100,120))
 				//if ent:GetPerk("cureall") then
 				//	ent:SetMana(math.Clamp(ent:GetMana()+math.random(10,15),0,ent:GetMaxMana()))

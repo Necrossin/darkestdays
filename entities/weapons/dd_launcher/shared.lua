@@ -12,8 +12,8 @@ if CLIENT then
 	SWEP.IconLetter = "k"
 	SWEP.ViewModelFOV = 60
 	
-	killicon.AddFont("dd_launcher", "HL2MPTypeDeath", 	"3", Color(231, 231, 231, 255 ))
-	killicon.AddFont("projectile_launchergrenade", "HL2MPTypeDeath", "3", Color(231, 231, 231, 255 ))
+	GAMEMODE:KilliconAddFont("dd_launcher", "HL2MPTypeDeath", 	"3", Color(231, 231, 231, 255 ))
+	GAMEMODE:KilliconAddFont("projectile_launchergrenade", "HL2MPTypeDeath", "3", Color(231, 231, 231, 255 ))
 
 	SWEP.ShowViewModel = true
 	SWEP.ShowWorldModel = false
@@ -110,34 +110,35 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	if not self:CanPrimaryAttack() then return end
 
-	
-	if SERVER then	
+	if SERVER then
 		local ent = ents.Create("projectile_launchergrenade")
 		if ent:IsValid() then
-			local v = self.Owner:GetShootPos()
-			v = v + self.Owner:GetForward() * 5
-			v = v + self.Owner:GetRight() * 8
-			v = v + self.Owner:GetUp() * -4
-			ent:SetPos(v)
-			local ang = self.Owner:GetAngles()
-			//ang.p = ang.p + 90
+			
+			local owner = self:GetOwner()
+
+			local trace = {}
+			trace.start = owner:GetShootPos() + owner:GetAimVector():Angle():Right() * 4 -  owner:GetAimVector():Angle():Up() * 4
+			trace.endpos = owner:GetShootPos() + owner:GetAimVector() * 5
+			trace.filter = { owner }
+			trace.mask = MASK_SOLID
+
+			local tr = util.TraceLine( trace )
+
+			local ang = owner:GetAngles()
+
 			ent:SetAngles(ang)
-			ent:SetOwner(self.Owner)
+			ent:SetPos( tr.Hit and tr.HitPos or trace.start )
+			ent:SetOwner(owner)
 			ent:Spawn()
 			ent:Activate()
 			ent:EmitSound("weapons/stinger_fire1.wav")
 			
 			local vel = 1400
 			
-			if self.Owner:GetPerk("grvel") then
-				//vel = 1800
-			end
-			
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
 				phys:Wake()
-				phys:ApplyForceCenter(self.Owner:GetAimVector() * vel)
-				//phys:SetVelocity((self.Owner:GetAimVector()) * vel)
+				phys:ApplyForceCenter(owner:GetAimVector() * vel)
 			end
 		end
 
@@ -146,20 +147,20 @@ function SWEP:PrimaryAttack()
 	self:TakeAmmo()
 	
 	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	
 end
 
 function SWEP:Reload()
-	if self.Owner:IsCrow() then return end
+	if self:GetOwner():IsCrow() then return end
 	if self:IsCasting() then return end
 	
 	if self:GetNextReload() <= CurTime() and self:DefaultReload(ACT_VM_PRIMARYATTACK) then
 		self.IdleAnimation = CurTime() + 1.5
 		self:SetNextReload(self.IdleAnimation)
 		--self.Owner:DoReloadEvent()
-		self.Weapon:SetNextPrimaryFire(CurTime() + 1.5)
-		self.Weapon:SetNextSecondaryFire(CurTime() + 1.5)
+		self:SetNextPrimaryFire(CurTime() + 1.5)
+		self:SetNextSecondaryFire(CurTime() + 1.5)
 		
 		self:EmitSound("physics/metal/paintcan_impact_hard3.wav",math.random(100,110),math.random(90,100))
 		
@@ -168,11 +169,11 @@ end
 
 function SWEP:CanPrimaryAttack()
 	
-	if self.Owner:IsGhosting() then return false end
+	if self:GetOwner():IsGhosting() then return false end
 
 	if self:Clip1() <= 0 then
 		self:EmitSound("physics/metal/paintcan_impact_hard1.wav")
-		self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+		self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 		
 		self:Reload()
 		

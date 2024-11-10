@@ -472,7 +472,7 @@ function GM:_HUDPaint()
 	
 	hook.Run( "HUDDrawTargetID" )
 	//hook.Run( "HUDDrawPickupHistory" )
-	hook.Run( "DrawDeathNotice", 0.85, 0.04 )
+	hook.Run( "DrawDeathNotice", 0.85, 0.03 )
 		
 	DrawAchievementNotice(MySelf)
 	
@@ -514,8 +514,8 @@ function DrawSpellStatus(MySelf)
 end
 
 local HillText = {
-	"Capture",
-	"Defend",
+	"obj_capture",
+	"obj_defend",
 }
 
 local PointText = {
@@ -524,8 +524,8 @@ local PointText = {
 }
 
 local FlagText = {
-	"Capture",
-	"Defend",
+	"obj_capture",
+	"obj_defend",
 }
 
 local FridgeText = {
@@ -572,19 +572,15 @@ function DrawKOTHNotify(MySelf)
 		surface_SetMaterial(hud_bg4)
 		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
 		
-		draw_SimpleText(GetPlayerSkills( SelectedLoadout ).ToSpend.." unused point(s)", "Bison_30", bgX,bgY,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText( translate.Format( "player_loadout_points_unused", GetPlayerSkills( SelectedLoadout ).ToSpend ), "Bison_30", bgX,bgY,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
 	
 	if LoadoutSelection and LoadoutSelection.IsVisible and not LoadoutSelection:IsVisible() and not MySelf:Alive() and NoDeathHUD and NoDeathHUD < CurTime() then
 		if not (LoadoutSwitcher and LoadoutSwitcher.IsVisible and LoadoutSwitcher:IsVisible()) then
-			if ENABLE_OUTFITS then
-				draw_SimpleText("F1 - Help  |  F2 - Outfit  |  F3 - Achievements  |  F4 - Options", "Bison_50", w/2,50,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-			else
-				draw_SimpleText("F1 - Help  |  F3 - Achievements  |  F4 - Options", "Bison_50", w/2,50,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-			end
+			draw_SimpleText(translate.Get( "player_loadout_help" ), "Bison_50", w/2,50,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			
 			if GAMEMODE:GetGametype() ~= "ts" then//and MySelf:Team() == TEAM_THUG
-				draw_SimpleText("Right click to change loadouts", "Bison_50", w/2,h-h/5,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+				draw_SimpleText( translate.Get( "player_loadout_help_edit" ), "Bison_50", w/2,h-h/5,COLOR_TEXT_SOFT_BRIGHT, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			end
 		end
 	end
@@ -602,18 +598,18 @@ function DrawKOTHNotify(MySelf)
 		
 		if hill:IsBeingHeld() then
 			if hill:GetHoldingTeam() == hill:TeamToHill( P_Team( MySelf ) ) then
-				text = HillText[2]
+				text = translate.Get( HillText[2] )
 				col = team_GetColor( P_Team( MySelf ) )
 			else
-				text = HillText[1]
+				text = translate.Get( HillText[1] )
 				col = team_GetColor(hill:HillToTeam(hill:GetHoldingTeam()))
 			end
 		else
 			if hill.GetStartCooldown and hill:GetStartCooldown() > 0 then
-				text = "Unlocking in: "..hill:GetStartCooldown()
+				text = translate.Get( "obj_unlocking" )..": "..hill:GetStartCooldown()
 				col = COLOR_TEXT_SOFT_BRIGHT
 			else
-				text = HillText[1]
+				text = translate.Get( HillText[1] )
 				col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
 			end
 		end
@@ -761,20 +757,21 @@ function DrawKOTHNotify(MySelf)
 				if MySelf:IsCarryingFlag() then
 					text = ""
 				else
-					text = FlagText[2]
+					text = translate.Get( FlagText[2] )
 				end
 				col = team_GetColor( P_Team( MySelf ) )
 			else
-				text = FlagText[1]
+				text = translate.Get( FlagText[1] )
 				col = team_GetColor(hill:HillToTeam(hill:GetHoldingTeam()))
 			end
 		else
 			if hill:GetRespawnTime() ~= 0 then
-				text = "Flag resets in "..math_Clamp(math_Round(hill:GetRespawnTime()-CurTime()),0,999).." seconds!"
+				//text = "Flag resets in "..math_Clamp(math_Round(hill:GetRespawnTime()-CurTime()),0,999).." seconds!"
+				text = translate.Format( "obj_flag_reset",  math_Clamp( math_Round( hill:GetRespawnTime() - CurTime() ), 0, 999 ) )
 				col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
 			else
 				if hill.GetStartCooldown and hill:GetStartCooldown() > 0 then
-					text = "Unlocking in: "..hill:GetStartCooldown()
+					text = translate.Get( "obj_unlocking" )..": "..hill:GetStartCooldown()
 					col = COLOR_TEXT_SOFT_BRIGHT
 				else
 					text = FlagText[1]
@@ -874,37 +871,35 @@ function DrawKOTHNotify(MySelf)
 		
 		local rcol = team_GetColor(TEAM_RED)
 		rcol.a = 230
-		
-		
-		
+
 		draw_SimpleText("Fridge: "..math_Round(hill:GetHealth() or 0),"Bison_55", bgX,bgY-bgH/2-20, bcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		draw_SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, rcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-	
+
 	end
-	
+
 	if GAMEMODE:GetGametype() == "ffa" and IsValid(GetHillEntity()) then
-				
+
 		local bgW = 160
 		local bgH = bgW/2
-		
+
 		local bgX,bgY = w/2, h-25-bgH/2//5+bgH/2
-		
+
 		surface_SetDrawColor( 255, 255, 255, 170)
 		surface_SetMaterial(hud_bg4)
 		surface_DrawTexturedRectRotated(bgX,bgY,bgW,bgH,0)
-		
+
 		surface_DrawTexturedRectRotated(bgX,bgY-bgH/2-20,bgW*1.3,bgH,0)
-		
-		
+
+
 		local hill = GetHillEntity()
-		
+
 		local fcol = team_GetColor(TEAM_FFA)
 		fcol.a = 230
-		
+
 		local score,max = GetFFAScore(MySelf)
-		
-		draw_SimpleText(score.." out of "..max,"Bison_55", bgX,bgY-bgH/2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		draw_SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+
+		draw_SimpleText( translate.Format( "obj_ffa_score", score, max ), "Bison_55", bgX,bgY-bgH/2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText( ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	
 	end
 	
@@ -927,14 +922,14 @@ function DrawKOTHNotify(MySelf)
 		local fcol = team_GetColor( P_Team( MySelf ) )
 		fcol.a = 230
 				
-		draw_SimpleText( P_Team( MySelf ) == TEAM_THUG and "Kill all weaklings!" or "Survive","Bison_55", bgX,bgY-bgH/2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-		draw_SimpleText(ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText( P_Team( MySelf ) == TEAM_THUG and translate.Get( "obj_ts_kill_all" ) or translate.Get( "obj_ts_survive" ), "Bison_55", bgX,bgY-bgH / 2-20, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw_SimpleText( ToMinutesSeconds(hill:GetTimer()), "Bison_50", bgX,bgY, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		
 		if P_Team( MySelf ) == TEAM_THUG then
 			for _,pl in ipairs(team_GetPlayers(TEAM_BLUE)) do
 				if IsValid(pl) and pl:Alive() then
 					local p = pl:GetShootPos():ToScreen()
-					draw_SimpleText("Kill", "Bison_50", p.x,p.y, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+					draw_SimpleText( translate.Get( "obj_ts_kill" ), "Bison_50", p.x,p.y, fcol, TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 				end
 			end
 		end
@@ -1248,8 +1243,8 @@ local function DrawAchievements( y, notice, notice_delay )
 	
 	local col = Color(231,231,231,alpha)
 	
-	draw_SimpleText("Achievement unlocked!", "Bison_30", w-120,y+bH/4, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-	draw_SimpleText(notice.Name, "Bison_40", w-120,y+2*bH/3, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+	draw_SimpleText( translate.Get( "ach_hud_unlocked" ), "Bison_30", w-120,y+bH/4, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+	draw_SimpleText(translate.Get( notice.Name ), "Bison_40", w-120,y+2*bH/3, col, TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 	
 	//draw.SimpleTextOutlined("Achievement unlocked!", "Arial_Bold_26", w-18.75,y+bH/4, Color(50,255,50,alpha), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER,1,Color(0,0,0,alpha))
 	//draw.SimpleTextOutlined(notice.Name, "Arial_Bold_Italic_32", w-18.75,y+2*bH/3, Color(255,255,255,alpha), TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER,1,Color(0,0,0,alpha))
@@ -1376,6 +1371,27 @@ net.Receive( "HUDMessage", function( len )
 	local txt = net.ReadString()
 	local ent = net.ReadEntity()
 	local snd = net.ReadDouble()
+
+	txt = translate.Get( txt )
+	
+	if snd == 1 then
+		if IsValid(ent) and ent:Team() ~= MySelf:Team() then
+			snd = 2
+		end
+	end
+	
+	AddHUDMessage(txt,IsValid(ent) and GAMEMODE:GetTeamColor( ent ) or nil,5,snd)
+	
+end)
+
+net.Receive( "HUDMessagePlayer", function( len )
+
+	local txt = net.ReadString()
+	local name = net.ReadString()
+	local ent = net.ReadEntity()
+	local snd = net.ReadDouble()
+
+	txt = translate.Format( txt, name )
 	
 	if snd == 1 then
 		if IsValid(ent) and ent:Team() ~= MySelf:Team() then

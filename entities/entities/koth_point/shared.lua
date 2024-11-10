@@ -428,7 +428,7 @@ function ENT:MoveHill()
 		
 		self.Swaps = self.Swaps +1
 		
-		GAMEMODE:HUDMessage(nil, "Hill has been reset!", nil, 0)
+		GAMEMODE:HUDMessage(nil, "obj_koth_reset", nil, 0)
 		
 		self:SetStartTime(CurTime() + 10)
 		self:SetHoldingTeam()

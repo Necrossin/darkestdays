@@ -52,8 +52,7 @@ function ENT:ResetShield()
 	self:SetEnergy( math.Round(self.EntOwner._DefaultMana*self.ManaPercentage) )
 	
 	if self.EntOwner:HasWeapon( "dd_striker" ) then
-		//self.Energy = math.Round( self.Energy * 0.3 )
-		self:SetEnergy( math.Round( self.Energy * 0.3 ) )
+		self:SetEnergy( math.Round( self:GetEnergy() * 0.3 ) )
 	end
 	
 	self:SetDTBool( 0, true )

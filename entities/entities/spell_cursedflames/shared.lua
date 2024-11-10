@@ -13,7 +13,7 @@ if SERVER then
 end
 
 if CLIENT then 
-	AddSpellIcon("projectile_cursedflames","cursedflames")
+	GAMEMODE:KilliconAddSpell("projectile_cursedflames","cursedflames")
 end
 
 PrecacheParticleSystem( "v_cursedflames" )

@@ -12,7 +12,7 @@ if CLIENT then
 	SWEP.ViewModelFOV = 60
 	SWEP.IconLetter = "k"
 	//killicon.AddFont("dd_spas12", "CSKillIcons", SWEP.IconLetter, Color(255, 255, 255, 255 ))
-	killicon.AddFont( "dd_spas12", 	"HL2MPTypeDeath", 	"0", 	Color(231,231,231,255) )
+	GAMEMODE:KilliconAddFont( "dd_spas12", 	"HL2MPTypeDeath", 	"0", 	Color(231,231,231,255) )
 	
 end
 

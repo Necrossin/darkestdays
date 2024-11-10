@@ -63,11 +63,15 @@ if SERVER then
 			
 			local restore = ent:RestoreSomeMana()
 			if restore then
+
+				local wep = IsValid( ent:GetActiveWeapon() ) and ent:GetActiveWeapon()
+
+				if wep and wep.OnOrbPickup then
+					wep:OnOrbPickup()
+				end
+
 				ent:EmitSound("items/battery_pickup.wav",100,math.random(100,120))
-				//if ent:GetPerk("cureall") then
-				//	ent:SetMana(math.Clamp(ent:GetMana()+math.random(10,15),0,ent:GetMaxMana()))
-				//end
-				//self:SetDTEntity(0,ent)
+
 				local e = EffectData()
 				e:SetOrigin(ent:GetPos())
 				e:SetEntity(ent)

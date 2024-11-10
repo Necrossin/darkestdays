@@ -102,6 +102,7 @@ include("obj_player_extend.lua")
 include("obj_weapon_extend.lua")
 include("sh_options.lua")
 include("sh_server_options.lua")
+include("sh_translate.lua")
 include("animations.lua")
 
 TEAM_RED = 3
@@ -112,7 +113,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 22/08/2024"
+GM.Version		= "v 10/11/2024"
 GM.Email 		= ""
 GM.Website 		= ""
 
@@ -120,6 +121,20 @@ GM.Website 		= ""
 team.SetUp(TEAM_RED, "Team Red", Color(250,40,40,255))
 team.SetUp(TEAM_BLUE, "Team Blue", Color(0,121,250,192))
 team.SetUp(TEAM_FFA, "Team FFA", Color(240,121,0,255))
+
+
+
+GM.TranslateTeamNameByID = {
+	[TEAM_RED] = "team_red",
+	[TEAM_BLUE] = "team_blue",
+	[TEAM_FFA] = "team_ffa",
+}
+
+GM.TranslateTeamName = {
+	["Team Red"] = "team_red",
+	["Team Blue"] = "team_blue",
+	["Team FFA"] = "team_ffa",
+}
 
 
 

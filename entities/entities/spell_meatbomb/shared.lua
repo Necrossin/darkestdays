@@ -11,8 +11,8 @@ if SERVER then
 end
 
 if CLIENT then
-	AddSpellIcon("spell_meatbomb","meatbomb")
-	AddSpellIcon("projectile_meatbomb","meatbomb")
+	GAMEMODE:KilliconAddSpell("spell_meatbomb","meatbomb")
+	GAMEMODE:KilliconAddSpell("projectile_meatbomb","meatbomb")
 end
 
 OrbsTable = OrbsTable or {}

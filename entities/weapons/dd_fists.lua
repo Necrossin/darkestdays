@@ -103,7 +103,7 @@ if CLIENT then
 	SWEP.ShowViewModel = true
 	SWEP.ShowWorldModel = false
 	
-	killicon.AddFont( "dd_fists", "Bison_30", "finished off", Color(231, 231, 231, 255 ) ) 
+	GAMEMODE:KilliconAddFontTranslated( "dd_fists", "Bison_30", "killicon_fists", Color(231, 231, 231, 255 ) ) 
 end
 
 

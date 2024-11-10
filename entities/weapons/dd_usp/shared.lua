@@ -8,7 +8,7 @@ if CLIENT then
 	SWEP.Slot = 1
 	SWEP.SlotPos = 2
 	SWEP.ViewModelFOV = 53
-	killicon.AddFont( "dd_usp", "CSKillIcons", "a", Color(255, 255, 255, 255 ) )
+	GAMEMODE:KilliconAddFont( "dd_usp", "CSKillIcons", "a", Color(255, 255, 255, 255 ) )
 	
 
 	SWEP.ShowWorldModel = false

@@ -81,12 +81,6 @@ cvars.AddChangeCallback("dd_options_enable_admin_menu", function(cvar, oldvalue,
 	ADMIN_MENU = util.tobool( newvalue )
 end)
 
-//I'd leave this on by default, but there is always gonna be some greedy server owner bitching about how it's stopping him from stealing money from the players
-ENABLE_OUTFITS = util.tobool(CreateConVar("dd_options_enable_outfits", 0, FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_SERVER_CAN_EXECUTE + FCVAR_REPLICATED, "Enable in-game hats/outfits."):GetInt())
-cvars.AddChangeCallback("dd_options_enable_outfits", function(cvar, oldvalue, newvalue)
-	ENABLE_OUTFITS = util.tobool( newvalue )
-end)
-
 TEAM_BALANCE = util.tobool(CreateConVar("dd_options_enable_team_balance", 1, FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED, "Enable auto team balancing, when someone leaves."):GetInt())
 cvars.AddChangeCallback("dd_options_enable_team_balance", function(cvar, oldvalue, newvalue)
 	TEAM_BALANCE = util.tobool( newvalue )

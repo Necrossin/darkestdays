@@ -12,7 +12,7 @@ if SERVER then
 end
 
 if CLIENT then
-	AddSpellIcon("npc_antlionguard","raiseundead")
+	GAMEMODE:KilliconAddSpell("npc_antlionguard","raiseundead")
 	RegisterParticleEffect( "raiseundead_spawn_effect" )
 end
 

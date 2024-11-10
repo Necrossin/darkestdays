@@ -68,6 +68,11 @@ if SERVER then
 				ent:EmitSound("npc/antlion_guard/angry"..math.random(1,3)..".wav",120,math.random(100,120))
 			end
 
+			local wep = IsValid( ent:GetActiveWeapon() ) and ent:GetActiveWeapon()
+
+			if wep and wep.OnOrbPickup then
+				wep:OnOrbPickup()
+			end
 				
 			local e = EffectData()
 			e:SetOrigin(ent:GetPos())

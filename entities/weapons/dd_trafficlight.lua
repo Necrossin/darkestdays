@@ -11,7 +11,7 @@ SWEP.ViewModel = Model ( "models/weapons/c_dsword2.mdl"  )
 SWEP.WorldModel = Model ( "models/weapons/w_crowbar.mdl"  )
 
 //Name and fov
-SWEP.PrintName = "Crowbar"
+SWEP.PrintName = "Traffic Light"
 SWEP.ViewModelFOV = 70
 
 //Position
@@ -56,7 +56,7 @@ util.PrecacheModel( "models/props/cs_assault/stoplight.mdl" )
 function SWEP:OnMeleeHit(hitent, hitflesh, tr, block)
 	if not block and hitent:IsValid() and hitent:IsPlayer() and not self.m_ChangingDamage and hitent:IsSprinting() then
 		self.m_ChangingDamage = true
-		self.MeleeDamage = self.MeleeDamage * 1.5
+		self.MeleeDamage = self.MeleeDamage * 2
 	end
 end
 
@@ -64,7 +64,7 @@ function SWEP:PostOnMeleeHit(hitent, hitflesh, tr, block)
 	if self.m_ChangingDamage then
 		self.m_ChangingDamage = false
 
-		self.MeleeDamage = self.MeleeDamage / 1.5
+		self.MeleeDamage = self.MeleeDamage / 2
 	end
 end
 
@@ -81,9 +81,8 @@ end
 if CLIENT then
 	SWEP.ShowViewModel = true
 	SWEP.ShowWorldModel = false
-	
-	killicon.AddFont( "dd_trafficlight", "Bison_30", "stopped", Color(231, 231, 231, 255 ) ) 
-	//killicon.AddFont( "dd_crowbar", "HL2MPTypeDeath", "6", Color(255, 255, 255, 255 ) )
+
+	GAMEMODE:KilliconAddFontTranslated( "dd_trafficlight", "Bison_30", "killicon_trafficlight", Color(231, 231, 231, 255 ) )
 end
 
 function SWEP:Precache()

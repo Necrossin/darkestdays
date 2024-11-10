@@ -18,6 +18,7 @@ AddCSLuaFile("obj_weapon_extend.lua")
 AddCSLuaFile("obj_player_extend.lua")
 AddCSLuaFile("sh_options.lua")
 AddCSLuaFile("sh_server_options.lua")
+AddCSLuaFile("sh_translate.lua")
 
 include("shared.lua")
 include("sv_maps.lua")
@@ -114,6 +115,8 @@ function GM:AddResources()
 
 	resource.AddFile("resource/fonts/bison.ttf")
 	resource.AddFile("cache/workshop/resource/fonts/bison.ttf") //just to see if it will fix broken fonts if hosted on dedicated server
+	resource.AddFile("resource/fonts/bison_multilang.ttf")
+	resource.AddFile("cache/workshop/resource/fonts/bison_multilang.ttf")
 
 	resource.AddSingleFile("models/weapons/c_dsword2.mdl")
 	resource.AddSingleFile("models/weapons/c_dsword2.vvd")
@@ -320,14 +323,6 @@ local function GetPlayerByID( id )
 	
 end
 
-//give swep construction kit so its easier to make new stuff in-game
-local function GiveSCK(p,c,a)
-	if !p:IsSuperAdmin() then return end
-	
-	p:Give("swep_construction_kit")	
-end
-concommand.Add("admin_givesck",GiveSCK)
-
 local function AdminSlay(p,c,a)
 	if !ADMIN_MENU then return end
 	if !p:IsAdmin() then return end
@@ -336,12 +331,12 @@ local function AdminSlay(p,c,a)
 	local id = a[1]
 	if not id then return end
 	
-	local target = player.GetByID( tonumber( id ) )//GetPlayerByID( id )
+	local target = player.GetByID( tonumber( id ) )
 	
 	if target and IsValid(target) then
 		
 		target:TakeDamage( 9999, nil, nil)
-		target:ChatPrint( "You have been slayed by admin "..p:Name() )
+		target:ChatPrint( translate.ClientFormat( target, "admin_action_slay", p:Name() ) )
 		
 	end
 	
@@ -356,10 +351,10 @@ local function AdminKick(p,c,a)
 	local id = a[1]
 	if not id then return end
 	
-	local target = player.GetByID( tonumber( id ) )//GetPlayerByID( id )
+	local target = player.GetByID( tonumber( id ) )
 	
 	if target and IsValid(target) then
-		target:Kick( "Kicked by "..p:Name().." (Reason: "..(a[2] and tostring(a[2]) or "No reason given.")..")." )
+		target:Kick( translate.ClientFormat( target, "admin_action_kick", p:Name(), a[2] and tostring(a[2]) or translate.ClientGet( target, "admin_no_reason" ) ) )
 	end
 	
 end
@@ -373,12 +368,12 @@ local function AdminMute(p,c,a)
 	local id = a[1]
 	if not id then return end
 	
-	local target = player.GetByID( tonumber( id ) )//GetPlayerByID( id )
+	local target = player.GetByID( tonumber( id ) )
 	
 	if target and IsValid(target) then
 		target.Muted = target.Muted or false
 		target.Muted = !target.Muted
-		target:ChatPrint( "You have been muted/unmuted by admin "..p:Name() )
+		target:ChatPrint( translate.ClientFormat( target, "admin_action_mute", p:Name() ) )
 	end
 	
 end
@@ -397,7 +392,7 @@ local function AdminGag(p,c,a)
 	if target and IsValid(target) then
 		target.Gagged = target.Gagged or false
 		target.Gagged = !target.Gagged
-		target:ChatPrint( "You have been gagged/ungagged by admin "..p:Name() )
+		target:ChatPrint( translate.ClientFormat( target, "admin_action_gag", p:Name() ) )
 	end
 	
 end
@@ -416,7 +411,7 @@ local function AdminBring(p,c,a)
 	if target and IsValid(target) then
 		target:SetPos( p:GetPos() )
 		target:SetAngles( p:GetAngles() )
-		target:ChatPrint( "You have been brought by admin "..p:Name() )
+		target:ChatPrint( translate.ClientFormat( target, "admin_action_bring", p:Name() ) )
 	end
 	
 end
@@ -545,41 +540,6 @@ function ApplySkills(pl, com, args)
 end
 concommand.Add("_applyskills",ApplySkills)
 
-function ApplyEquipment(pl, com, args)
-
-	if not ValidEntity(pl) then return end
-	if not args then return end
-	if not ENABLE_OUTFITS then return end
-	if #args <= 0 then 
-	
-	pl.Suit = {}
-	pl:SpawnSuit(pl.Suit)
-	
-	return end
-	
-	pl.Suit = {}
-	
-	local gothat = false
-	local count = 0	
-	for _, item in pairs(args) do
-		--if pl:HasUnlocked( item ) then
-			if Equipment[item] and Equipment[item].slot and Equipment[item].slot == "hat" and not gothat then
-				table.insert(pl.Suit,item)
-				gothat = true
-			end
-			if Equipment[item] and Equipment[item].slot and Equipment[item].slot == "misc" then
-				count = count + 1
-				table.insert(pl.Suit,item)
-				if count >=3 then
-					break
-				end
-			end
-		--end
-	end	
-	pl:SpawnSuit(pl.Suit)
-	
-end
-concommand.Add("_applyequipment",ApplyEquipment)
 
 function ActualSpawn(ply,commandName,args)
 	if not ply.FirstSpawn then return end
@@ -628,9 +588,9 @@ function thugmode(pl,cmd,args)
 	THUG_MODE = not THUG_MODE
 	
 	if THUG_MODE then
-		pl:ChatPrint("Thuggin!")
+		pl:ChatPrint( translate.ClientGet( pl, "admin_thugmode_on" ) )
 	else
-		pl:ChatPrint("Not so thuggin!")
+		pl:ChatPrint( translate.ClientGet( pl, "admin_thugmode_off" ) )
 	end
 end
 concommand.Add("thuggin",thugmode)
@@ -658,24 +618,21 @@ end
 concommand.Add("admin_doublexp",doublexp)*/
 
 
-function GM:ShowHelp( pl ) 
+function GM:ShowHelp( pl )
 	if ENDROUND then return end
 	pl:SendLua("HelpMenu()")
 end
 
-function GM:ShowTeam( pl ) 
-	if ENDROUND then return end
-	if !ENABLE_OUTFITS then return end
-	pl:SendLua("CustomizationMenu()")
+function GM:ShowTeam( pl )
 end
 
-function GM:ShowSpare1( pl ) 
+function GM:ShowSpare1( pl )
 	if ENDROUND then return end
 	//pl:QuickStatsUpdate()
 	pl:SendLua("AchievementsMenu()")
 end
 
-function GM:ShowSpare2( pl ) 
+function GM:ShowSpare2( pl )
 	if ENDROUND then return end
 	pl:SendLua("OptionsMenu()")
 end
@@ -684,75 +641,66 @@ util.AddNetworkString( "RefreshPoints" )
 util.AddNetworkString( "Client:ShowLobby" )
 
 function GM:PlayerInitialSpawn( pl )
-	
+
 	pl:SendLua("GAMEMODE.Gametype = \""..(tostring(self.Gametype) or "koth").."\"")
-	
+
 	net.Start( "CheckNight" )
 		net.WriteBool( self:IsNight() )
 	net.Send( pl )
-	
+
 	pl.Stats = {}
-	
+
 	pl:ReadStats()
-	
 	pl:RequestAchievements()
-	
+
 	pl:SetupSkills()
-	
+
 	pl.FirstSpawn = true
-	
+
 	pl:SetTeam(TEAM_SPECTATOR)
-	
+
 	pl:SetFrags(0)
 	pl:SetDeaths(0)
-	
+
 	pl.SpawnProtection = 0
 	pl.NextSpawnTime = 0
-	
+
 	pl.StartTime = nil
-	
-	//PrintTable(pl.Skills)
-	
+
 	pl.Loadout = {}
 	pl.SpellsToGive = {}
 	pl.Perks = nil
-	pl.Suit = {}
 
-	if pl:SteamID() == "BOT" then
-		//pl.Suit = {"rlegs","rustarmor","roboarm"}
-		//pl:SpawnSuit(pl.Suit)
-	end
-	
 	pl.BulletsBlocked = 0
 	pl.BallCarriers = 0
 	pl.Healed = 0
 	pl.UsedOnlyMelee = true
-	
+
 	pl.Voted = nil//false
 	pl.VotedGameType = nil//false
-	
+
 	//self:SynchronizeTime(pl)	
-	
+
 end
 
 function GM:PlayerSpawn( pl )
 
 	pl:StripWeapons()
 	pl:ShouldDropWeapon( false )
-	
+
 	pl:SprintEnable()
-	
+
 	if (pl.FirstSpawn and not ENROUND) then
-	
+
 		if ( pl:SteamID() == "BOT" ) then
 			ActualSpawn(pl,"actual_spawn")
 			return
 		end
-		
-		pl:KillSilent() 
-		pl:Lock()				
-		
-		if ENDROUND then 
+
+		pl:KillSilent()
+		pl:Lock()
+
+		if ENDROUND then
 			pl:Lock()
 			self:SendVotemaps ( pl )
 			timer.Simple(0.2, function()
@@ -768,35 +716,35 @@ function GM:PlayerSpawn( pl )
 			net.Start( "Client:ShowLobby" )
 			net.Send( pl )
 		end
-		
-	else				
+
+	else
 		-- Normal spawning
 		pl:UnSpectate()
-		
+
 		--net.Start("RefreshPoints")
 		--	net.WriteDouble(CONQUEST_CAPTURE_TIME)
 		--net.Send(pl)
-				
-		if ENDROUND then 
+
+		if ENDROUND then
 			pl:Lock()
 			self:SendVotemaps ( pl )
 			timer.Simple(0.2, function()
 				//pl:SendLua("DrawEndround("..ROUNDTIME..")")
 				net.Start( "CallDrawEndRound" )
 					net.WriteInt( ROUNDTIME, 32 )
-				net.Send( pl ) 
+				net.Send( pl )
 			end)
 		end
-		
+
 		self.GameState = ROUNDSTATE_PLAY
 
-		
+
 		pl:SetupDefaultStats()
 		pl:SetupSkillStats()
-		
+
 
 		//self:SynchronizeTime(pl)
-		
+
 		local desiredname = pl:GetInfo("cl_playermodel")
 		local modelname = player_manager.TranslatePlayerModel(#desiredname == 0 and "models/player/kleiner.mdl" or desiredname)
 		local lowermodelname = string.lower(modelname)
@@ -1621,12 +1569,12 @@ concommand.Add("admin_changelevel",change_map,
 ---------------------------------------------------------*/
 
 local thugmsg = {
-	"%s just died!",
-	"Thugs just killed %s!",
-	"%s is no longer a weakling!",
-	"They've killed %s!",
-	"%s was destroyed!",
-	"Oh shit, %s is dead!",
+	"obj_ts_death1",
+	"obj_ts_death2",
+	"obj_ts_death3",
+	"obj_ts_death4",
+	"obj_ts_death5",
+	"obj_ts_death6",
 }
 
 local ground_trace = {mask=MASK_SOLID_BRUSHONLY}
@@ -1794,7 +1742,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 					util.Effect("bulletholes",e,true,true)
 				end
 			end
-			////////////////
+
 			
 			if dmginfo:GetDamageType() == DMG_BURN then
 				local e = EffectData()
@@ -1815,7 +1763,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 				e:SetOrigin(ply:GetPos())
 				util.Effect("frozenplayer",e,true,true)
 			end
-						
+	
 			if ply.DeathSequence then
 				local id, duration = ply:LookupSequence( ply.DeathSequence.Anim )
 				local e = EffectData()
@@ -1843,7 +1791,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 		for i=1,8 do
 			local rand = tr.HitNormal:Angle():Right()*math.random(-20,20)
 			local rand2 = tr.HitNormal:Angle():Up()*math.random(-20,20)
-			util.Decal("Blood", tr.HitPos + tr.HitNormal+rand+rand2, tr.HitPos - tr.HitNormal+rand+rand2)				
+			util.Decal("Blood", tr.HitPos + tr.HitNormal+rand+rand2, tr.HitPos - tr.HitNormal+rand+rand2)	
 		end
 		//util.Decal("Blood",  tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
 	end
@@ -1858,7 +1806,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 		attacker = ply.LastAttacker
 	end
 	
-	if ( IsValid(attacker) && attacker:IsPlayer() ) then
+	if ( IsValid(attacker) and attacker:IsPlayer() ) then
 	
 		local inf = dmginfo:GetInflictor()
 		if inf:GetClass() == "player" then
@@ -1899,51 +1847,52 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 					end
 				end
 			end
-			
+
 			if !IsValid(ply._efFrozen) then
 				ply:CreateOrb(attacker)
 			end
 
 			attacker:AddFrags( 1 )
-			
+
 			attacker:AddXP(ply:IsCarryingFlag() and SKILL_XP_PER_KILL*5 or SKILL_XP_PER_KILL)
-			
+
 			if self:GetGametype() ~= "ffa" then
 				team.AddScore(P_Team( attacker ), #player_GetAll() < 9 and 2 or 1 )
 			end
-			
+
 			if self:GetGametype() == "conquest" then
 				local tm = P_Team( ply ) == TEAM_RED and 1 or 2
 				self:DrainTickets(tm)
 			end
 			//attacker:RefillMana(15)
-			
+
 			//if attacker._SkillScavenger then
 				attacker:RestoreAmmo(true)
 			//end
-			
+
 			if math.random(13) == 1 then
 				attacker:OnKillSpeech()
 			end	
 			attacker:OnKillAnimation()
-			
+
 			CheckAchievementKillsGlobal(attacker,ply,inf)
 		end
-		
+
 	end
-	
+
 	ply:BalanceTeams()
-	
+
 	if self:GetGametype() == "ts" and P_Team( ply ) ~= TEAM_THUG then
 		ply:SetTeam(TEAM_THUG)
-		
+
 		self.DeadPeople[tostring(ply:SteamID())] = true
-		
+
 		if IsValid(attacker) and attacker:IsPlayer() and attacker ~= ply then
-			GAMEMODE:HUDMessage(nil, string.format( thugmsg[math.random(1,#thugmsg)], ply:Name()) , attacker, 5)
+			//GAMEMODE:HUDMessage(nil, string.format( thugmsg[math.random(1,#thugmsg)], ply:Name()) , attacker, 5)
+			GAMEMODE:HUDMessagePlayer(nil, thugmsg[math.random(1,#thugmsg)], ply:Name(), attacker, 5)
 		end
-		
-		timer.Simple(1, function() 
+
+		timer.Simple(1, function()
 			if #team.GetPlayers(TEAM_BLUE) < 1 then
 				local winner = team.GetName(TEAM_BLUE)
 				self:EndRound(winner)
@@ -1967,7 +1916,7 @@ function GM:PlayerDeathThink( pl )
 		pl:SendLua("LoadoutMenu()")
 	end
 
-	if (  pl.NextSpawnTime && pl.NextSpawnTime > CurTime() ) then return end
+	if (  pl.NextSpawnTime and pl.NextSpawnTime > CurTime() ) then return end
 
 	if ( pl:KeyPressed( IN_ATTACK ) /*|| pl:KeyPressed( IN_JUMP ) */) or pl:SteamID() == "BOT" then
 	
@@ -2003,6 +1952,8 @@ end
    Desc: Called when a player dies.
 ---------------------------------------------------------*/
 
+util.AddNetworkString( "PlayerKilledNPC" )
+util.AddNetworkString( "NPCKilledNPC" )
 util.AddNetworkString( "PlayerKilledSelf" )
 util.AddNetworkString( "PlayerKilled" )
 util.AddNetworkString( "PlayerKilledByPlayer" )
@@ -2016,10 +1967,10 @@ function GM:PlayerDeath( Victim, Inflictor, Attacker )
 		Victim.NextSpawnTime = CurTime() + ( Victim:IsBot() and 7 or SPAWNTIME )
 	end
 
-	if ( Inflictor && Inflictor == Attacker && (Inflictor:IsPlayer() || Inflictor:IsNPC()) ) then
+	if ( Inflictor and Inflictor == Attacker and (Inflictor:IsPlayer() or Inflictor:IsNPC()) ) then
 	
 		Inflictor = Inflictor:GetActiveWeapon()
-		if ( !Inflictor || Inflictor == NULL ) then Inflictor = Attacker end
+		if ( !Inflictor or Inflictor == NULL ) then Inflictor = Attacker end
 	
 	end
 	
