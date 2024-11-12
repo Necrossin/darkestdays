@@ -617,7 +617,7 @@ function ToggleRadio( pl,commandName,args )
 	if RadioOn then 
 		RunConsoleCommand("_dd_enableradio","1")
 		if not Org then
-			MySelf:PrintMessage( HUD_PRINTTALK, "Radio on")
+			MySelf:PrintMessage( HUD_PRINTTALK, translate.Get( "radio_on" ))
 		end
 		if MySelf._CurSong then
 			MySelf._CurSong:Stop()
@@ -626,7 +626,7 @@ function ToggleRadio( pl,commandName,args )
 	else 
 		RunConsoleCommand("_dd_enableradio","0")
 		if Org then
-			MySelf:PrintMessage( HUD_PRINTTALK, "Radio off")
+			MySelf:PrintMessage( HUD_PRINTTALK, translate.Get( "radio_off" ))
 		end
 		if MySelf._CurSong then
 			MySelf._CurSong:Stop()

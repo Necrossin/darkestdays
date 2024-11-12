@@ -30,6 +30,7 @@ LANGUAGE.obj_flag_reset					= "Flag resets in %i seconds!"
 LANGUAGE.obj_flag_reset_done			= "Flag has been reset!"
 LANGUAGE.obj_flag_pickup    			= "%s has picked up the flag!"
 LANGUAGE.obj_flag_drop        			= "%s has dropped the flag!"
+LANGUAGE.obj_flag_hold        			= "Holding the flag"
 
 LANGUAGE.obj_ffa_score					= "%i out of %i"
 
@@ -74,6 +75,16 @@ LANGUAGE.killicon_thugfists	 			= "destroyed"
 LANGUAGE.killicon_trafficlight 			= "has stopped"
 LANGUAGE.killicon_wand		 			= "poked to death"
 
+-- Voice commands
+
+LANGUAGE.voice_agree					= "Agree"
+LANGUAGE.voice_disagree					= "Disagree"
+LANGUAGE.voice_follow					= "Follow me"
+LANGUAGE.voice_taunt					= "Taunt"
+LANGUAGE.voice_help						= "Help"
+LANGUAGE.voice_sorry					= "Sorry"
+
+
 -- Options labels etc
 
 LANGUAGE.option_language		 		= "Language"
@@ -108,6 +119,8 @@ LANGUAGE.option_thirdperson_x	 		= "Thirdperson X pos"
 LANGUAGE.option_thirdperson_y	 		= "Thirdperson Y pos"
 LANGUAGE.option_thirdperson_z	 		= "Thirdperson Z pos"
 
+LANGUAGE.radio_on			 			= "Radio on"
+LANGUAGE.radio_off			 			= "Radio off"
 
 
 -- Round end menus

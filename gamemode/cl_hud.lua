@@ -85,12 +85,12 @@ local selected = "none"
 local nextopen = 0
 
 local VoiceKeys = {
-	["agree"] = "Agree",
-	["disagree"] = "Disagree",
-	["follow"] = "Follow me",
-	["taunt"] = "Taunt",
-	["help"] = "Help",
-	["sorry"] = "Sorry",
+	["agree"] = "voice_agree",
+	["disagree"] = "voice_disagree",
+	["follow"] = "voice_follow",
+	["taunt"] = "voice_taunt",
+	["help"] = "voice_help",
+	["sorry"] = "voice_sorry",
 }
 
 local function ConfirmVoiceCommand(delay)
@@ -167,7 +167,7 @@ function DrawVoiceMenu(MySelf)
 			end
 			
 
-			draw_SimpleText( VoiceKeys[i] or i,font,x,y, Color(231, 231, 231, 170),TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )//VoiceKeys[i] or i
+			draw_SimpleText( translate.Get ( VoiceKeys[i] ) or i,font,x,y, Color(231, 231, 231, 170),TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 		
 			angle = angle + step
 		end
@@ -715,7 +715,7 @@ function DrawKOTHNotify(MySelf)
 			bbig = hill:IsBeingHeld() and hill:HillToTeam(hill:GetHoldingTeam()) == TEAM_BLUE
 			
 			if MySelf:IsCarryingFlag() then
-				draw_SimpleText("Holding the flag","Bison_55", bgX,bgY-bgH/2-20, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+				draw_SimpleText( translate.Get( "obj_flag_hold" ),"Bison_55", bgX,bgY-bgH/2-20, Color(231,231,231,230), TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 			end
 			
 		else
@@ -774,7 +774,7 @@ function DrawKOTHNotify(MySelf)
 					text = translate.Get( "obj_unlocking" )..": "..hill:GetStartCooldown()
 					col = COLOR_TEXT_SOFT_BRIGHT
 				else
-					text = FlagText[1]
+					text =  translate.Get( FlagText[1] )
 					col = COLOR_TEXT_SOFT_BRIGHT//Color(220,220,220,255)
 				end
 			end
