@@ -218,7 +218,7 @@ function OptionsMenu()
 	LangButton.OnSelect = function( self, index, value )
 		RunConsoleCommand( "dd_language", self:GetOptionData( index ) )
 		
-		timer.Simple( 1, function()  
+		timer.Simple( 0.5, function() 
 			if OpMenu then
 				OpMenu:Remove()
 				OpMenu = nil

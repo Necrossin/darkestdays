@@ -25,7 +25,7 @@ if CLIENT then
 
 	timer.Create("checklanguagechange", 1, 0, function()
 		CurrentLanguage = GetConVar("dd_language"):GetString() == "auto" and GetConVar("gmod_language"):GetString() or GetConVar("dd_language"):GetString()
-		if CurrentLanguage ~= GetConVar("gmod_language"):GetString() then
+		if CurrentLanguage ~= GetConVar("gmod_language_rep"):GetString() then
 			-- Let server know our language changed.
 			 RunConsoleCommand("gmod_language_rep", CurrentLanguage)
 		end
