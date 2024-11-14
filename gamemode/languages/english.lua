@@ -137,6 +137,8 @@ LANGUAGE.vote_restarting_map            = "Restarting map in %i"
 LANGUAGE.vote_next_gametype             = "Next gametype: %s"
 LANGUAGE.vote_unlock_gametype           = "Unlocks in %i round(s)"
 
+LANGUAGE.no_map_name					= "no name"
+
 
 -- Loadout --
 

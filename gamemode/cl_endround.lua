@@ -247,7 +247,7 @@ function DrawEndround(time)
 	
 	for i=1,MAX_VOTEMAPS do
 	
-		local name = Votemaplist[i] or "no name"
+		local name = Votemaplist[i] or translate.Get( "no_map_name" )
 	
 		local MapButton = vgui.Create("DButton",i <= ( MAX_VOTEMAPS / 2 ) and mappanel_l or mappanel_r)
 		MapButton:Dock( TOP )

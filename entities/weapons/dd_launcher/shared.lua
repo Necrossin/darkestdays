@@ -197,7 +197,6 @@ function SWEP:GetViewModelPosition(pos, ang)
 	if self:GetNextReload() > CurTime() then
 		lerp = math.Approach(lerp, ((self:GetNextReload() > CurTime()) and 1) or 0, RealFrameTime() * ((lerp + 1) ^ 1.5))
 		ang:RotateAroundAxis(ang:Right(), -23 * lerp)
-		return pos, ang
 	else
 		--if IsFirstTimePredicted() then
 			lerp = math.Approach(lerp, (self.Owner:IsSprinting() and not self.IgnoreSprint and 1) or 0, RealFrameTime() * 1*((lerp + 1) ^ 2.5))
@@ -217,10 +216,12 @@ function SWEP:GetViewModelPosition(pos, ang)
 		else
 			ang:RotateAroundAxis(ang:Right(), (self.IsPistol and 1.5 or -1) * 12 * lerp)
 		end
-		return pos, ang
 	end
-	//lerp = math.Approach(lerp, ((self:GetNextReload() > CurTime()) and 1) or 0, FrameTime() * ((lerp + 1) ^ 3))
-	//ang:RotateAroundAxis(ang:Right(), -23 * lerp)
-	//return pos, ang
+
+	local plang = MySelf:EyeAngles()
+	
+	pos = pos + ( DD_VIEWMODEL_Z or 0 ) * plang:Up()
+
+	return pos, ang
 end 
 end

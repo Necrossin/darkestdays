@@ -1805,7 +1805,7 @@ function LoadoutMenu()
 	
 	local w,h = ScrW(),ScrH()
 	
-	local tW,tH = w/2.7,h/1.9
+	local tW,tH = w/2.2,h/1.9//w/2.7,h/1.9
 	
 	if LoadoutSwitcher then
 		LoadoutSwitcher:Remove()
@@ -1855,10 +1855,10 @@ function LoadoutMenu()
 		
 		if self.Overed then
 			draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT )
-			draw.SimpleText ( text,"Arial_Bold_30", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text,"Arial_Bold_28", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		else
 			draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT)
-			draw.SimpleText ( text,"Arial_Bold_30", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText ( text,"Arial_Bold_28", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 	end
 	
@@ -1938,12 +1938,11 @@ function LoadoutMenu()
 			draw.RoundedBox( 4,1,1, fw-2,fh-2, COLOR_BACKGROUND_DARK)
 			local text = translate.Get("player_loadout")
 			if self.Overed then
-				
 				draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_SELECTED_BRIGHT )
-				draw.SimpleText ( text.." "..i,"Arial_Bold_30", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( text.." "..i,"Arial_Bold_34", fw/2, fh/2, COLOR_TEXT_SOFT_BRIGHT , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			else
 				draw.RoundedBox( 4,2,2, fw-4, fh-4, COLOR_DESELECTED_BRIGHT)
-				draw.SimpleText ( text.." "..i,"Arial_Bold_30", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText ( text.." "..i,"Arial_Bold_34", fw/2, fh/2, COLOR_BACKGROUND_DARK , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 		end
 	end
