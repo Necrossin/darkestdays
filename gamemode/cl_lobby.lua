@@ -1336,7 +1336,7 @@ function CreateLoadoutSlot(x,y,ww,hh,class,num,tbl,classind)
 			end
 			
 			if LoadoutSlotItems[SelectedLoadout][num] == "none" then
-				draw.SimpleText( translate.Get("player_loadout_noitem "), "Arial_Bold_18", ww/2, hh/2, col , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.SimpleText( translate.Get("player_loadout_noitem"), "Arial_Bold_18", ww/2, hh/2, col , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				return
 			else
 				local mat = false

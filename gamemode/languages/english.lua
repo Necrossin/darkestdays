@@ -384,7 +384,7 @@ LANGUAGE.spell_undead_pr               	= "- Raise an undead AntGuard for\na few
 LANGUAGE.spell_undead_co               	= "- Necromancy: Requires an orb to cast"
 LANGUAGE.spell_gravitywell_pr          	= "- Pulls nearby props towards\nyour enemies"
 LANGUAGE.spell_cure_pr                 	= "- Creates a healing cloud\n- Restore health for\neach healed teammate"
-LANGUAGE.spell_cure_co                 	= "- Owner cant be healed directly\nby cloud in team-based gamemodes"
+LANGUAGE.spell_cure_co                 	= "- Owner cant be healed directly\nby cloud in team-based gametypes"
 LANGUAGE.spell_meatbomb_pr             	= "- Throw a bouncing ball of meat\nthat explodes after a while\n- Can be attached to teammates"
 
 -- Perks
