@@ -374,12 +374,14 @@ local function DrawDeath( x, y, death, hud_deathnotice_time )
 	GAMEMODE:KilliconRender( x - w / 2, y, death.icon, alpha )
 
 	// Draw KILLER
-	if (death.left) then
+	if death.left then
 		draw.SimpleText( death.left, 	"Bison_30", x - (w/2) - 16, y + h / 2, 		death.color1, 	TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER )
 	end
 
 	// Draw VICTIM
-	draw.SimpleText( death.right, 		"Bison_30", x + (w/2) + 16, y + h / 2, 		death.color2, 	TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER )
+	if death.right then
+		draw.SimpleText( death.right, 		"Bison_30", x + (w/2) + 16, y + h / 2, 		death.color2, 	TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER )
+	end
 
 	return (y + h * 0.70)
 
