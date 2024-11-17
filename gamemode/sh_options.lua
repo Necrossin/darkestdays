@@ -989,7 +989,7 @@ Perks = {
 		Name = "perk_martial_name",
 		Special = "perk_martial_special",
 		PrTr = "perk_martial_pr",
-		Co = "perk_martial_co",
+		CoTr = "perk_martial_co",
 		Description = "perk_martial_desc",
 		OnSet = function(pl) if SERVER then pl:SendLua("LocalPlayer()._MartialArts = true") end end, OnReset = function(pl) if SERVER then pl:SendLua("LocalPlayer()._MartialArts = nil") end end
 	},
