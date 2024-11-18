@@ -1000,7 +1000,7 @@ Perks = {
 		PrTr = "perk_dash_pr",
 		//Co = "Costs 25% of your mana per dash\nCosts even more mana per dash attack\n-15 max health",
 		Co = "%s\n%s",
-		CoForm = function() return translate.Format("perk_dash_co", 25), translate.Format("att_max_health", -15) end,
+		CoForm = function() return translate.Format("perk_dash_co", 25, 50), translate.Format("att_max_health", -15) end,
 		OnSet = function(pl) pl._DefaultHealth = pl._DefaultHealth - 15; if SERVER then pl:SendLua("LocalPlayer()._ShiftUses = 4 LocalPlayer()._ShiftCap = 25") end end, 
 		OnReset = function(pl) if SERVER then pl:SendLua("LocalPlayer()._ShiftUses = nil LocalPlayer()._ShiftCap = nil") end end
 	},

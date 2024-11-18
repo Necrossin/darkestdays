@@ -745,33 +745,46 @@ end
 
 function SWEP:PrimaryAttack()
 
-	if SERVER and self.Owner.SpawnProtection and self.Owner.SpawnProtection > CurTime() then
-		self.Owner.SpawnProtection = 0
+	local owner = self:GetOwner()
+	
+	if SERVER and owner.SpawnProtection and owner.SpawnProtection > CurTime() then
+		owner.SpawnProtection = 0
 	end
 
-	if self.Owner:IsCrow() then return end
-	if self.Owner:IsSprinting() and not ( self.IgnoreSprint or self.Owner:IsSliding() ) then 
-		self.Owner.NextSprint = CurTime() + 0.5
-		return 
+	if owner:IsCrow() then return end
+	if owner:IsSprinting() and not ( self.IgnoreSprint or owner:IsSliding() ) then 
+		owner.NextSprint = CurTime() + 0.5
+		return
 	end
 	if self:IsBlocking() then return end
 	if not self:CanPrimaryAttack() then return end
 
 	
-	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay - self.Primary.Delay * ((self.Owner._DefaultMeleeSpeedBonus  or 0) / 2 ))
+	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay - self.Primary.Delay * ((owner._DefaultMeleeSpeedBonus  or 0) / 2 ))
 	
-	if self.Owner.DashFrames and self.Owner.DashFrames > CurTime() and self:IsTwoHanded() then
+	if owner.DashFrames and owner.DashFrames > CurTime() and self:IsTwoHanded() then
 	
-		self.Owner.DashFrames = nil
+		owner.DashFrames = nil
 		self:GenerateHitDirection()
 		if self:GetHitDirection() == 0 then
 			self.DashBonus = true
 			self:MeleeSwing()
+			
+			if self.StartSwingingSeq then
+				self:PlaySequence(self.StartSwingingSeq)
+				self.IdleAnimation = CurTime() + (IsValid(owner:GetViewModel()) and owner:GetViewModel():SequenceDuration() or 0.85)
+			else
+				if self.StartSwingAnimation then
+					self:SendWeaponAnim(self.StartSwingAnimation)
+					owner:GetViewModel():SetPlaybackRate(2)
+				end
+			end
+
 			self.DashBonus = false
 			self:SetNextPrimaryFire( CurTime() + 1 )
 			if SERVER then
-				self.Owner:SetMana( math.Clamp( self.Owner:GetMana() - math.ceil( self.Owner:GetMaxMana() / 2 ), 0, self.Owner:GetMana() ) )
-				self.Owner._NextManaRegen = CurTime() + 1.2
+				owner:SetMana( math.Clamp( owner:GetMana() - math.ceil( owner:GetMaxMana() / 2 ), 0, owner:GetMana() ) )
+				owner._NextManaRegen = CurTime() + 1.2
 			end
 		end
 	else
