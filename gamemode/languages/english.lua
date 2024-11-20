@@ -571,6 +571,7 @@ LANGUAGE.help_page1_content            	=
 		Fray - Some SCK designs
 		Xerxes - For fixing up sword viewmodel
 		Pseudoroom - Bison font, edited by LYAJKA
+		kas_2ST - Russian translation
 
 		All the players that joined the server for playtesting
 	]]

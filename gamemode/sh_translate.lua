@@ -115,6 +115,14 @@ if CLIENT then
 	function translate.ClientFormat(_, ...)
 		return translateFormat(...)
 	end
+
+	function translate.ForceCheckLanguage()
+		CurrentLanguage = GetConVar("dd_language"):GetString() == "auto" and GetConVar("gmod_language"):GetString() or GetConVar("dd_language"):GetString()
+	end
+
+	function translate.ForceLanguage( lan )
+		CurrentLanguage = lan or DefaultLanguage
+	end
 end
 
 for i, filename in pairs(file.Find(GM.FolderName.. "/gamemode/languages/*.lua", "LUA")) do

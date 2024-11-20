@@ -217,12 +217,15 @@ function OptionsMenu()
 
 	LangButton.OnSelect = function( self, index, value )
 		RunConsoleCommand( "dd_language", self:GetOptionData( index ) )
-		
-		timer.Simple( 0.5, function() 
-			if OpMenu then
-				OpMenu:Remove()
-				OpMenu = nil
-			end
+
+		translate.ForceLanguage(  self:GetOptionData( index ) == "auto" and GetConVar("gmod_language"):GetString() or self:GetOptionData( index ) )
+
+		if OpMenu then
+			OpMenu:Remove()
+			OpMenu = nil
+		end
+
+		timer.Simple( 0.2, function()
 			OptionsMenu()
 		end)
 		

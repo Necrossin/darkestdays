@@ -1570,12 +1570,12 @@ function CreateSkillsMenu(x,y,ww,hh)
 			local moveY = 0
 			
 			if stuff.Pr then
-				draw.DrawText( translate.Get(stuff.Pr) or "", "Arial_Bold_Scaled_21", self:GetWide()/2, self:GetTall()/2+moveY, Color(131,204,255,255) , TEXT_ALIGN_CENTER, nil)
+				draw.DrawText( translate.Get(stuff.Pr) or "", "Arial_Bold_Scaled_20", self:GetWide()/2, self:GetTall()/2+moveY, Color(131,204,255,255) , TEXT_ALIGN_CENTER, nil)
 				local tX,tY = surface.GetTextSize(stuff.Pr)
 				moveY = moveY + tY
 			end
 			if stuff.Co then
-				draw.DrawText( translate.Get(stuff.Co) or "", "Arial_Bold_Scaled_21", self:GetWide()/2, self:GetTall()/2+moveY, Color(230,80,80,255) , TEXT_ALIGN_CENTER, nil)
+				draw.DrawText( translate.Get(stuff.Co) or "", "Arial_Bold_Scaled_20", self:GetWide()/2, self:GetTall()/2+moveY, Color(230,80,80,255) , TEXT_ALIGN_CENTER, nil)
 				local tX,tY = surface.GetTextSize(stuff.Co)
 				moveY = moveY + tY
 			end
