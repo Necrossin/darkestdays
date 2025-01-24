@@ -113,7 +113,7 @@ TEAM_THUG = TEAM_RED
 
 GM.Name 		= "Darkest Days"
 GM.Author 		= "Necrossin"
-GM.Version		= "v 20/11/2024"
+GM.Version		= "v 24/01/2025"
 GM.Email 		= ""
 GM.Website 		= ""
 

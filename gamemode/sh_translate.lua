@@ -79,6 +79,9 @@ if SERVER then
 	
 	function translate.ClientGet(pl, ...)
 		CurrentLanguage = pl:GetInfo("gmod_language_rep")
+		if pl:IsBot() then
+			CurrentLanguage = DefaultLanguage
+		end
 		return translateGet(...)
 	end
 	
@@ -89,6 +92,9 @@ if SERVER then
 	
 	function translate.ClientFormat(pl, ...)
 		CurrentLanguage = pl:GetInfo("gmod_language_rep")
+		if pl:IsBot() then
+			CurrentLanguage = DefaultLanguage
+		end
 		return translateFormat(...)
 	end
 	
