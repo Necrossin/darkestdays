@@ -133,7 +133,7 @@ local function GivePickupSpawner(pl,cmg,args)
 	pl:Give("pickup_spawner")
 	
 end
-if SERVER then concommand.Add( "map_givepickupspawner", GivePickupSpawner ) end
+//if SERVER then concommand.Add( "map_givepickupspawner", GivePickupSpawner ) end
 
 
 function SWEP:Reload()

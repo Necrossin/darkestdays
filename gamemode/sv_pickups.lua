@@ -59,6 +59,8 @@ function GM:LoadKOTHPoints()
 	
 	local stuff_exists = false
 	local to_check
+
+	print"-- Checking KOTH Points"
 	
 	if file.Exists(filename,"DATA") then
 		to_check = file.Read(filename,"DATA")
@@ -69,6 +71,14 @@ function GM:LoadKOTHPoints()
 			to_check = self.DefaultKOTHPoints[game.GetMap()]
 			stuff_exists = true
 			print"No file, but table exists, using table"
+		else
+			--look for data_static folder (workshop_support)
+			filename = "data_static/"..filename
+			if file.Exists(filename,"GAME") then
+				to_check = file.Read(filename,"GAME")
+				stuff_exists = true
+				print"File exists in 'data_static' folder, loading this one"
+			end
 		end
 	end
 	
